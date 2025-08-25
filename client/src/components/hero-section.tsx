@@ -99,14 +99,16 @@ export default function HeroSection() {
         {/* Cinematic Headline */}
         <motion.div className="mb-6" variants={cinematicVariants}>
           <h1 
-            className="text-4xl md:text-6xl xl:text-7xl font-black leading-tight tracking-tight text-white" 
+            className="text-4xl md:text-6xl xl:text-7xl font-black leading-tight tracking-tight" 
             data-testid="hero-headline"
             style={{
               textShadow: '0 0 40px rgba(255,255,255,0.3)'
             }}
           >
-            <span className="block text-white font-black">Get Your</span>
-            <span className="block text-white font-black">Brand</span>
+            <span className="block text-white font-black">Get your</span>
+            <span className="block relative">
+              <span className="bg-white text-purple-900 font-black px-4 py-2 inline-block">brand</span>
+            </span>
             <span className="block text-white font-black">Noticed</span>
           </h1>
         </motion.div>
