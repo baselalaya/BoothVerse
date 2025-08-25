@@ -13,6 +13,8 @@ type SectionConfig = {
   scale: number;
   rotation: number;
   color: 'white' | 'purple' | 'blue';
+  shape?: 'infinity' | 'questionMark';
+  morphProgress?: number;
 };
 
 const sectionConfigs: Record<string, SectionConfig> = {
@@ -24,11 +26,13 @@ const sectionConfigs: Record<string, SectionConfig> = {
     color: 'white'
   },
   'brand-activation': {
-    opacity: 0.9,
-    cinematicPhase: 'buildup',
-    scale: 1.1,
-    rotation: 15,
-    color: 'purple'
+    opacity: 1.2,
+    cinematicPhase: 'climax',
+    scale: 1.3,
+    rotation: 0,
+    color: 'white',
+    shape: 'questionMark',
+    morphProgress: 1.0
   },
   'products': {
     opacity: 0.8,
@@ -161,6 +165,8 @@ export default function StickyParticlesBackground({ className }: StickyParticles
         <ThreeBackground 
           introOpacity={config.opacity} 
           cinematicPhase={config.cinematicPhase}
+          targetShape={config.shape || 'infinity'}
+          morphProgress={config.morphProgress || 0}
         />
       </motion.div>
 

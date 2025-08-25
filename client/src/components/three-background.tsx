@@ -6,9 +6,17 @@ interface ThreeBackgroundProps {
   className?: string;
   introOpacity?: number;
   cinematicPhase?: 'blackout' | 'particles' | 'buildup' | 'climax' | 'transition' | 'content';
+  targetShape?: 'infinity' | 'questionMark';
+  morphProgress?: number;
 }
 
-export default function ThreeBackground({ className, introOpacity = 1, cinematicPhase = 'content' }: ThreeBackgroundProps) {
+export default function ThreeBackground({ 
+  className, 
+  introOpacity = 1, 
+  cinematicPhase = 'content',
+  targetShape = 'infinity',
+  morphProgress = 0
+}: ThreeBackgroundProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const sceneRef = useRef<{
@@ -52,9 +60,10 @@ export default function ThreeBackground({ className, introOpacity = 1, cinematic
     renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
 
-    // Create infinity symbol particle system
+    // Create morphing particle system
     const particleCount = 6000;  // Reduced particle count
     const positions = new Float32Array(particleCount * 3);
+    const targetPositions = new Float32Array(particleCount * 3); // For morphing
     const colors = new Float32Array(particleCount * 3);
     const sizes = new Float32Array(particleCount);
 
@@ -66,23 +75,68 @@ export default function ThreeBackground({ className, introOpacity = 1, cinematic
     const colorInside = new THREE.Color('#FFFFFF').multiplyScalar(0.3);  // Much dimmer white
     const colorOutside = new THREE.Color('#FFFFFF').multiplyScalar(0.15);  // Even dimmer white
 
+    // Function to generate question mark shape positions
+    const generateQuestionMarkPositions = (positions: Float32Array) => {
+      for (let i = 0; i < particleCount; i++) {
+        const i3 = i * 3;
+        const t = (i / particleCount) * Math.PI * 2;
+        
+        if (i < particleCount * 0.7) {
+          // Question mark top curve (spiral)
+          const radius = scale * 0.4 * (1 - t / (Math.PI * 1.4));
+          const angle = t * 1.5;
+          positions[i3] = Math.cos(angle) * radius;
+          positions[i3 + 1] = Math.sin(angle) * radius + scale * 0.3;
+          positions[i3 + 2] = (Math.random() - 0.5) * thickness;
+        } else if (i < particleCount * 0.85) {
+          // Question mark vertical stem
+          const stemProgress = (i - particleCount * 0.7) / (particleCount * 0.15);
+          positions[i3] = scale * 0.1;
+          positions[i3 + 1] = scale * 0.1 - stemProgress * scale * 0.4;
+          positions[i3 + 2] = (Math.random() - 0.5) * thickness;
+        } else {
+          // Question mark dot
+          const dotAngle = Math.random() * Math.PI * 2;
+          const dotRadius = Math.random() * scale * 0.15;
+          positions[i3] = Math.cos(dotAngle) * dotRadius + scale * 0.1;
+          positions[i3 + 1] = Math.sin(dotAngle) * dotRadius - scale * 0.6;
+          positions[i3 + 2] = (Math.random() - 0.5) * thickness;
+        }
+      }
+    };
+
+    // Function to generate infinity positions
+    const generateInfinityPositions = (positions: Float32Array) => {
+      for (let i = 0; i < particleCount; i++) {
+        const i3 = i * 3;
+        const t = (i / particleCount) * Math.PI * 4;
+        
+        // Lemniscate equations: creates perfect infinity symbol
+        const denominator = 1 + Math.sin(t) * Math.sin(t);
+        let x = scale * Math.cos(t) / denominator;
+        let y = scale * Math.sin(t) * Math.cos(t) / denominator;
+        let z = (Math.random() - 0.5) * thickness;
+
+        positions[i3] = x;
+        positions[i3 + 1] = y;
+        positions[i3 + 2] = z;
+      }
+    };
+
+    // Generate initial infinity positions
+    generateInfinityPositions(positions);
+    
+    // Generate initial target shape positions based on targetShape
+    if (targetShape === 'questionMark') {
+      generateQuestionMarkPositions(targetPositions);
+    } else {
+      generateInfinityPositions(targetPositions);
+    }
+
+    // Set up particle properties
     for (let i = 0; i < particleCount; i++) {
       const i3 = i * 3;
       
-      // Assign each particle a specific position along the infinity curve
-      const t = (i / particleCount) * Math.PI * 4; // Full infinity loop
-      
-      // Lemniscate equations: creates perfect infinity symbol
-      const denominator = 1 + Math.sin(t) * Math.sin(t);
-      let x = scale * Math.cos(t) / denominator;
-      let y = scale * Math.sin(t) * Math.cos(t) / denominator;
-      let z = (Math.random() - 0.5) * thickness;
-
-      // Store the target infinity position
-      positions[i3] = x;
-      positions[i3 + 1] = y;
-      positions[i3 + 2] = z;
-
       // Color based on position along the curve
       const normalizedPos = i / particleCount;
       const mixedColor = colorInside.clone();
@@ -108,6 +162,7 @@ export default function ThreeBackground({ className, introOpacity = 1, cinematic
 
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('targetPosition', new THREE.BufferAttribute(targetPositions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
     geometry.setAttribute('phase', new THREE.BufferAttribute(phases, 1));
@@ -120,8 +175,10 @@ export default function ThreeBackground({ className, introOpacity = 1, cinematic
         uniform float uTime;
         uniform float uIntroOpacity;
         uniform float uCinematicIntensity;
+        uniform float uMorphProgress;
         attribute float size;
         attribute float phase;
+        attribute vec3 targetPosition;
         varying vec3 vColor;
         varying float vIntensity;
         
@@ -167,8 +224,11 @@ export default function ThreeBackground({ className, introOpacity = 1, cinematic
           float spiral = sin(dynamicTime * 2.0 + curvePosition * 2.0 + particlePhase) * 0.25;
           float orbit = cos(dynamicTime * 3.5 + particlePhase * 2.0) * 0.15;
           
-          // Apply all transformations
-          vec3 animatedPosition = position;
+          // Morph between original position and target position
+          vec3 basePosition = mix(position, targetPosition, uMorphProgress);
+          
+          // Apply all transformations to the morphed position
+          vec3 animatedPosition = basePosition;
           animatedPosition.x += flow + drift + spiral + cluster;
           animatedPosition.y += momentum + orbit + sin(dynamicTime + curvePosition * 2.0 + particlePhase) * 0.2;
           animatedPosition.z += cos(dynamicTime * 2.2 + particlePhase) * 0.1;
@@ -220,12 +280,26 @@ export default function ThreeBackground({ className, introOpacity = 1, cinematic
       uniforms: {
         uTime: { value: 0 },
         uIntroOpacity: { value: introOpacity },
-        uCinematicIntensity: { value: cinematicPhase === 'climax' ? 2.0 : 1.0 }
+        uCinematicIntensity: { value: cinematicPhase === 'climax' ? 2.0 : 1.0 },
+        uMorphProgress: { value: morphProgress }
       }
     });
 
     const particles = new THREE.Points(geometry, material);
     scene.add(particles);
+
+    // Function to update target positions dynamically
+    const updateTargetPositions = (shape: 'infinity' | 'questionMark') => {
+      if (shape === 'questionMark') {
+        generateQuestionMarkPositions(targetPositions);
+      } else {
+        generateInfinityPositions(targetPositions);
+      }
+      geometry.getAttribute('targetPosition').needsUpdate = true;
+    };
+
+    // Store the update function for external access
+    (particles as any).updateTargetPositions = updateTargetPositions;
 
     // Remove tube geometry - particles will create the infinity shape themselves
 
@@ -256,6 +330,7 @@ export default function ThreeBackground({ className, introOpacity = 1, cinematic
           case 'content': cinematicIntensity = 1.0; break;
         }
         material.uniforms.uCinematicIntensity.value = cinematicIntensity;
+        material.uniforms.uMorphProgress.value = morphProgress;
       }
 
       // No rotation - particles flow along infinity path via shader
@@ -296,6 +371,13 @@ export default function ThreeBackground({ className, introOpacity = 1, cinematic
       renderer.dispose();
     };
   }, [prefersReducedMotion]);
+
+  // Handle dynamic shape morphing when targetShape or morphProgress changes
+  useEffect(() => {
+    if (sceneRef.current?.particles && (sceneRef.current.particles as any).updateTargetPositions) {
+      (sceneRef.current.particles as any).updateTargetPositions(targetShape);
+    }
+  }, [targetShape]);
 
   return (
     <div 

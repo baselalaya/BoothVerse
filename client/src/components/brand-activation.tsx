@@ -54,51 +54,65 @@ export default function BrandActivation() {
   return (
     <section 
       ref={sectionRef}
-      className="relative py-24 overflow-hidden bg-black" 
+      className="relative py-24 overflow-hidden bg-transparent" 
       data-testid="brand-activation-section"
     >
       
       <motion.div 
-        className="relative z-10 max-w-6xl mx-auto text-center px-8"
+        className="relative z-20 max-w-6xl mx-auto text-center px-8"
         ref={ref}
         initial="hidden"
         animate={isIntersecting ? "visible" : "hidden"}
         variants={staggerContainer}
       >
-        {/* Clean badge */}
+        {/* Glass-morphism badge */}
         <motion.div variants={cinematicVariants} className="mb-8">
           <Badge 
-            className="backdrop-blur-xl px-8 py-3 rounded-full text-base font-semibold bg-white/10 border border-white/20 text-white"
+            className="backdrop-blur-3xl px-8 py-3 rounded-full text-base font-semibold bg-white/5 border border-white/10 text-white shadow-2xl"
             data-testid="revolutionary-tech-badge"
+            style={{
+              backdropFilter: 'blur(20px) saturate(180%)',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)'
+            }}
           >
             Revolutionary Technology
           </Badge>
         </motion.div>
         
-        {/* Clean headline */}
-        <motion.h2 
-          className="text-4xl md:text-6xl xl:text-7xl font-black mb-8 leading-tight tracking-tight text-white"
+        {/* Glass-morphism headline container */}
+        <motion.div
+          className="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl p-8 mb-8 shadow-2xl"
           variants={cinematicVariants}
-          data-testid="ai-headline"
           style={{
-            textShadow: '0 0 40px rgba(255,255,255,0.3)'
+            backdropFilter: 'blur(15px) saturate(150%)'
           }}
         >
-          <span className="block text-white font-black">
-            AI designed for
-          </span>
-          <span className="block text-white font-black">
-            brand activations
-          </span>
-        </motion.h2>
+          <h2 
+            className="text-4xl md:text-6xl xl:text-7xl font-black leading-tight tracking-tight text-white"
+            data-testid="ai-headline"
+            style={{
+              textShadow: '0 0 40px rgba(255,255,255,0.4)'
+            }}
+          >
+            <span className="block text-white font-black">
+              AI designed for
+            </span>
+            <span className="block text-white font-black">
+              brand activations
+            </span>
+          </h2>
+        </motion.div>
         
-        {/* Clean description */}
+        {/* Glass-morphism description */}
         <motion.div
           variants={cinematicVariants}
-          className="mb-12"
+          className="mb-12 backdrop-blur-2xl bg-white/3 border border-white/8 rounded-2xl p-6 shadow-xl"
+          style={{
+            backdropFilter: 'blur(12px) saturate(140%)'
+          }}
         >
           <p 
-            className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed font-light"
+            className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto leading-relaxed font-light"
             data-testid="ai-description"
           >
             Our <span className="text-white font-semibold">cutting-edge artificial intelligence</span> creates personalized, 
@@ -115,10 +129,13 @@ export default function BrandActivation() {
             <motion.div
               key={index}
               variants={cinematicVariants}
-              className="group backdrop-blur-xl p-6 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300"
+              className="group backdrop-blur-2xl p-6 rounded-xl bg-white/3 border border-white/8 hover:bg-white/8 transition-all duration-500 shadow-xl hover:shadow-2xl hover:scale-105"
+              style={{
+                backdropFilter: 'blur(15px) saturate(160%)'
+              }}
             >
-              <div className="w-12 h-12 bg-white/10 rounded-lg mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <feature.icon className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 bg-white/15 backdrop-blur-xl rounded-lg mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-all duration-300 border border-white/10">
+                <feature.icon className="w-6 h-6 text-white drop-shadow-lg" />
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">
                 {feature.text}
@@ -131,8 +148,11 @@ export default function BrandActivation() {
         <motion.div variants={cinematicVariants}>
           <Button 
             size="lg"
-            className="group px-8 py-4 text-lg font-bold hover:scale-105 transition-all duration-500 backdrop-blur-2xl border-2 border-white/20 rounded-xl bg-white/10 hover:bg-white/20"
+            className="group px-8 py-4 text-lg font-bold hover:scale-105 transition-all duration-500 backdrop-blur-3xl border-2 border-white/15 rounded-xl bg-white/8 hover:bg-white/15 shadow-2xl hover:shadow-white/10"
             data-testid="explore-ai-tech"
+            style={{
+              backdropFilter: 'blur(20px) saturate(180%)'
+            }}
           >
             <span className="text-white font-bold">
               Explore Our AI Tech
