@@ -56,6 +56,7 @@ export default function BrandActivation() {
       ref={sectionRef}
       className="relative py-24 overflow-hidden bg-transparent" 
       data-testid="brand-activation-section"
+      data-section="brand-activation"
     >
       
       <motion.div 
