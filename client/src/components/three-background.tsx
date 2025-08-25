@@ -52,7 +52,7 @@ export default function ThreeBackground() {
     const colors = new Float32Array(particleCount * 3);
     const sizes = new Float32Array(particleCount);
 
-    const scale = 10;
+    const scale = 14;  // Increased from 10 to make shape bigger
     const thickness = 3;
     const randomness = 0.4;
     const randomnessPower = 1.5;
@@ -108,12 +108,15 @@ export default function ThreeBackground() {
         void main() {
           vColor = color;
           
-          // Use the pre-calculated infinity positions directly
-          // Add subtle pulsing animation to show the drawing effect
-          float pulse = 0.5 + 0.5 * sin(uTime * 2.0 + position.x * 0.5);
+          // More fluid animation with multiple wave frequencies
+          float wave1 = sin(uTime * 1.5 + position.x * 0.3);
+          float wave2 = cos(uTime * 2.2 + position.y * 0.4);
+          float wave3 = sin(uTime * 0.8 + length(position.xy) * 0.2);
+          
+          float fluidPulse = 0.6 + 0.4 * (wave1 + wave2 + wave3) / 3.0;
           
           vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = size * (300.0 / -mvPosition.z) * pulse;
+          gl_PointSize = size * (300.0 / -mvPosition.z) * fluidPulse;
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
@@ -123,8 +126,10 @@ export default function ThreeBackground() {
         void main() {
           float distanceToCenter = distance(gl_PointCoord, vec2(0.5));
           if (distanceToCenter > 0.5) discard;
-          float alpha = 1.0 - distanceToCenter * 2.0;
-          gl_FragColor = vec4(vColor, alpha * 0.15);  // Much lower opacity
+          
+          // Smoother alpha falloff for more fluid appearance
+          float alpha = smoothstep(0.5, 0.0, distanceToCenter);
+          gl_FragColor = vec4(vColor, alpha * 0.2);
         }
       `,
       uniforms: {
