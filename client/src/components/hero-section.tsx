@@ -100,46 +100,19 @@ export default function HeroSection() {
         animate="visible"
       >
 
-        {/* 3D Cinematic Headline */}
-        <motion.div className="mb-12 space-y-2" variants={staggerContainer}>
-          <motion.h1 
+        {/* Cinematic Headline */}
+        <motion.div className="mb-12 space-y-2" variants={cinematicVariants}>
+          <h1 
             className="text-5xl md:text-7xl xl:text-8xl font-black leading-tight tracking-tight text-white" 
             data-testid="hero-headline"
+            style={{
+              textShadow: '0 0 40px rgba(255,255,255,0.3)'
+            }}
           >
-            <motion.span 
-              className="block text-white font-black transform-gpu"
-              variants={wordVariants}
-              custom={0}
-              style={{
-                transformStyle: 'preserve-3d',
-                textShadow: '0 0 40px rgba(255,255,255,0.3)'
-              }}
-            >
-              Get Your
-            </motion.span>
-            <motion.span 
-              className="block text-white font-black transform-gpu"
-              variants={wordVariants}
-              custom={1}
-              style={{
-                transformStyle: 'preserve-3d',
-                textShadow: '0 0 40px rgba(255,255,255,0.3)'
-              }}
-            >
-              Brand
-            </motion.span>
-            <motion.span 
-              className="block text-white font-black transform-gpu"
-              variants={wordVariants}
-              custom={2}
-              style={{
-                transformStyle: 'preserve-3d',
-                textShadow: '0 0 40px rgba(255,255,255,0.3)'
-              }}
-            >
-              Noticed
-            </motion.span>
-          </motion.h1>
+            <span className="block text-white font-black">Get Your</span>
+            <span className="block text-white font-black">Brand</span>
+            <span className="block text-white font-black">Noticed</span>
+          </h1>
         </motion.div>
         
         <motion.div
