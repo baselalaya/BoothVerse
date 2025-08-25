@@ -110,14 +110,14 @@ export default function ThreeBackground() {
         attribute float size;
         varying vec3 vColor;
         
-        // Infinity shape function
+        // Front-facing infinity shape function
         vec3 infinityPosition(float t, float scale) {
           float s = sin(t);
           float c = cos(t);
           float denominator = 1.0 + s * s;
           float x = scale * c / denominator;
           float y = scale * s * c / denominator;
-          return vec3(x, y, 0.0);
+          return vec3(x, y, 0.0); // Keep Z=0 for front-facing view
         }
         
         void main() {
@@ -158,8 +158,9 @@ export default function ThreeBackground() {
 
     // Remove tube geometry - particles will create the infinity shape themselves
 
-    camera.position.z = 10;
-    camera.position.y = 3;
+    camera.position.z = 15;
+    camera.position.y = 0;
+    camera.position.x = 0;
 
     // Store references
     sceneRef.current = { scene, camera, renderer, particles, animationId: null };
@@ -175,9 +176,10 @@ export default function ThreeBackground() {
 
       // No rotation - particles flow along infinity path via shader
 
-      // Camera gentle movement
-      camera.position.x = Math.sin(elapsedTime * 0.1) * 2;
-      camera.lookAt(scene.position);
+      // Keep camera fixed front-facing
+      camera.position.x = 0;
+      camera.position.y = 0;
+      camera.lookAt(0, 0, 0);
 
       renderer.render(scene, camera);
       sceneRef.current.animationId = requestAnimationFrame(animate);
