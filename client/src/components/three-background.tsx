@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import * as THREE from "three";
 
@@ -19,9 +19,6 @@ export default function ThreeBackground({
 }: ThreeBackgroundProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
-  
-  // Smooth morphing animation
-  const [currentMorphProgress, setCurrentMorphProgress] = useState(0);
   
   const sceneRef = useRef<{
     scene: THREE.Scene | null;
@@ -334,7 +331,7 @@ export default function ThreeBackground({
           case 'content': cinematicIntensity = 1.0; break;
         }
         material.uniforms.uCinematicIntensity.value = cinematicIntensity;
-        material.uniforms.uMorphProgress.value = currentMorphProgress;
+        material.uniforms.uMorphProgress.value = morphProgress;
       }
 
       // No rotation - particles flow along infinity path via shader
@@ -376,30 +373,6 @@ export default function ThreeBackground({
     };
   }, [prefersReducedMotion]);
 
-  // Smooth morphing animation
-  useEffect(() => {
-    if (prefersReducedMotion) {
-      setCurrentMorphProgress(morphProgress);
-      return;
-    }
-
-    const duration = 1500; // 1.5 seconds
-    const steps = 60; // 60fps
-    const stepValue = (morphProgress - currentMorphProgress) / steps;
-    
-    let currentStep = 0;
-    const interval = setInterval(() => {
-      currentStep++;
-      if (currentStep >= steps) {
-        setCurrentMorphProgress(morphProgress);
-        clearInterval(interval);
-      } else {
-        setCurrentMorphProgress(prev => prev + stepValue);
-      }
-    }, duration / steps);
-
-    return () => clearInterval(interval);
-  }, [morphProgress, prefersReducedMotion]);
 
   // Handle dynamic shape morphing when targetShape changes
   useEffect(() => {

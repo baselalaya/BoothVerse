@@ -32,7 +32,7 @@ const sectionConfigs: Record<string, SectionConfig> = {
     rotation: 0,
     color: 'white',
     shape: 'questionMark',
-    morphProgress: 1.0
+    morphProgress: 0.0 // Will be set dynamically by scroll
   },
   'products': {
     opacity: 0.8,
@@ -96,6 +96,7 @@ export default function StickyParticlesBackground({ className }: StickyParticles
   const prefersReducedMotion = useReducedMotion();
   const [currentSection, setCurrentSection] = useState('hero');
   const [config, setConfig] = useState(sectionConfigs.hero);
+  const [scrollBasedMorphProgress, setScrollBasedMorphProgress] = useState(0);
 
   useEffect(() => {
     if (prefersReducedMotion) {
@@ -132,8 +133,57 @@ export default function StickyParticlesBackground({ className }: StickyParticles
     const sections = document.querySelectorAll('[data-section]');
     sections.forEach((section) => observer.observe(section));
 
+    // Scroll-based morphing for brand-activation section
+    const handleScroll = () => {
+      const brandActivationSection = document.querySelector('[data-section="brand-activation"]');
+      if (!brandActivationSection) return;
+
+      const rect = brandActivationSection.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      
+      // Calculate scroll progress within the brand-activation section
+      const sectionTop = rect.top;
+      const sectionBottom = rect.bottom;
+      const sectionHeight = rect.height;
+      
+      let morphProgress = 0;
+      
+      if (sectionTop <= windowHeight && sectionBottom >= 0) {
+        // Section is in viewport
+        if (sectionTop <= windowHeight * 0.5 && sectionBottom >= windowHeight * 0.5) {
+          // Section center is in view - full morph
+          morphProgress = 1;
+        } else if (sectionTop <= windowHeight && sectionTop > windowHeight * 0.5) {
+          // Section entering from bottom
+          morphProgress = (windowHeight - sectionTop) / (windowHeight * 0.5);
+        } else if (sectionBottom >= 0 && sectionBottom < windowHeight * 0.5) {
+          // Section exiting to top
+          morphProgress = sectionBottom / (windowHeight * 0.5);
+        }
+      }
+      
+      // Clamp between 0 and 1
+      morphProgress = Math.max(0, Math.min(1, morphProgress));
+      setScrollBasedMorphProgress(morphProgress);
+      
+      // Update config for brand-activation with dynamic morph progress
+      if (currentSection === 'brand-activation') {
+        setConfig({
+          ...sectionConfigs['brand-activation'],
+          morphProgress
+        });
+      }
+    };
+
+    // Initial scroll position check
+    handleScroll();
+    
+    // Add scroll listener
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
     return () => {
       sections.forEach((section) => observer.unobserve(section));
+      window.removeEventListener('scroll', handleScroll);
     };
   }, [prefersReducedMotion]);
 
@@ -175,7 +225,8 @@ export default function StickyParticlesBackground({ className }: StickyParticles
         <div className="fixed top-4 right-4 z-50 bg-black/50 text-white p-2 rounded text-xs space-y-1">
           <div>Section: {currentSection}</div>
           <div>Shape: {config.shape || 'infinity'}</div>
-          <div>Morph: {config.morphProgress || 0}</div>
+          <div>Morph: {(config.morphProgress || 0).toFixed(2)}</div>
+          <div>Scroll Morph: {scrollBasedMorphProgress.toFixed(2)}</div>
           <div>Opacity: {config.opacity}</div>
         </div>
       )}
