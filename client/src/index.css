@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
+@import url('https://db.onlinewebfonts.com/c/d7e8a95865396ccedc81d882f92f4c02?family=Neue+Montreal');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -37,33 +38,30 @@
   --sidebar-border: hsl(205.7143 15.7895% 26.0784%);
   --sidebar-ring: hsl(202.8169 89.1213% 53.1373%);
   
-  /* Premium Typography */
-  --font-display: "SF Pro Display", "Inter", system-ui, sans-serif;
-  --font-sans: "SF Pro Text", "Inter", system-ui, sans-serif;
+  /* Brand Typography - Neue Montreal */
+  --font-display: "Neue Montreal", "Manrope", system-ui, sans-serif;
+  --font-sans: "Neue Montreal", "Manrope", system-ui, sans-serif;
   --font-mono: "SF Mono", "Fira Code", monospace;
   --radius: 1.8rem;
   
-  /* Cinematic Color Palette */
-  --void-black: hsl(0 0% 0%);
-  --deep-space: hsl(240 8% 2%);
-  --obsidian: hsl(240 6% 4%);
-  --charcoal: hsl(240 4% 8%);
-  --slate: hsl(240 3% 12%);
+  /* Official iBooth.me Brand Colors */
+  --brand-dark-violet: #7042D2;
+  --brand-white: #FFFFFF;
+  --brand-light-pink: #FFD9D1;
+  --brand-sunburst-flame: #65CF83;
+  --brand-crimson-pulse: #126228;
   
-  /* Neon Spectrum */
-  --neon-purple: hsl(270 100% 70%);
-  --neon-blue: hsl(200 100% 60%);
-  --neon-cyan: hsl(180 100% 55%);
-  --neon-green: hsl(120 100% 50%);
-  --neon-yellow: hsl(60 100% 50%);
-  --neon-orange: hsl(30 100% 55%);
-  --neon-pink: hsl(320 100% 70%);
-  --electric: hsl(240 100% 75%);
+  /* Brand Color Variables (HSL for manipulation) */
+  --dark-violet: hsl(262, 70%, 54%);
+  --light-pink: hsl(13, 100%, 91%);
+  --sunburst-flame: hsl(142, 50%, 60%);
+  --crimson-pulse: hsl(142, 69%, 15%);
   
-  /* Holographic gradients */
-  --holographic-1: linear-gradient(135deg, var(--neon-purple) 0%, var(--neon-blue) 25%, var(--neon-cyan) 50%, var(--neon-green) 75%, var(--neon-yellow) 100%);
-  --holographic-2: linear-gradient(225deg, var(--neon-pink) 0%, var(--neon-purple) 33%, var(--electric) 66%, var(--neon-cyan) 100%);
-  --holographic-3: linear-gradient(45deg, var(--neon-orange) 0%, var(--neon-pink) 50%, var(--neon-purple) 100%);
+  /* Brand Gradients */
+  --brand-primary-gradient: linear-gradient(135deg, var(--brand-dark-violet) 0%, var(--brand-white) 100%);
+  --brand-secondary-gradient: linear-gradient(135deg, var(--brand-dark-violet) 0%, var(--brand-light-pink) 100%);
+  --brand-accent-gradient: linear-gradient(135deg, var(--brand-dark-violet) 0%, var(--brand-sunburst-flame) 50%, var(--brand-crimson-pulse) 100%);
+  --brand-hover-gradient: linear-gradient(135deg, var(--brand-light-pink) 0%, var(--brand-dark-violet) 100%);
   
   /* Advanced Glass Materials */
   --glass-ultra: hsla(0, 0%, 100%, 0.02);
@@ -73,10 +71,10 @@
   --glass-border-subtle: hsla(0, 0%, 100%, 0.08);
   --glass-border-strong: hsla(0, 0%, 100%, 0.15);
   
-  /* Sophisticated Shadows */
-  --shadow-glow-purple: 0 0 40px hsl(270 100% 70% / 0.3), 0 0 80px hsl(270 100% 70% / 0.1);
-  --shadow-glow-blue: 0 0 40px hsl(200 100% 60% / 0.3), 0 0 80px hsl(200 100% 60% / 0.1);
-  --shadow-glow-cyan: 0 0 40px hsl(180 100% 55% / 0.3), 0 0 80px hsl(180 100% 55% / 0.1);
+  /* Brand Shadows */
+  --shadow-brand-violet: 0 0 40px hsl(262 70% 54% / 0.3), 0 0 80px hsl(262 70% 54% / 0.1);
+  --shadow-brand-flame: 0 0 40px hsl(142 50% 60% / 0.3), 0 0 80px hsl(142 50% 60% / 0.1);
+  --shadow-brand-pink: 0 0 40px hsl(13 100% 91% / 0.3), 0 0 80px hsl(13 100% 91% / 0.1);
   --shadow-depth: 0 20px 40px rgba(0, 0, 0, 0.4), 0 40px 80px rgba(0, 0, 0, 0.2);
   --shadow-float: 0 10px 20px rgba(0, 0, 0, 0.3), 0 20px 40px rgba(0, 0, 0, 0.1);
   
@@ -152,34 +150,49 @@
     box-shadow: var(--shadow-float);
   }
   
-  /* Holographic Text Effects */
-  .holographic-text {
-    background: var(--holographic-1);
+  /* Brand Text Effects */
+  .brand-text-primary {
+    background: var(--brand-primary-gradient);
     background-size: 400% 400%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: holographic-shift 4s ease-in-out infinite;
-    filter: drop-shadow(0 0 20px hsla(270, 100%, 70%, 0.5));
+    animation: brand-gradient-shift 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px hsla(262, 70%, 54%, 0.5));
   }
   
-  .holographic-text-alt {
-    background: var(--holographic-2);
+  .brand-text-accent {
+    background: var(--brand-accent-gradient);
     background-size: 400% 400%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: holographic-shift 6s ease-in-out infinite reverse;
-    filter: drop-shadow(0 0 30px hsla(200, 100%, 60%, 0.4));
+    animation: brand-gradient-shift 6s ease-in-out infinite reverse;
+    filter: drop-shadow(0 0 30px hsla(142, 50%, 60%, 0.4));
+  }
+
+  .brand-text-hover {
+    background: var(--brand-hover-gradient);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: brand-gradient-shift 5s ease-in-out infinite;
   }
   
-  .neon-glow-intense {
+  .brand-glow {
     text-shadow: 
-      0 0 5px currentColor,
-      0 0 10px currentColor,
-      0 0 20px currentColor,
-      0 0 40px currentColor,
-      0 0 80px currentColor;
+      0 0 5px var(--brand-dark-violet),
+      0 0 10px var(--brand-dark-violet),
+      0 0 20px var(--brand-dark-violet),
+      0 0 40px var(--brand-dark-violet);
+  }
+
+  .brand-glow-flame {
+    text-shadow: 
+      0 0 5px var(--brand-sunburst-flame),
+      0 0 10px var(--brand-sunburst-flame),
+      0 0 20px var(--brand-sunburst-flame);
   }
   
   /* Advanced Card Effects */
@@ -203,21 +216,21 @@
     filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
   }
   
-  /* Cinematic Backgrounds */
-  .cinematic-gradient {
+  /* Brand Backgrounds */
+  .brand-gradient-bg {
     background: 
-      radial-gradient(circle at 20% 80%, var(--neon-purple) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, var(--neon-blue) 0%, transparent 50%),
-      radial-gradient(circle at 40% 40%, var(--neon-cyan) 0%, transparent 50%),
-      linear-gradient(135deg, var(--deep-space) 0%, var(--void-black) 100%);
+      radial-gradient(circle at 20% 80%, hsla(262, 70%, 54%, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, hsla(142, 50%, 60%, 0.2) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, hsla(13, 100%, 91%, 0.1) 0%, transparent 50%),
+      linear-gradient(135deg, hsl(0, 0%, 0%) 0%, hsl(262, 20%, 5%) 100%);
   }
   
-  .hero-cinematic {
+  .hero-brand {
     background: 
-      radial-gradient(ellipse 800px 400px at 50% 0%, hsla(270, 100%, 70%, 0.15) 0%, transparent 50%),
-      radial-gradient(ellipse 600px 300px at 20% 100%, hsla(200, 100%, 60%, 0.1) 0%, transparent 50%),
-      radial-gradient(ellipse 400px 200px at 80% 50%, hsla(180, 100%, 55%, 0.08) 0%, transparent 50%),
-      linear-gradient(180deg, var(--void-black) 0%, var(--deep-space) 50%, var(--obsidian) 100%);
+      radial-gradient(ellipse 800px 400px at 50% 0%, hsla(262, 70%, 54%, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse 600px 300px at 20% 100%, hsla(13, 100%, 91%, 0.1) 0%, transparent 50%),
+      radial-gradient(ellipse 400px 200px at 80% 50%, hsla(142, 50%, 60%, 0.08) 0%, transparent 50%),
+      linear-gradient(180deg, hsl(0, 0%, 0%) 0%, hsl(262, 20%, 3%) 50%, hsl(262, 15%, 8%) 100%);
   }
   
   /* Morphing Elements */
@@ -258,12 +271,12 @@
     animation: float-sophisticated 8s ease-in-out infinite;
   }
   
-  .animate-glow-intense {
-    animation: glow-intense 3s ease-in-out infinite alternate;
+  .animate-brand-glow {
+    animation: brand-glow-pulse 3s ease-in-out infinite alternate;
   }
   
-  .animate-holographic {
-    animation: holographic-shift 4s ease-in-out infinite;
+  .animate-brand-gradient {
+    animation: brand-gradient-shift 4s ease-in-out infinite;
   }
   
   .animate-marquee-smooth {
@@ -310,18 +323,18 @@
   }
 }
 
-@keyframes glow-intense {
+@keyframes brand-glow-pulse {
   0% { 
-    box-shadow: var(--shadow-glow-purple);
+    box-shadow: var(--shadow-brand-violet);
     filter: brightness(1) saturate(100%);
   }
   100% { 
-    box-shadow: var(--shadow-glow-blue);
-    filter: brightness(1.3) saturate(150%);
+    box-shadow: var(--shadow-brand-flame);
+    filter: brightness(1.2) saturate(130%);
   }
 }
 
-@keyframes holographic-shift {
+@keyframes brand-gradient-shift {
   0%, 100% { background-position: 0% 50%; }
   25% { background-position: 100% 50%; }
   50% { background-position: 100% 100%; }

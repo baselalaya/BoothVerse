@@ -9,7 +9,7 @@ import { useRef } from "react";
 export default function BrandActivation() {
   const prefersReducedMotion = useReducedMotion();
   const [ref, isIntersecting] = useIntersectionObserver();
-  const sectionRef = useRef<HTMLElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
   
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -157,13 +157,13 @@ export default function BrandActivation() {
         {/* Premium badge with enhanced styling */}
         <motion.div variants={cinematicVariants} className="mb-12">
           <Badge 
-            className="glass-heavy px-10 py-4 rounded-full text-lg font-bold interactive-glow border-2 border-neon-cyan/30"
+            className="glass-heavy px-10 py-4 rounded-full text-lg font-bold animate-brand-glow border-2 border-brand-sunburst-flame/40"
             data-testid="revolutionary-tech-badge"
           >
             <div className="flex items-center gap-4">
-              <div className="w-2 h-2 rounded-full bg-neon-cyan animate-pulse-neon" />
-              <span className="holographic-text-alt">Revolutionary Technology</span>
-              <div className="w-2 h-2 rounded-full bg-neon-purple animate-pulse-neon" />
+              <div className="w-2 h-2 rounded-full bg-brand-sunburst-flame animate-pulse-neon" />
+              <span className="brand-text-accent font-semibold">Revolutionary Technology</span>
+              <div className="w-2 h-2 rounded-full bg-brand-dark-violet animate-pulse-neon" />
             </div>
           </Badge>
         </motion.div>
@@ -174,13 +174,13 @@ export default function BrandActivation() {
           variants={cinematicVariants}
           data-testid="ai-headline"
         >
-          <span className="block holographic-text neon-glow-intense">
+          <span className="block brand-text-primary brand-glow font-black">
             AI designed for
           </span>
-          <span className="block holographic-text-alt neon-glow-intense relative">
+          <span className="block brand-text-accent brand-glow relative font-black">
             brand activations
-            {/* Advanced underline effect */}
-            <div className="absolute -bottom-4 left-0 right-0 h-2 bg-gradient-to-r from-neon-green via-neon-cyan to-neon-purple animate-holographic opacity-70 blur-sm" />
+            {/* Brand underline effect */}
+            <div className="absolute -bottom-4 left-0 right-0 h-2 bg-gradient-to-r from-brand-dark-violet via-brand-sunburst-flame to-brand-crimson-pulse animate-brand-gradient opacity-70 blur-sm" />
           </span>
         </motion.h2>
         
