@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import * as THREE from "three";
 
@@ -19,6 +19,10 @@ export default function ThreeBackground({
 }: ThreeBackgroundProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
+  
+  // Smooth morphing animation
+  const [currentMorphProgress, setCurrentMorphProgress] = useState(0);
+  
   const sceneRef = useRef<{
     scene: THREE.Scene | null;
     camera: THREE.PerspectiveCamera | null;
@@ -75,31 +79,31 @@ export default function ThreeBackground({
     const colorInside = new THREE.Color('#FFFFFF').multiplyScalar(0.3);  // Much dimmer white
     const colorOutside = new THREE.Color('#FFFFFF').multiplyScalar(0.15);  // Even dimmer white
 
-    // Function to generate question mark shape positions
+    // Function to generate question mark shape positions - more dramatic and visible
     const generateQuestionMarkPositions = (positions: Float32Array) => {
       for (let i = 0; i < particleCount; i++) {
         const i3 = i * 3;
         const t = (i / particleCount) * Math.PI * 2;
         
-        if (i < particleCount * 0.7) {
-          // Question mark top curve (spiral)
-          const radius = scale * 0.4 * (1 - t / (Math.PI * 1.4));
-          const angle = t * 1.5;
-          positions[i3] = Math.cos(angle) * radius;
-          positions[i3 + 1] = Math.sin(angle) * radius + scale * 0.3;
+        if (i < particleCount * 0.6) {
+          // Question mark top curve - larger and more curved
+          const angle = t * 1.8; // More spiral turns
+          const radius = scale * 0.8 * (1 - t / (Math.PI * 1.2)); // Larger radius
+          positions[i3] = Math.cos(angle) * radius - scale * 0.2; // Offset left
+          positions[i3 + 1] = Math.sin(angle) * radius + scale * 0.5; // Higher position
           positions[i3 + 2] = (Math.random() - 0.5) * thickness;
-        } else if (i < particleCount * 0.85) {
-          // Question mark vertical stem
-          const stemProgress = (i - particleCount * 0.7) / (particleCount * 0.15);
-          positions[i3] = scale * 0.1;
-          positions[i3 + 1] = scale * 0.1 - stemProgress * scale * 0.4;
+        } else if (i < particleCount * 0.8) {
+          // Question mark vertical stem - more prominent
+          const stemProgress = (i - particleCount * 0.6) / (particleCount * 0.2);
+          positions[i3] = -scale * 0.1; // Further left
+          positions[i3 + 1] = scale * 0.2 - stemProgress * scale * 0.8; // Longer stem
           positions[i3 + 2] = (Math.random() - 0.5) * thickness;
         } else {
-          // Question mark dot
+          // Question mark dot - larger and more visible
           const dotAngle = Math.random() * Math.PI * 2;
-          const dotRadius = Math.random() * scale * 0.15;
-          positions[i3] = Math.cos(dotAngle) * dotRadius + scale * 0.1;
-          positions[i3 + 1] = Math.sin(dotAngle) * dotRadius - scale * 0.6;
+          const dotRadius = Math.random() * scale * 0.25; // Larger dot
+          positions[i3] = Math.cos(dotAngle) * dotRadius - scale * 0.1;
+          positions[i3 + 1] = Math.sin(dotAngle) * dotRadius - scale * 0.8; // Lower position
           positions[i3 + 2] = (Math.random() - 0.5) * thickness;
         }
       }
@@ -330,7 +334,7 @@ export default function ThreeBackground({
           case 'content': cinematicIntensity = 1.0; break;
         }
         material.uniforms.uCinematicIntensity.value = cinematicIntensity;
-        material.uniforms.uMorphProgress.value = morphProgress;
+        material.uniforms.uMorphProgress.value = currentMorphProgress;
       }
 
       // No rotation - particles flow along infinity path via shader
@@ -372,7 +376,32 @@ export default function ThreeBackground({
     };
   }, [prefersReducedMotion]);
 
-  // Handle dynamic shape morphing when targetShape or morphProgress changes
+  // Smooth morphing animation
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      setCurrentMorphProgress(morphProgress);
+      return;
+    }
+
+    const duration = 1500; // 1.5 seconds
+    const steps = 60; // 60fps
+    const stepValue = (morphProgress - currentMorphProgress) / steps;
+    
+    let currentStep = 0;
+    const interval = setInterval(() => {
+      currentStep++;
+      if (currentStep >= steps) {
+        setCurrentMorphProgress(morphProgress);
+        clearInterval(interval);
+      } else {
+        setCurrentMorphProgress(prev => prev + stepValue);
+      }
+    }, duration / steps);
+
+    return () => clearInterval(interval);
+  }, [morphProgress, prefersReducedMotion]);
+
+  // Handle dynamic shape morphing when targetShape changes
   useEffect(() => {
     if (sceneRef.current?.particles && (sceneRef.current.particles as any).updateTargetPositions) {
       (sceneRef.current.particles as any).updateTargetPositions(targetShape);

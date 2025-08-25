@@ -172,8 +172,11 @@ export default function StickyParticlesBackground({ className }: StickyParticles
 
       {/* Debug info - remove in production */}
       {process.env.NODE_ENV === 'development' && (
-        <div className="fixed top-4 right-4 z-50 bg-black/50 text-white p-2 rounded text-xs">
-          Section: {currentSection} | Opacity: {config.opacity}
+        <div className="fixed top-4 right-4 z-50 bg-black/50 text-white p-2 rounded text-xs space-y-1">
+          <div>Section: {currentSection}</div>
+          <div>Shape: {config.shape || 'infinity'}</div>
+          <div>Morph: {config.morphProgress || 0}</div>
+          <div>Opacity: {config.opacity}</div>
         </div>
       )}
     </div>
