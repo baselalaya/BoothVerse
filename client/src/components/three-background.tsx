@@ -23,7 +23,7 @@ export default function ThreeBackground() {
       for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
         particle.className = 'absolute w-1 h-1 rounded-full opacity-40';
-        particle.style.background = Math.random() > 0.5 ? '#7042D2' : '#65CF83';  // Brand colors
+        particle.style.background = Math.random() > 0.5 ? '#FFFFFF' : '#FFD9D1';  // Clean colors
         particle.style.left = `${Math.random() * 100}%`;
         particle.style.top = `${Math.random() * 100}%`;
         container.appendChild(particle);
@@ -58,8 +58,8 @@ export default function ThreeBackground() {
     const randomness = 0.5;
     const randomnessPower = 2;
 
-    const colorInside = new THREE.Color('#7042D2');  // Brand Dark Violet
-    const colorOutside = new THREE.Color('#65CF83');  // Brand Sunburst Flame
+    const colorInside = new THREE.Color('#FFFFFF');  // White
+    const colorOutside = new THREE.Color('#FFD9D1');  // Light Pink
 
     for (let i = 0; i < particleCount; i++) {
       const i3 = i * 3;
