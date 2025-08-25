@@ -39,14 +39,14 @@ export default function InfinityShape({ className }: InfinityShapeProps) {
     // Create infinity curve path with perfect proportions
     class InfinityCurve extends THREE.Curve<THREE.Vector3> {
       getPoint(t: number): THREE.Vector3 {
-        const scale = 2.8;
+        const scale = 2.5;
         const angle = t * Math.PI * 4; // Full infinity loop
         
-        // Enhanced lemniscate equations for smoother curves
+        // Proper lemniscate equations for correct proportions
         const denominator = 1 + Math.sin(angle) * Math.sin(angle);
         const x = scale * Math.cos(angle) / denominator;
-        const y = scale * Math.sin(angle) * Math.cos(angle) / denominator * 0.7; // Slightly flatten
-        const z = Math.sin(angle * 2) * 0.1; // Add subtle depth variation
+        const y = scale * Math.sin(angle) * Math.cos(angle) / denominator;
+        const z = 0;
 
         return new THREE.Vector3(x, y, z);
       }
@@ -105,25 +105,14 @@ export default function InfinityShape({ className }: InfinityShapeProps) {
     // Store references
     sceneRef.current = { scene, camera, renderer, infinity: infinityMesh, animationId: null };
 
-    // Elegant rotation animation matching the reference
-    const animate = (time: number) => {
-      if (!sceneRef.current?.infinity) return;
-
-      const elapsedTime = time * 0.001;
-      
-      // Subtle rotation to show the 3D form and reflections
-      sceneRef.current.infinity.rotation.x = Math.sin(elapsedTime * 0.15) * 0.08;
-      sceneRef.current.infinity.rotation.y = elapsedTime * 0.08;
-      sceneRef.current.infinity.rotation.z = Math.cos(elapsedTime * 0.12) * 0.04;
-
+    // Static render - no rotation animation
+    const render = () => {
+      if (!sceneRef.current) return;
       renderer.render(scene, camera);
-      
-      if (sceneRef.current) {
-        sceneRef.current.animationId = requestAnimationFrame(animate);
-      }
     };
 
-    sceneRef.current.animationId = requestAnimationFrame(animate);
+    // Initial render
+    render();
 
     // Handle resize
     const handleResize = () => {
@@ -135,16 +124,13 @@ export default function InfinityShape({ className }: InfinityShapeProps) {
       sceneRef.current.camera!.aspect = width / height;
       sceneRef.current.camera!.updateProjectionMatrix();
       sceneRef.current.renderer!.setSize(width, height);
+      render(); // Re-render on resize
     };
 
     window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      
-      if (sceneRef.current?.animationId) {
-        cancelAnimationFrame(sceneRef.current.animationId);
-      }
       
       if (container && renderer.domElement) {
         container.removeChild(renderer.domElement);
