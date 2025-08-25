@@ -97,9 +97,9 @@ export default function HeroSection() {
       >
 
         {/* Cinematic Headline */}
-        <motion.div className="mb-12 space-y-2" variants={cinematicVariants}>
+        <motion.div className="mb-16 space-y-4" variants={cinematicVariants}>
           <h1 
-            className="text-5xl md:text-7xl xl:text-8xl font-black leading-tight tracking-tight text-white" 
+            className="text-6xl md:text-8xl xl:text-9xl font-black leading-[0.85] tracking-normal text-white" 
             data-testid="hero-headline"
             style={{
               textShadow: '0 0 40px rgba(255,255,255,0.3)'
@@ -130,30 +130,30 @@ export default function HeroSection() {
         </motion.div>
         
         <motion.div 
-          className="flex flex-col lg:flex-row gap-8 justify-center items-center"
+          className="flex flex-col lg:flex-row gap-6 justify-center items-center max-w-5xl mx-auto"
           variants={cinematicVariants}
         >
           <Button 
             size="lg"
-            className="group px-12 py-6 text-xl font-bold hover:scale-105 transition-all duration-500 backdrop-blur-2xl border-2 border-white/20 rounded-2xl bg-white/10 hover:bg-white/20"
+            className="group px-8 py-4 text-lg font-bold hover:scale-105 transition-all duration-500 backdrop-blur-2xl border-2 border-white/20 rounded-2xl bg-white/10 hover:bg-white/20 min-w-[280px]"
             data-testid="cta-custom-concept"
           >
             <span className="text-white font-bold">
               Request a Custom Concept
             </span>
-            <ArrowRight className="ml-3 group-hover:translate-x-3 transition-transform duration-300" size={24} />
+            <ArrowRight className="ml-3 group-hover:translate-x-3 transition-transform duration-300" size={20} />
           </Button>
           
           <Button 
             variant="outline"
             size="lg"
-            className="group px-12 py-6 text-xl font-semibold hover:scale-105 transition-all duration-500 border-2 border-white/30 rounded-2xl backdrop-blur-xl bg-transparent hover:bg-white/10"
+            className="group px-8 py-4 text-lg font-semibold hover:scale-105 transition-all duration-500 border-2 border-white/30 rounded-2xl backdrop-blur-xl bg-transparent hover:bg-white/10 min-w-[280px]"
             data-testid="cta-consultation"
           >
             <span className="text-white group-hover:text-white/80 transition-colors font-semibold">
               Schedule a Virtual Consultation
             </span>
-            <Calendar className="ml-3 group-hover:rotate-12 transition-transform duration-300" size={24} />
+            <Calendar className="ml-3 group-hover:rotate-12 transition-transform duration-300" size={20} />
           </Button>
         </motion.div>
 
