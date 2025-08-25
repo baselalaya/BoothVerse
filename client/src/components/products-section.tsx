@@ -190,11 +190,11 @@ export default function ProductsSection() {
                     
                     {/* Content Overlay */}
                     <div className="relative z-10 p-8 h-full flex flex-col justify-between">
-                      <div>
-                        <p className={`text-sm font-medium mb-2 ${product.bgColor.includes('gray-900') ? 'text-white/80' : 'text-gray-800/80'}`}>
+                      <div className="space-y-4">
+                        <p className={`text-sm font-medium ${product.bgColor.includes('gray-900') ? 'text-white/80' : 'text-gray-800/80'}`}>
                           {product.title}
                         </p>
-                        <h3 className={`text-4xl font-bold leading-tight mb-4 ${product.bgColor.includes('gray-900') ? 'text-white' : 'text-gray-900'}`}>
+                        <h3 className={`text-4xl font-bold leading-tight ${product.bgColor.includes('gray-900') ? 'text-white' : 'text-gray-900'}`}>
                           {product.subtitle}
                         </h3>
                         <p className={`text-xl leading-relaxed ${product.bgColor.includes('gray-900') ? 'text-white/90' : 'text-gray-800/90'}`}>
