@@ -85,7 +85,7 @@ export default function HeroSection() {
       
       
       <motion.div 
-        className="relative z-20 text-center max-w-7xl mx-auto px-6 py-8 pt-20 backdrop-blur-[1px]"
+        className="relative z-20 text-center max-w-7xl mx-auto px-6 py-8 pt-20"
         style={{ 
           y: prefersReducedMotion ? 0 : y, 
           opacity: prefersReducedMotion ? 1 : opacity,
