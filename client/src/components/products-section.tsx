@@ -168,7 +168,7 @@ export default function ProductsSection() {
             className="overflow-hidden rounded-3xl"
             variants={cardVariants}
           >
-            <div className="flex gap-6">
+            <div className="flex gap-4">
               {products.map((product) => (
                 <div key={product.id} className="flex-[0_0_320px] group cursor-pointer">
                   <div 
