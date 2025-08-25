@@ -130,18 +130,18 @@ export default function ThreeBackground() {
           
           // Flowing motion along the infinity path with individual variation
           float flowSpeed = dynamicTime * 1.2 + particlePhase;
-          float flow = sin(curvePosition + flowSpeed) * 0.4;
+          float flow = sin(curvePosition + flowSpeed) * 0.2; // Reduced from 0.4 to 0.2
           
-          // Complex multi-layered wave system
+          // Complex multi-layered wave system - reduced spreading
           float wave1 = sin(dynamicTime * 2.5 + position.x * 0.6 + particlePhase);
           float wave2 = cos(dynamicTime * 1.8 + length(position.xy) * 0.25 + particlePhase * 0.5);
           float wave3 = sin(dynamicTime * 4.1 + curvePosition * 3.0 + particlePhase * 2.0);
           float wave4 = cos(dynamicTime * 0.9 + position.x * 0.3 + particlePhase * 1.5);
           float wave5 = sin(dynamicTime * 3.7 + position.y * 0.5 + particlePhase * 0.8);
           
-          // Individual particle drift and momentum
-          float drift = sin(dynamicTime * 0.6 + particlePhase) * 0.3;
-          float momentum = cos(dynamicTime * 1.4 + particlePhase * 1.2) * 0.2;
+          // Individual particle drift and momentum - reduced spreading
+          float drift = sin(dynamicTime * 0.6 + particlePhase) * 0.15; // Reduced from 0.3 to 0.15
+          float momentum = cos(dynamicTime * 1.4 + particlePhase * 1.2) * 0.1;  // Reduced from 0.2 to 0.1
           
           // Breathing effect with variation
           float breathe = 1.0 + sin(dynamicTime * 0.7 + particlePhase * 0.3) * 0.15;
