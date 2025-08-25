@@ -63,7 +63,9 @@ export default function ProductsSection() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ 
     loop: true,
     dragFree: true,
-    containScroll: 'trimSnaps'
+    containScroll: 'trimSnaps',
+    startIndex: 0,
+    skipSnaps: false
   });
 
   const scrollPrev = useCallback(() => {
@@ -168,7 +170,7 @@ export default function ProductsSection() {
             className="overflow-hidden rounded-3xl"
             variants={cardVariants}
           >
-            <div className="flex gap-4">
+            <div className="flex gap-4 pl-4 pr-4">
               {products.map((product) => (
                 <div key={product.id} className="flex-[0_0_320px] group cursor-pointer">
                   <div 
