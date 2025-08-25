@@ -9,6 +9,12 @@ export default function HeroSection() {
   const prefersReducedMotion = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  
+  // Intro animation states
+  const [introPhase, setIntroPhase] = useState<'particles' | 'transition' | 'content'>('particles');
+  const [particleOpacity, setParticleOpacity] = useState(2.5); // Start with very high opacity
+  const [contentVisible, setContentVisible] = useState(false);
+  
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"]
@@ -16,6 +22,36 @@ export default function HeroSection() {
 
   const y = useTransform(scrollYProgress, [0, 1], [0, -100]);
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
+  // Intro animation sequence
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      // Skip intro for reduced motion
+      setIntroPhase('content');
+      setParticleOpacity(1.0);
+      setContentVisible(true);
+      return;
+    }
+
+    const sequence = [
+      // Phase 1: Show particles at full opacity (2.5 seconds)
+      { delay: 0, phase: 'particles' as const, opacity: 2.5, content: false },
+      
+      // Phase 2: Start transition (1 second smooth fade)
+      { delay: 2500, phase: 'transition' as const, opacity: 1.2, content: true },
+      
+      // Phase 3: Final state - show content with subtle particles
+      { delay: 3500, phase: 'content' as const, opacity: 1.0, content: true }
+    ];
+    
+    sequence.forEach(({ delay, phase, opacity, content }) => {
+      setTimeout(() => {
+        setIntroPhase(phase);
+        setParticleOpacity(opacity);
+        setContentVisible(content);
+      }, delay);
+    });
+  }, [prefersReducedMotion]);
 
   // Mouse parallax effect
   useEffect(() => {
@@ -81,19 +117,21 @@ export default function HeroSection() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden hero-brand"
       data-testid="hero-section"
     >
-      <ThreeBackground />
+      <ThreeBackground introOpacity={particleOpacity} />
       
       
       <motion.div 
-        className="relative z-20 text-center max-w-7xl mx-auto px-6 py-8 pt-20"
+        className={`relative z-20 text-center max-w-7xl mx-auto px-6 py-8 pt-20 transition-all duration-1000 ${
+          contentVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
         style={{ 
           y: prefersReducedMotion ? 0 : y, 
-          opacity: prefersReducedMotion ? 1 : opacity,
+          opacity: prefersReducedMotion ? 1 : (contentVisible ? opacity : 0),
           transform: prefersReducedMotion ? 'none' : `translate(${mousePosition.x * 0.5}px, ${mousePosition.y * 0.5}px)`
         }}
         variants={staggerContainer}
         initial="hidden"
-        animate="visible"
+        animate={contentVisible ? "visible" : "hidden"}
       >
 
         {/* Cinematic Headline */}

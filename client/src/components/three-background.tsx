@@ -2,7 +2,12 @@ import { useEffect, useRef } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import * as THREE from "three";
 
-export default function ThreeBackground() {
+interface ThreeBackgroundProps {
+  className?: string;
+  introOpacity?: number;
+}
+
+export default function ThreeBackground({ className, introOpacity = 1 }: ThreeBackgroundProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const sceneRef = useRef<{
@@ -112,6 +117,7 @@ export default function ThreeBackground() {
       vertexColors: true,
       vertexShader: `
         uniform float uTime;
+        uniform float uIntroOpacity;
         attribute float size;
         attribute float phase;
         varying vec3 vColor;
@@ -181,6 +187,7 @@ export default function ThreeBackground() {
         }
       `,
       fragmentShader: `
+        uniform float uIntroOpacity;
         varying vec3 vColor;
         varying float vIntensity;
         
@@ -199,11 +206,15 @@ export default function ThreeBackground() {
           // Dynamic color intensity based on animation
           float finalAlpha = alpha * vIntensity * sparkle * 0.4;
           
+          // Apply intro opacity control
+          finalAlpha *= uIntroOpacity;
+          
           gl_FragColor = vec4(vColor, finalAlpha);
         }
       `,
       uniforms: {
-        uTime: { value: 0 }
+        uTime: { value: 0 },
+        uIntroOpacity: { value: introOpacity }
       }
     });
 
@@ -226,6 +237,7 @@ export default function ThreeBackground() {
       // Update shader uniforms
       if (material.uniforms) {
         material.uniforms.uTime.value = elapsedTime;
+        material.uniforms.uIntroOpacity.value = introOpacity;
       }
 
       // No rotation - particles flow along infinity path via shader
