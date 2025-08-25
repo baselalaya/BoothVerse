@@ -166,8 +166,10 @@ export default function StickyParticlesBackground({ className }: StickyParticles
       morphProgress = Math.max(0, Math.min(1, morphProgress));
       setScrollBasedMorphProgress(morphProgress);
       
-      // Update config for brand-activation with dynamic morph progress
-      if (currentSection === 'brand-activation') {
+      console.log('Scroll handler - morphProgress:', morphProgress, 'sectionTop:', sectionTop, 'currentSection:', currentSection);
+      
+      // Always update config when brand-activation section is in viewport
+      if (morphProgress > 0) {
         setConfig({
           ...sectionConfigs['brand-activation'],
           morphProgress
@@ -185,7 +187,7 @@ export default function StickyParticlesBackground({ className }: StickyParticles
       sections.forEach((section) => observer.unobserve(section));
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [prefersReducedMotion]);
+  }, [prefersReducedMotion, currentSection]);
 
   return (
     <div 

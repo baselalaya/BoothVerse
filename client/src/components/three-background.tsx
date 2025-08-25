@@ -332,6 +332,11 @@ export default function ThreeBackground({
         }
         material.uniforms.uCinematicIntensity.value = cinematicIntensity;
         material.uniforms.uMorphProgress.value = morphProgress;
+        
+        // Debug morphing
+        if (morphProgress > 0) {
+          console.log('ThreeBackground - Setting uMorphProgress to:', morphProgress, 'targetShape:', targetShape);
+        }
       }
 
       // No rotation - particles flow along infinity path via shader
