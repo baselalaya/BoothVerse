@@ -197,7 +197,7 @@ export default function ThreeBackground() {
           float sparkle = 1.0 + sin(distanceToCenter * 20.0) * 0.1;
           
           // Dynamic color intensity based on animation
-          float finalAlpha = alpha * vIntensity * sparkle * 0.25;
+          float finalAlpha = alpha * vIntensity * sparkle * 0.4;
           
           gl_FragColor = vec4(vColor, finalAlpha);
         }
