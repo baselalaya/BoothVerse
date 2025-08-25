@@ -85,7 +85,7 @@ export default function HeroSection() {
       
       
       <motion.div 
-        className="relative z-20 text-center max-w-7xl mx-auto px-6 py-8 backdrop-blur-[1px]"
+        className="relative z-20 text-center max-w-7xl mx-auto px-6 py-8 pt-20 backdrop-blur-[1px]"
         style={{ 
           y: prefersReducedMotion ? 0 : y, 
           opacity: prefersReducedMotion ? 1 : opacity,
@@ -99,7 +99,7 @@ export default function HeroSection() {
         {/* Cinematic Headline */}
         <motion.div className="mb-6" variants={cinematicVariants}>
           <h1 
-            className="text-6xl md:text-8xl xl:text-9xl font-black leading-tight tracking-tight" 
+            className="text-5xl md:text-7xl xl:text-8xl font-black leading-tight tracking-tight" 
             data-testid="hero-headline"
             style={{
               textShadow: '0 0 40px rgba(255,255,255,0.3)'
@@ -107,7 +107,7 @@ export default function HeroSection() {
           >
             <span className="block text-white font-black">Get your</span>
             <span className="block relative">
-              <span className="bg-white text-purple-900 font-black px-8 py-4 inline-block transform rotate-[-2deg] text-7xl md:text-9xl xl:text-10xl">brand</span>
+              <span className="bg-white text-purple-900 font-black px-6 py-3 inline-block transform rotate-[-2deg] text-6xl md:text-8xl xl:text-9xl">brand</span>
             </span>
             <span className="block text-white font-black">Noticed</span>
           </h1>
