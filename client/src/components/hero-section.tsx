@@ -11,11 +11,11 @@ export default function HeroSection() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   
   // Cinematic intro animation states
-  const [introPhase, setIntroPhase] = useState<'blackout' | 'particles' | 'buildup' | 'climax' | 'transition' | 'content'>('blackout');
-  const [particleOpacity, setParticleOpacity] = useState(0); // Start with blackout
+  const [introPhase, setIntroPhase] = useState<'particles' | 'buildup' | 'climax' | 'transition' | 'content'>('particles');
+  const [particleOpacity, setParticleOpacity] = useState(1.0); // Start at 100% opacity
   const [contentVisible, setContentVisible] = useState(false);
   const [cinematicScale, setCinematicScale] = useState(1.2); // Start zoomed in
-  const [cinematicBlur, setCinematicBlur] = useState(4); // Start blurred
+  const [cinematicBlur, setCinematicBlur] = useState(2); // Start with subtle blur
   
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -30,7 +30,7 @@ export default function HeroSection() {
     if (prefersReducedMotion) {
       // Skip intro for reduced motion
       setIntroPhase('content');
-      setParticleOpacity(1.2);
+      setParticleOpacity(0.8);
       setContentVisible(true);
       setCinematicScale(1.0);
       setCinematicBlur(0);
@@ -38,26 +38,22 @@ export default function HeroSection() {
     }
 
     const cinematicSequence = [
-      // Phase 1: Dramatic blackout (0.8 seconds)
-      { delay: 0, phase: 'blackout' as const, opacity: 0, content: false, scale: 1.2, blur: 4 },
+      // Phase 1: Start with full particles at 100% opacity (2 seconds)
+      { delay: 0, phase: 'particles' as const, opacity: 1.0, content: false, scale: 1.2, blur: 2 },
       
-      // Phase 2: Particle emergence with zoom-in (1.2 seconds)
-      { delay: 800, phase: 'particles' as const, opacity: 1.2, content: false, scale: 1.15, blur: 3 },
-      { delay: 1200, phase: 'particles' as const, opacity: 1.8, content: false, scale: 1.1, blur: 2 },
+      // Phase 2: Dramatic buildup - particles intensify (1.5 seconds)
+      { delay: 2000, phase: 'buildup' as const, opacity: 1.2, content: false, scale: 1.1, blur: 1 },
+      { delay: 2800, phase: 'buildup' as const, opacity: 1.5, content: false, scale: 1.05, blur: 0.5 },
       
-      // Phase 3: Dramatic buildup - particles intensify (1.5 seconds)
-      { delay: 2000, phase: 'buildup' as const, opacity: 2.2, content: false, scale: 1.05, blur: 1 },
-      { delay: 2800, phase: 'buildup' as const, opacity: 2.8, content: false, scale: 1.02, blur: 0.5 },
+      // Phase 3: Cinematic climax - maximum intensity (1 second)
+      { delay: 3500, phase: 'climax' as const, opacity: 1.8, content: false, scale: 1.0, blur: 0 },
       
-      // Phase 4: Cinematic climax - maximum intensity (1 second)
-      { delay: 3500, phase: 'climax' as const, opacity: 3.2, content: false, scale: 1.0, blur: 0 },
+      // Phase 4: Smooth transition with content reveal (1.5 seconds)
+      { delay: 4500, phase: 'transition' as const, opacity: 1.2, content: true, scale: 1.0, blur: 0 },
+      { delay: 5500, phase: 'transition' as const, opacity: 0.8, content: true, scale: 1.0, blur: 0 },
       
-      // Phase 5: Elegant transition with content reveal (1.5 seconds)
-      { delay: 4500, phase: 'transition' as const, opacity: 2.2, content: true, scale: 1.0, blur: 0 },
-      { delay: 5500, phase: 'transition' as const, opacity: 1.5, content: true, scale: 1.0, blur: 0 },
-      
-      // Phase 6: Final state - refined and elegant
-      { delay: 6000, phase: 'content' as const, opacity: 1.0, content: true, scale: 1.0, blur: 0 }
+      // Phase 5: Final state - refined and elegant
+      { delay: 6000, phase: 'content' as const, opacity: 0.6, content: true, scale: 1.0, blur: 0 }
     ];
     
     cinematicSequence.forEach(({ delay, phase, opacity, content, scale, blur }) => {
