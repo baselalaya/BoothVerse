@@ -222,6 +222,8 @@
   
   .hero-brand {
     background: transparent;
+    perspective: 1000px;
+    perspective-origin: center center;
   }
   
   /* Morphing Elements */

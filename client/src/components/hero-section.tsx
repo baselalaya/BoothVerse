@@ -24,6 +24,11 @@ export default function HeroSection() {
 
   const y = useTransform(scrollYProgress, [0, 1], [0, -100]);
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  
+  // Modern scroll-triggered flip animation for particles
+  const particleRotateX = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 15, 45, 180]);
+  const particleScale = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [1, 1.05, 0.95, 0.8]);
+  const particleOpacityScroll = useTransform(scrollYProgress, [0, 0.4, 0.8, 1], [1, 0.8, 0.5, 0.2]);
 
   // Intro animation sequence
   useEffect(() => {
@@ -131,10 +136,21 @@ export default function HeroSection() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden hero-brand"
       data-testid="hero-section"
     >
-      <ThreeBackground 
-        introOpacity={particleOpacity} 
-        cinematicPhase={introPhase}
-      />
+      <motion.div
+        className="absolute inset-0"
+        style={{
+          rotateX: prefersReducedMotion ? 0 : particleRotateX,
+          scale: prefersReducedMotion ? 1 : particleScale,
+          opacity: prefersReducedMotion ? 1 : particleOpacityScroll,
+          transformStyle: 'preserve-3d',
+          transformOrigin: 'center center'
+        }}
+      >
+        <ThreeBackground 
+          introOpacity={particleOpacity} 
+          cinematicPhase={introPhase}
+        />
+      </motion.div>
       
       
       <motion.div 
