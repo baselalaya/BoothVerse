@@ -5,9 +5,10 @@ import * as THREE from "three";
 interface ThreeBackgroundProps {
   className?: string;
   introOpacity?: number;
+  cinematicPhase?: 'blackout' | 'particles' | 'buildup' | 'climax' | 'transition' | 'content';
 }
 
-export default function ThreeBackground({ className, introOpacity = 1 }: ThreeBackgroundProps) {
+export default function ThreeBackground({ className, introOpacity = 1, cinematicPhase = 'content' }: ThreeBackgroundProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const sceneRef = useRef<{
@@ -118,6 +119,7 @@ export default function ThreeBackground({ className, introOpacity = 1 }: ThreeBa
       vertexShader: `
         uniform float uTime;
         uniform float uIntroOpacity;
+        uniform float uCinematicIntensity;
         attribute float size;
         attribute float phase;
         varying vec3 vColor;
@@ -131,19 +133,21 @@ export default function ThreeBackground({ className, introOpacity = 1 }: ThreeBa
           // Calculate particle's position along infinity curve
           float curvePosition = atan(position.y, position.x);
           
-          // Dynamic time with individual speed
-          float dynamicTime = uTime * particleSpeed;
+          // Cinematic time with dramatic scaling
+          float cinematicMultiplier = uCinematicIntensity;
+          float dynamicTime = uTime * particleSpeed * cinematicMultiplier;
           
           // Flowing motion along the infinity path with individual variation
           float flowSpeed = dynamicTime * 1.2 + particlePhase;
           float flow = sin(curvePosition + flowSpeed) * 0.2; // Reduced from 0.4 to 0.2
           
-          // Complex multi-layered wave system - reduced spreading
-          float wave1 = sin(dynamicTime * 2.5 + position.x * 0.6 + particlePhase);
-          float wave2 = cos(dynamicTime * 1.8 + length(position.xy) * 0.25 + particlePhase * 0.5);
-          float wave3 = sin(dynamicTime * 4.1 + curvePosition * 3.0 + particlePhase * 2.0);
-          float wave4 = cos(dynamicTime * 0.9 + position.x * 0.3 + particlePhase * 1.5);
-          float wave5 = sin(dynamicTime * 3.7 + position.y * 0.5 + particlePhase * 0.8);
+          // Cinematic multi-layered wave system with dramatic intensity
+          float intensity = uCinematicIntensity;
+          float wave1 = sin(dynamicTime * 2.5 + position.x * 0.6 + particlePhase) * intensity;
+          float wave2 = cos(dynamicTime * 1.8 + length(position.xy) * 0.25 + particlePhase * 0.5) * intensity;
+          float wave3 = sin(dynamicTime * 4.1 + curvePosition * 3.0 + particlePhase * 2.0) * intensity;
+          float wave4 = cos(dynamicTime * 0.9 + position.x * 0.3 + particlePhase * 1.5) * intensity;
+          float wave5 = sin(dynamicTime * 3.7 + position.y * 0.5 + particlePhase * 0.8) * intensity;
           
           // Individual particle drift and momentum - reduced spreading
           float drift = sin(dynamicTime * 0.6 + particlePhase) * 0.15; // Reduced from 0.3 to 0.15
@@ -178,9 +182,10 @@ export default function ThreeBackground({ className, introOpacity = 1 }: ThreeBa
           
           vec4 mvPosition = modelViewMatrix * vec4(animatedPosition, 1.0);
           
-          // Dynamic size with multiple influences
-          float dynamicSize = size * (300.0 / -mvPosition.z) * individualPulse;
-          dynamicSize *= (1.0 + wave3 * 0.5 + sin(dynamicTime * 4.0 + particlePhase) * 0.3);
+          // Cinematic size with dramatic scaling
+          float cinematicScale = 1.0 + (uCinematicIntensity - 1.0) * 0.5;
+          float dynamicSize = size * (300.0 / -mvPosition.z) * individualPulse * cinematicScale;
+          dynamicSize *= (1.0 + wave3 * 0.5 + sin(dynamicTime * 4.0 + particlePhase) * 0.3 * intensity);
           
           gl_PointSize = dynamicSize;
           gl_Position = projectionMatrix * mvPosition;
@@ -214,7 +219,8 @@ export default function ThreeBackground({ className, introOpacity = 1 }: ThreeBa
       `,
       uniforms: {
         uTime: { value: 0 },
-        uIntroOpacity: { value: introOpacity }
+        uIntroOpacity: { value: introOpacity },
+        uCinematicIntensity: { value: cinematicPhase === 'climax' ? 2.0 : 1.0 }
       }
     });
 
@@ -234,10 +240,22 @@ export default function ThreeBackground({ className, introOpacity = 1 }: ThreeBa
     const animate = (time: number) => {
       const elapsedTime = time * 0.001;
 
-      // Update shader uniforms
+      // Update shader uniforms with cinematic control
       if (material.uniforms) {
         material.uniforms.uTime.value = elapsedTime;
         material.uniforms.uIntroOpacity.value = introOpacity;
+        
+        // Cinematic intensity based on phase
+        let cinematicIntensity = 1.0;
+        switch(cinematicPhase) {
+          case 'blackout': cinematicIntensity = 0.0; break;
+          case 'particles': cinematicIntensity = 1.2; break;
+          case 'buildup': cinematicIntensity = 1.5; break;
+          case 'climax': cinematicIntensity = 2.2; break;
+          case 'transition': cinematicIntensity = 1.3; break;
+          case 'content': cinematicIntensity = 1.0; break;
+        }
+        material.uniforms.uCinematicIntensity.value = cinematicIntensity;
       }
 
       // No rotation - particles flow along infinity path via shader
