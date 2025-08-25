@@ -12,7 +12,7 @@ export default function HeroSection() {
   
   // Intro animation states
   const [introPhase, setIntroPhase] = useState<'particles' | 'transition' | 'content'>('particles');
-  const [particleOpacity, setParticleOpacity] = useState(2.5); // Start with very high opacity
+  const [particleOpacity, setParticleOpacity] = useState(1.0); // Start at 100% opacity
   const [contentVisible, setContentVisible] = useState(false);
   
   const { scrollYProgress } = useScroll({
@@ -34,14 +34,14 @@ export default function HeroSection() {
     }
 
     const sequence = [
-      // Phase 1: Show particles at full opacity (2.5 seconds)
-      { delay: 0, phase: 'particles' as const, opacity: 2.5, content: false },
+      // Phase 1: Show particles at 100% opacity (2.5 seconds)
+      { delay: 0, phase: 'particles' as const, opacity: 1.0, content: false },
       
-      // Phase 2: Start transition (1 second smooth fade)
-      { delay: 2500, phase: 'transition' as const, opacity: 1.2, content: true },
+      // Phase 2: Start transition - reduce opacity while showing content
+      { delay: 2500, phase: 'transition' as const, opacity: 0.7, content: true },
       
-      // Phase 3: Final state - show content with subtle particles
-      { delay: 3500, phase: 'content' as const, opacity: 1.0, content: true }
+      // Phase 3: Final state - subtle particles with content
+      { delay: 3500, phase: 'content' as const, opacity: 0.5, content: true }
     ];
     
     sequence.forEach(({ delay, phase, opacity, content }) => {
