@@ -58,84 +58,141 @@ export default function ProductsSection() {
   return (
     <section 
       ref={ref}
-      className="py-32 bg-gradient-to-b from-gray-900 to-black" 
+      className="relative py-40 overflow-hidden" 
       data-testid="products-section"
     >
-      <div className="max-w-7xl mx-auto px-6">
+      {/* Enhanced background with gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-purple-950/20 to-slate-900" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(168,85,247,0.1),transparent_70%)]" />
+      
+      <div className="relative max-w-8xl mx-auto px-6">
+        {/* Enhanced header section */}
         <motion.div 
-          className="text-center mb-20"
+          className="text-center mb-24"
           initial="hidden"
           animate={isIntersecting ? "visible" : "hidden"}
           variants={cardVariants}
         >
-          <h2 className="text-5xl md:text-6xl font-black mb-6 gradient-text" data-testid="products-headline">
-            More Than Photo Booths
+          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-8">
+            <div className="w-2 h-2 rounded-full bg-gradient-to-r from-neon-purple to-electric animate-pulse" />
+            <span className="text-sm font-medium text-gray-300 tracking-wide uppercase">Our Technology</span>
+          </div>
+          
+          <h2 className="text-6xl md:text-7xl lg:text-8xl font-black mb-8 gradient-text leading-tight" data-testid="products-headline">
+            More Than<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-200 to-pink-200">
+              Photo Booths
+            </span>
           </h2>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto" data-testid="products-description">
-            Immersive experiences that blend physical and digital worlds to create unforgettable brand moments
+          
+          <p className="text-2xl md:text-3xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-light" data-testid="products-description">
+            Immersive experiences that blend physical and digital worlds to create 
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-purple to-electric font-medium"> unforgettable brand moments</span>
           </p>
         </motion.div>
         
+        {/* Enhanced product cards grid */}
         <motion.div 
-          className="grid md:grid-cols-3 gap-8 mb-16"
+          className="grid lg:grid-cols-3 gap-8 mb-20"
           initial="hidden"
           animate={isIntersecting ? "visible" : "hidden"}
           variants={containerVariants}
         >
-          {products.map((product) => (
+          {products.map((product, index) => (
             <motion.div key={product.id} variants={cardVariants}>
-              <Card className="card-hover tilt-effect glass-effect rounded-2xl p-8 group h-full" data-testid={`product-card-${product.id}`}>
-                <div className="relative mb-6 overflow-hidden rounded-xl">
-                  <img 
-                    src={product.image} 
-                    alt={product.title}
-                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <Card className="relative card-hover tilt-effect rounded-3xl p-0 group h-full overflow-hidden border-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl" data-testid={`product-card-${product.id}`}>
+                {/* Gradient border effect */}
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-neon-purple/20 via-transparent to-electric/20 p-[1px]">
+                  <div className="w-full h-full rounded-3xl bg-gradient-to-br from-slate-900/90 via-slate-800/90 to-slate-900/90" />
                 </div>
                 
-                <h3 className="text-2xl font-bold mb-4 gradient-text" data-testid={`product-title-${product.id}`}>
-                  {product.title}
-                </h3>
-                
-                <p className="text-gray-300 mb-6" data-testid={`product-description-${product.id}`}>
-                  {product.description}
-                </p>
-                
-                <div className="flex items-center text-neon-blue font-semibold group-hover:text-neon-green transition-colors duration-300">
-                  <span>{product.cta}</span>
-                  <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform duration-300" size={16} />
+                <div className="relative p-8 h-full flex flex-col">
+                  {/* Enhanced image section */}
+                  <div className="relative mb-8 overflow-hidden rounded-2xl">
+                    <img 
+                      src={product.image} 
+                      alt={product.title}
+                      className="w-full h-72 object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/10 to-electric/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    
+                    {/* Floating badge */}
+                    <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
+                      <span className="text-xs font-medium text-white/90">NEW</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 flex flex-col">
+                    <h3 className="text-3xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-200 group-hover:from-neon-purple group-hover:to-electric transition-all duration-500" data-testid={`product-title-${product.id}`}>
+                      {product.title}
+                    </h3>
+                    
+                    <p className="text-gray-300 mb-8 text-lg leading-relaxed flex-1" data-testid={`product-description-${product.id}`}>
+                      {product.description}
+                    </p>
+                    
+                    {/* Enhanced CTA button */}
+                    <div className="group/cta cursor-pointer">
+                      <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-white/5 to-transparent border border-white/10 group-hover:border-neon-purple/30 transition-all duration-300">
+                        <span className="text-white font-semibold text-lg">{product.cta}</span>
+                        <ArrowRight className="text-neon-purple group-hover:text-electric group-hover:translate-x-2 transition-all duration-300" size={20} />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </Card>
             </motion.div>
           ))}
         </motion.div>
         
+        {/* Enhanced CTA section */}
         <motion.div 
           className="text-center"
           initial="hidden"
           animate={isIntersecting ? "visible" : "hidden"}
           variants={cardVariants}
         >
-          <div className="flex flex-col md:flex-row gap-6 justify-center">
-            <Button 
-              variant="outline"
-              size="lg"
-              className="glass-effect px-8 py-4 text-lg font-semibold hover:scale-105 transition-all duration-300 border-white/20"
-              data-testid="view-all-models"
-            >
-              View All Models
-              <Grid3X3 className="ml-2" />
-            </Button>
+          <div className="relative max-w-4xl mx-auto">
+            {/* Background decoration */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-neon-purple/5 to-transparent rounded-3xl" />
             
-            <Button 
-              size="lg"
-              className="bg-gradient-to-r from-neon-purple to-electric px-8 py-4 text-lg font-semibold hover:scale-105 transition-all duration-300"
-              data-testid="product-lineup-video"
-            >
-              Product Lineup Video 2024
-              <Play className="ml-2" />
-            </Button>
+            <div className="relative p-12 rounded-3xl bg-gradient-to-br from-white/5 via-transparent to-white/5 backdrop-blur-sm border border-white/10">
+              <h3 className="text-3xl md:text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">
+                Ready to Transform Your Brand?
+              </h3>
+              
+              <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
+                Explore our complete lineup of cutting-edge photo booth technology
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                <Button 
+                  variant="outline"
+                  size="lg"
+                  className="group relative px-10 py-4 text-lg font-semibold border-white/20 hover:border-neon-purple/50 bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-2xl transition-all duration-300 overflow-hidden"
+                  data-testid="view-all-models"
+                >
+                  <div className="relative z-10 flex items-center text-white group-hover:text-neon-purple transition-colors duration-300">
+                    View All Models
+                    <Grid3X3 className="ml-3 group-hover:rotate-12 transition-transform duration-300" />
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-neon-purple/10 to-electric/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </Button>
+                
+                <Button 
+                  size="lg"
+                  className="group relative px-10 py-4 text-lg font-semibold bg-gradient-to-r from-neon-purple via-purple-600 to-electric hover:from-neon-purple/80 hover:via-purple-500 hover:to-electric/80 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl shadow-neon-purple/25"
+                  data-testid="product-lineup-video"
+                >
+                  <div className="relative z-10 flex items-center text-white">
+                    Product Lineup Video 2024
+                    <Play className="ml-3 group-hover:scale-110 transition-transform duration-300" />
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+                </Button>
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>
