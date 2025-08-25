@@ -85,7 +85,7 @@ export default function HeroSection() {
       
       
       <motion.div 
-        className="relative z-10 text-center max-w-8xl mx-auto px-8"
+        className="relative z-10 text-center max-w-7xl mx-auto px-6 py-8"
         style={{ 
           y: prefersReducedMotion ? 0 : y, 
           opacity: prefersReducedMotion ? 1 : opacity,
@@ -97,26 +97,26 @@ export default function HeroSection() {
       >
 
         {/* Cinematic Headline */}
-        <motion.div className="mb-16 space-y-4" variants={cinematicVariants}>
+        <motion.div className="mb-8 md:mb-12" variants={cinematicVariants}>
           <h1 
-            className="text-6xl md:text-8xl xl:text-9xl font-black leading-[0.85] tracking-normal text-white" 
+            className="text-6xl md:text-8xl xl:text-9xl font-black leading-[0.85] tracking-normal text-white mb-4" 
             data-testid="hero-headline"
             style={{
               textShadow: '0 0 40px rgba(255,255,255,0.3)'
             }}
           >
-            <span className="block text-white font-black">Get Your</span>
-            <span className="block text-white font-black">Brand</span>
+            <span className="block text-white font-black mb-1">Get Your</span>
+            <span className="block text-white font-black mb-1">Brand</span>
             <span className="block text-white font-black">Noticed</span>
           </h1>
         </motion.div>
         
         <motion.div
           variants={cinematicVariants}
-          className="mb-16"
+          className="mb-10 md:mb-16"
         >
           <p 
-            className="text-2xl md:text-3xl text-white/80 max-w-4xl mx-auto leading-relaxed font-light"
+            className="text-xl md:text-2xl xl:text-3xl text-white/80 max-w-4xl mx-auto leading-relaxed font-light px-4"
             data-testid="hero-description"
             style={{ 
               fontFamily: 'var(--font-sans)',
@@ -130,7 +130,7 @@ export default function HeroSection() {
         </motion.div>
         
         <motion.div 
-          className="flex flex-col lg:flex-row gap-6 justify-center items-center max-w-5xl mx-auto"
+          className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center max-w-4xl mx-auto mb-16 px-4"
           variants={cinematicVariants}
         >
           <Button 
@@ -160,10 +160,10 @@ export default function HeroSection() {
         {/* Scroll indicator */}
         <motion.div
           variants={cinematicVariants}
-          className="absolute bottom-12 left-1/2 transform -translate-x-1/2"
+          className="absolute bottom-8 md:bottom-12 left-1/2 transform -translate-x-1/2"
         >
-          <div className="flex flex-col items-center gap-4">
-            <span className="text-white/60 text-sm font-light tracking-widest">SCROLL TO EXPLORE</span>
+          <div className="flex flex-col items-center gap-3">
+            <span className="text-white/60 text-xs md:text-sm font-light tracking-widest">SCROLL TO EXPLORE</span>
             <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
               <div className="w-1 h-3 bg-white/60 rounded-full mt-2 animate-bounce" />
             </div>
