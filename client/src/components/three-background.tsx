@@ -104,32 +104,66 @@ export default function ThreeBackground() {
         uniform float uTime;
         attribute float size;
         varying vec3 vColor;
+        varying float vIntensity;
         
         void main() {
+          // Calculate particle's position along infinity curve
+          float curvePosition = atan(position.y, position.x);
+          
+          // Flowing motion along the infinity path
+          float flowSpeed = uTime * 0.8;
+          float flow = sin(curvePosition + flowSpeed) * 0.3;
+          
+          // Multiple layered wave effects
+          float wave1 = sin(uTime * 2.0 + position.x * 0.4 + position.y * 0.3);
+          float wave2 = cos(uTime * 1.3 + length(position.xy) * 0.15);
+          float wave3 = sin(uTime * 3.2 + curvePosition * 2.0);
+          float wave4 = cos(uTime * 0.7 + position.x * 0.2);
+          
+          // Breathing effect for the whole shape
+          float breathe = 1.0 + sin(uTime * 0.5) * 0.1;
+          
+          // Dynamic pulsing with complexity
+          float complexity = (wave1 + wave2 + wave3 + wave4) / 4.0;
+          float fluidPulse = 0.4 + 0.6 * complexity;
+          
+          // Orbital motion around curve points
+          float orbit = sin(uTime * 2.5 + curvePosition) * 0.2;
+          vec3 animatedPosition = position;
+          animatedPosition.x += flow + orbit;
+          animatedPosition.y += sin(uTime + curvePosition * 1.5) * 0.15;
+          
+          // Scale with breathing
+          animatedPosition *= breathe;
+          
           vColor = color;
+          vIntensity = fluidPulse;
           
-          // More fluid animation with multiple wave frequencies
-          float wave1 = sin(uTime * 1.5 + position.x * 0.3);
-          float wave2 = cos(uTime * 2.2 + position.y * 0.4);
-          float wave3 = sin(uTime * 0.8 + length(position.xy) * 0.2);
-          
-          float fluidPulse = 0.6 + 0.4 * (wave1 + wave2 + wave3) / 3.0;
-          
-          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = size * (300.0 / -mvPosition.z) * fluidPulse;
+          vec4 mvPosition = modelViewMatrix * vec4(animatedPosition, 1.0);
+          gl_PointSize = size * (300.0 / -mvPosition.z) * fluidPulse * (1.2 + wave3 * 0.3);
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
       fragmentShader: `
         varying vec3 vColor;
+        varying float vIntensity;
         
         void main() {
-          float distanceToCenter = distance(gl_PointCoord, vec2(0.5));
+          vec2 center = gl_PointCoord - vec2(0.5);
+          float distanceToCenter = length(center);
+          
           if (distanceToCenter > 0.5) discard;
           
-          // Smoother alpha falloff for more fluid appearance
-          float alpha = smoothstep(0.5, 0.0, distanceToCenter);
-          gl_FragColor = vec4(vColor, alpha * 0.2);
+          // Soft circular gradient
+          float alpha = smoothstep(0.5, 0.1, distanceToCenter);
+          
+          // Add subtle sparkle effect
+          float sparkle = 1.0 + sin(distanceToCenter * 20.0) * 0.1;
+          
+          // Dynamic color intensity based on animation
+          float finalAlpha = alpha * vIntensity * sparkle * 0.25;
+          
+          gl_FragColor = vec4(vColor, finalAlpha);
         }
       `,
       uniforms: {
