@@ -101,13 +101,10 @@ export default function HeroSection() {
       >
 
         {/* 3D Cinematic Headline */}
-        <motion.div className="mb-12 space-y-2 perspective-1000" variants={staggerContainer}>
+        <motion.div className="mb-12 space-y-2" variants={staggerContainer}>
           <motion.h1 
-            className="text-5xl md:text-7xl xl:text-8xl font-black leading-[0.9] tracking-tight" 
+            className="text-5xl md:text-7xl xl:text-8xl font-black leading-tight tracking-tight text-white" 
             data-testid="hero-headline"
-            style={{
-              fontFamily: 'var(--font-display)',
-            }}
           >
             <motion.span 
               className="block text-white font-black transform-gpu"
