@@ -63,37 +63,32 @@ export default function ThreeBackground() {
     for (let i = 0; i < particleCount; i++) {
       const i3 = i * 3;
       
-      // Infinity symbol parametric equations (lemniscate of Bernoulli)
+      // Assign each particle a specific position along the infinity curve
       const t = (i / particleCount) * Math.PI * 4; // Full infinity loop
-      const density = Math.random(); // For multiple layers
-      const layerScale = scale * (0.3 + density * 0.9);
+      const phase = (i / particleCount) * 6.28318; // Store phase for animation
       
       // Lemniscate equations: creates perfect infinity symbol
       const denominator = 1 + Math.sin(t) * Math.sin(t);
-      let x = layerScale * Math.cos(t) / denominator;
-      let y = layerScale * Math.sin(t) * Math.cos(t) / denominator;
+      let x = scale * Math.cos(t) / denominator;
+      let y = scale * Math.sin(t) * Math.cos(t) / denominator;
       let z = (Math.random() - 0.5) * thickness;
 
-      // Add controlled randomness for organic feel
-      const randomX = Math.pow(Math.random(), randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * randomness;
-      const randomY = Math.pow(Math.random(), randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * randomness;
-      const randomZ = Math.pow(Math.random(), randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * randomness * 0.5;
+      // Store the target infinity position
+      positions[i3] = x;
+      positions[i3 + 1] = y;
+      positions[i3 + 2] = z;
 
-      positions[i3] = x + randomX;
-      positions[i3 + 1] = y + randomY;
-      positions[i3 + 2] = z + randomZ;
-
-      // Color based on distance from center for gradient effect
-      const distance = Math.sqrt(x * x + y * y) / scale;
+      // Color based on position along the curve
+      const normalizedPos = i / particleCount;
       const mixedColor = colorInside.clone();
-      mixedColor.lerp(colorOutside, Math.min(distance * 0.8, 1));
+      mixedColor.lerp(colorOutside, normalizedPos);
 
       colors[i3] = mixedColor.r;
       colors[i3 + 1] = mixedColor.g;
       colors[i3 + 2] = mixedColor.b;
 
-      // Vary particle sizes based on position for depth effect
-      sizes[i] = Math.random() * 2.5 + 0.4 + (1 - Math.min(distance, 1)) * 1.8;
+      // Size based on position for flow effect
+      sizes[i] = Math.random() * 2.5 + 0.5;
     }
 
     const geometry = new THREE.BufferGeometry();
@@ -110,32 +105,15 @@ export default function ThreeBackground() {
         attribute float size;
         varying vec3 vColor;
         
-        // Front-facing infinity shape function
-        vec3 infinityPosition(float t, float scale) {
-          float s = sin(t);
-          float c = cos(t);
-          float denominator = 1.0 + s * s;
-          float x = scale * c / denominator;
-          float y = scale * s * c / denominator;
-          return vec3(x, y, 0.0); // Keep Z=0 for front-facing view
-        }
-        
         void main() {
           vColor = color;
           
-          // Create flowing effect along infinity curve
-          float t = uTime * 0.3 + position.x * 0.1 + position.y * 0.05;
-          float progress = mod(t, 6.28318); // 2*PI for full loop
+          // Use the pre-calculated infinity positions directly
+          // Add subtle pulsing animation to show the drawing effect
+          float pulse = 0.5 + 0.5 * sin(uTime * 2.0 + position.x * 0.5);
           
-          // Get base infinity position
-          vec3 basePos = infinityPosition(progress, 8.0);
-          
-          // Mix original position with flowing infinity position
-          float flowStrength = 0.7;
-          vec3 newPosition = mix(position, basePos, flowStrength * (0.5 + 0.5 * sin(uTime + position.x)));
-          
-          vec4 mvPosition = modelViewMatrix * vec4(newPosition, 1.0);
-          gl_PointSize = size * (300.0 / -mvPosition.z) * (0.6 + 0.4 * sin(uTime * 1.5 + progress));
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          gl_PointSize = size * (300.0 / -mvPosition.z) * pulse;
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
