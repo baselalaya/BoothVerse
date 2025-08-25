@@ -47,7 +47,7 @@ export default function ThreeBackground() {
     container.appendChild(renderer.domElement);
 
     // Create infinity symbol particle system
-    const particleCount = 12000;
+    const particleCount = 6000;  // Reduced particle count
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
     const sizes = new Float32Array(particleCount);
@@ -57,8 +57,8 @@ export default function ThreeBackground() {
     const randomness = 0.4;
     const randomnessPower = 1.5;
 
-    const colorInside = new THREE.Color('#FFFFFF');  // White
-    const colorOutside = new THREE.Color('#FFD9D1');  // Light Pink
+    const colorInside = new THREE.Color('#FFFFFF').multiplyScalar(0.3);  // Much dimmer white
+    const colorOutside = new THREE.Color('#FFD9D1').multiplyScalar(0.25);  // Much dimmer light pink
 
     for (let i = 0; i < particleCount; i++) {
       const i3 = i * 3;
@@ -87,8 +87,8 @@ export default function ThreeBackground() {
       colors[i3 + 1] = mixedColor.g;
       colors[i3 + 2] = mixedColor.b;
 
-      // Size based on position for flow effect
-      sizes[i] = Math.random() * 2.5 + 0.5;
+      // Size based on position for flow effect  
+      sizes[i] = Math.random() * 1.0 + 0.2;  // Much smaller particles
     }
 
     const geometry = new THREE.BufferGeometry();
@@ -122,8 +122,9 @@ export default function ThreeBackground() {
         
         void main() {
           float distanceToCenter = distance(gl_PointCoord, vec2(0.5));
-          float strength = 0.05 / distanceToCenter - 0.1;
-          gl_FragColor = vec4(vColor, strength);
+          if (distanceToCenter > 0.5) discard;
+          float alpha = 1.0 - distanceToCenter * 2.0;
+          gl_FragColor = vec4(vColor, alpha * 0.15);  // Much lower opacity
         }
       `,
       uniforms: {
