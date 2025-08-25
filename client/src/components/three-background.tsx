@@ -46,45 +46,54 @@ export default function ThreeBackground() {
     renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
 
-    // Create galaxy particle system
-    const particleCount = 15000;
+    // Create infinity symbol particle system
+    const particleCount = 12000;
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
     const sizes = new Float32Array(particleCount);
 
-    const galaxyRadius = 15;
-    const branches = 6;
-    const spin = 1.2;
-    const randomness = 0.5;
-    const randomnessPower = 2;
+    const scale = 10;
+    const thickness = 3;
+    const randomness = 0.4;
+    const randomnessPower = 1.5;
 
     const colorInside = new THREE.Color('#FFFFFF');  // White
     const colorOutside = new THREE.Color('#FFD9D1');  // Light Pink
 
     for (let i = 0; i < particleCount; i++) {
       const i3 = i * 3;
-      const radius = Math.random() * galaxyRadius;
-      const branchAngle = ((i % branches) / branches) * Math.PI * 2;
-      const spinAngle = radius * spin;
+      
+      // Infinity symbol parametric equations (lemniscate of Bernoulli)
+      const t = (i / particleCount) * Math.PI * 4; // Full infinity loop
+      const density = Math.random(); // For multiple layers
+      const layerScale = scale * (0.3 + density * 0.9);
+      
+      // Lemniscate equations: creates perfect infinity symbol
+      const denominator = 1 + Math.sin(t) * Math.sin(t);
+      let x = layerScale * Math.cos(t) / denominator;
+      let y = layerScale * Math.sin(t) * Math.cos(t) / denominator;
+      let z = (Math.random() - 0.5) * thickness;
 
-      const randomX = Math.pow(Math.random(), randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * randomness * radius;
-      const randomY = Math.pow(Math.random(), randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * randomness * radius;
-      const randomZ = Math.pow(Math.random(), randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * randomness * radius;
+      // Add controlled randomness for organic feel
+      const randomX = Math.pow(Math.random(), randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * randomness;
+      const randomY = Math.pow(Math.random(), randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * randomness;
+      const randomZ = Math.pow(Math.random(), randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * randomness * 0.5;
 
-      positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
-      positions[i3 + 1] = randomY * 0.1;
-      positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+      positions[i3] = x + randomX;
+      positions[i3 + 1] = y + randomY;
+      positions[i3 + 2] = z + randomZ;
 
-      // Colors
+      // Color based on distance from center for gradient effect
+      const distance = Math.sqrt(x * x + y * y) / scale;
       const mixedColor = colorInside.clone();
-      mixedColor.lerp(colorOutside, radius / galaxyRadius);
+      mixedColor.lerp(colorOutside, Math.min(distance * 0.8, 1));
 
       colors[i3] = mixedColor.r;
       colors[i3 + 1] = mixedColor.g;
       colors[i3 + 2] = mixedColor.b;
 
-      // Size
-      sizes[i] = Math.random() * 2 + 0.5;
+      // Vary particle sizes based on position for depth effect
+      sizes[i] = Math.random() * 2.5 + 0.4 + (1 - Math.min(distance, 1)) * 1.8;
     }
 
     const geometry = new THREE.BufferGeometry();
@@ -125,11 +134,11 @@ export default function ThreeBackground() {
     const particles = new THREE.Points(geometry, material);
     scene.add(particles);
 
-    // Add infinity loop geometry
+    // Enhanced rotation for infinity symbol
     const curve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-10, 0, -10),
-      new THREE.Vector3(-10, 5, 0),
-      new THREE.Vector3(0, 0, 10),
+      new THREE.Vector3(-8, 0, -8),
+      new THREE.Vector3(-8, 4, 0),
+      new THREE.Vector3(0, 0, 8),
       new THREE.Vector3(10, 5, 0),
       new THREE.Vector3(10, 0, -10),
       new THREE.Vector3(0, -5, -20),
