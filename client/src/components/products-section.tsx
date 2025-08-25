@@ -1,37 +1,73 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, Grid3X3, Play } from "lucide-react";
+import { ArrowRight, Grid3X3, Play, ChevronLeft, ChevronRight } from "lucide-react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
+import useEmblaCarousel from 'embla-carousel-react';
+import { useCallback } from "react";
 
 const products = [
   {
     id: "holo-booth",
     title: "HoloBoothᵀᴹ",
     description: "Holographic displays with AI-powered gesture recognition for next-level brand interactions",
-    image: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+    image: "/images/holobox-purple.png",
     cta: "Explore Features"
   },
   {
-    id: "game-xperience",
-    title: "GameXperienceᵀᴹ",
-    description: "Virtual reality gaming stations with custom brand integration and real-time leaderboards",
-    image: "https://images.unsplash.com/photo-1592478411213-6153e4ebc696?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-    cta: "View Games"
+    id: "mirror-tech",
+    title: "Mirror Techᵀᴹ",
+    description: "Interactive mirror experiences with personalized brand messaging and social sharing",
+    image: "/images/mirror-tech-purple.png",
+    cta: "View Demo"
   },
   {
-    id: "talia-ai",
-    title: "TaliaAIᵀᴹ",
-    description: "AI assistant with facial recognition and personalized brand recommendations",
-    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
-    cta: "Meet Talia"
+    id: "360-booth",
+    title: "360 Boothᵀᴹ",
+    description: "Full rotation video capture with slow-motion effects and instant social sharing",
+    image: "/images/360-purple.png",
+    cta: "See 360° Magic"
+  },
+  {
+    id: "gumball-x",
+    title: "Gumball Xᵀᴹ",
+    description: "Interactive prize dispensing with gamification and brand reward integration",
+    image: "/images/gumball-x-purple.png",
+    cta: "Play & Win"
+  },
+  {
+    id: "gift-box",
+    title: "Gift Boxᵀᴹ",
+    description: "Surprise and delight experiences with branded gift reveals and social moments",
+    image: "/images/gift-box-purple.png",
+    cta: "Unwrap Magic"
+  },
+  {
+    id: "gobooth",
+    title: "GoBoothᵀᴹ",
+    description: "Portable photo booth solutions for any event with wireless connectivity and cloud storage",
+    image: "/images/gobooth-purple.png",
+    cta: "Go Mobile"
   }
 ];
 
 export default function ProductsSection() {
   const prefersReducedMotion = useReducedMotion();
   const [ref, isIntersecting] = useIntersectionObserver();
+  const [emblaRef, emblaApi] = useEmblaCarousel({ 
+    loop: true,
+    dragFree: true,
+    containScroll: 'trimSnaps'
+  });
+
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev()
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext()
+  }, [emblaApi]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -101,40 +137,91 @@ export default function ProductsSection() {
           </motion.div>
         </motion.div>
         
-        {/* Clean product cards grid matching design language */}
+        {/* Product Carousel */}
         <motion.div 
-          className="grid md:grid-cols-3 gap-8 mb-16"
+          className="relative mb-16"
           initial="hidden"
           animate={isIntersecting ? "visible" : "hidden"}
           variants={containerVariants}
         >
-          {products.map((product) => (
-            <motion.div key={product.id} variants={cardVariants}>
-              <Card className="group backdrop-blur-2xl p-8 rounded-2xl bg-white/3 border border-white/8 hover:bg-white/8 transition-all duration-500 shadow-xl hover:shadow-2xl hover:scale-105 h-full" data-testid={`product-card-${product.id}`}>
-                <div className="relative mb-6 overflow-hidden rounded-xl">
-                  <img 
-                    src={product.image} 
-                    alt={product.title}
-                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          {/* Carousel Navigation */}
+          <div className="flex justify-between items-center mb-8">
+            <motion.button
+              variants={cardVariants}
+              onClick={scrollPrev}
+              className="group p-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300"
+              data-testid="carousel-prev"
+            >
+              <ChevronLeft className="w-6 h-6 text-white group-hover:text-white/80" />
+            </motion.button>
+            
+            <motion.h3 
+              variants={cardVariants}
+              className="text-2xl font-bold text-white text-center"
+            >
+              Our Product Lineup
+            </motion.h3>
+            
+            <motion.button
+              variants={cardVariants}
+              onClick={scrollNext}
+              className="group p-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300"
+              data-testid="carousel-next"
+            >
+              <ChevronRight className="w-6 h-6 text-white group-hover:text-white/80" />
+            </motion.button>
+          </div>
+
+          {/* Carousel Container */}
+          <motion.div 
+            ref={emblaRef}
+            className="overflow-hidden"
+            variants={cardVariants}
+          >
+            <div className="flex gap-6">
+              {products.map((product) => (
+                <div key={product.id} className="flex-[0_0_85%] md:flex-[0_0_45%] lg:flex-[0_0_32%]">
+                  <Card className="group backdrop-blur-2xl p-8 rounded-2xl bg-white/3 border border-white/8 hover:bg-white/8 transition-all duration-500 shadow-xl hover:shadow-2xl hover:scale-105 h-full" data-testid={`product-card-${product.id}`}>
+                    <div className="relative mb-6 overflow-hidden rounded-xl">
+                      <img 
+                        src={product.image} 
+                        alt={product.title}
+                        className="w-full h-64 object-contain bg-gradient-to-br from-purple-900/20 to-transparent group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    </div>
+                    
+                    <h3 className="text-2xl font-bold mb-4 text-white" data-testid={`product-title-${product.id}`}>
+                      {product.title}
+                    </h3>
+                    
+                    <p className="text-white/80 mb-6 leading-relaxed" data-testid={`product-description-${product.id}`}>
+                      {product.description}
+                    </p>
+                    
+                    <div className="flex items-center text-white font-semibold group-hover:text-white/80 transition-colors duration-300">
+                      <span>{product.cta}</span>
+                      <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform duration-300" size={16} />
+                    </div>
+                  </Card>
                 </div>
-                
-                <h3 className="text-2xl font-bold mb-4 text-white" data-testid={`product-title-${product.id}`}>
-                  {product.title}
-                </h3>
-                
-                <p className="text-white/80 mb-6 leading-relaxed" data-testid={`product-description-${product.id}`}>
-                  {product.description}
-                </p>
-                
-                <div className="flex items-center text-white font-semibold group-hover:text-white/80 transition-colors duration-300">
-                  <span>{product.cta}</span>
-                  <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform duration-300" size={16} />
-                </div>
-              </Card>
-            </motion.div>
-          ))}
+              ))}
+            </div>
+          </motion.div>
+          
+          {/* Carousel Indicator Dots */}
+          <motion.div 
+            variants={cardVariants}
+            className="flex justify-center gap-2 mt-8"
+          >
+            {products.map((_, index) => (
+              <button
+                key={index}
+                className="w-2 h-2 rounded-full bg-white/20 hover:bg-white/40 transition-colors duration-300"
+                data-testid={`carousel-dot-${index}`}
+              />
+            ))}
+          </motion.div>
         </motion.div>
         
         {/* Clean CTA section matching other sections */}
