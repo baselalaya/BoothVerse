@@ -107,7 +107,7 @@ export default function HeroSection() {
           >
             <span className="block text-white font-black">Get your</span>
             <span className="block relative">
-              <span className="bg-white text-purple-900 font-black px-4 py-2 inline-block">brand</span>
+              <span className="bg-white text-purple-900 font-black px-6 py-3 inline-block transform rotate-[-2deg] text-5xl md:text-7xl xl:text-8xl">brand</span>
             </span>
             <span className="block text-white font-black">Noticed</span>
           </h1>
