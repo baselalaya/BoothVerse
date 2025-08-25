@@ -13,7 +13,8 @@ const products = [
     subtitle: "HoloBooth",
     description: "Easy to use. Easy to love.",
     image: "/images/holobox-purple.png",
-    bgColor: "from-orange-400 via-pink-400 to-blue-500"
+    bgColor: "from-orange-400 via-pink-400 to-blue-500",
+    isDarkImage: true
   },
   {
     id: "360-booth", 
@@ -21,7 +22,8 @@ const products = [
     subtitle: "360 Booth",
     description: "Go fast. Go far.",
     image: "/images/360-purple.png", 
-    bgColor: "from-gray-900 to-black"
+    bgColor: "from-gray-900 to-black",
+    isDarkImage: true
   },
   {
     id: "mirror-tech",
@@ -29,7 +31,8 @@ const products = [
     subtitle: "Mirror Tech", 
     description: "Dream team.",
     image: "/images/mirror-tech-purple.png",
-    bgColor: "from-green-300 to-blue-400"
+    bgColor: "from-green-300 to-blue-400",
+    isDarkImage: true
   },
   {
     id: "gumball-x",
@@ -37,7 +40,8 @@ const products = [
     subtitle: "Gumball X",
     description: "Mac runs your favorite apps.",
     image: "/images/gumball-x-purple.png",
-    bgColor: "from-blue-300 to-purple-400"
+    bgColor: "from-blue-300 to-purple-400",
+    isDarkImage: true
   },
   {
     id: "gift-box",
@@ -45,7 +49,8 @@ const products = [
     subtitle: "Gift Box",
     description: "Branded gift reveals and social moments",
     image: "/images/gift-box-purple.png",
-    bgColor: "from-yellow-300 to-orange-400"
+    bgColor: "from-yellow-300 to-orange-400",
+    isDarkImage: false
   },
   {
     id: "gobooth",
@@ -53,7 +58,8 @@ const products = [
     subtitle: "GoBooth", 
     description: "Mobile photo booth experiences for any event",
     image: "/images/gobooth-purple.png",
-    bgColor: "from-indigo-400 to-blue-500"
+    bgColor: "from-indigo-400 to-blue-500",
+    isDarkImage: true
   }
 ];
 
@@ -193,13 +199,13 @@ export default function ProductsSection() {
                     {/* Content Overlay */}
                     <div className="relative z-10 p-8 h-full flex flex-col justify-between">
                       <div className="space-y-4">
-                        <p className={`text-sm font-medium ${product.bgColor.includes('gray-900') ? 'text-white/80' : 'text-gray-800/80'}`}>
+                        <p className={`text-sm font-medium ${product.isDarkImage ? 'text-white/90' : 'text-gray-900/80'}`}>
                           {product.title}
                         </p>
-                        <h3 className={`text-4xl font-bold leading-tight ${product.bgColor.includes('gray-900') ? 'text-white' : 'text-gray-900'}`}>
+                        <h3 className={`text-4xl font-bold leading-tight ${product.isDarkImage ? 'text-white' : 'text-gray-900'}`}>
                           {product.subtitle}
                         </h3>
-                        <p className={`text-xl leading-relaxed ${product.bgColor.includes('gray-900') ? 'text-white/90' : 'text-gray-800/90'}`}>
+                        <p className={`text-xl leading-relaxed ${product.isDarkImage ? 'text-white/95' : 'text-gray-900/90'}`}>
                           {product.description}
                         </p>
                       </div>
