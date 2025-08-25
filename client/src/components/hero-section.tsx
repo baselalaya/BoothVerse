@@ -87,59 +87,6 @@ export default function HeroSection() {
     >
       <ThreeBackground />
       
-      {/* Advanced floating morphing shapes */}
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Main holographic orbs */}
-        <div 
-          className="absolute w-96 h-96 morph-blob animate-morph"
-          style={{
-            background: 'radial-gradient(circle, hsla(262, 70%, 54%, 0.3) 0%, hsla(13, 100%, 91%, 0.15) 50%, transparent 100%)',
-            filter: 'blur(40px)',
-            top: '10%',
-            left: '5%',
-            animationDelay: '0s'
-          }} 
-        />
-        
-        <div 
-          className="absolute w-64 h-64 morph-blob animate-morph"
-          style={{
-            background: 'radial-gradient(circle, hsla(142, 50%, 60%, 0.25) 0%, hsla(262, 70%, 54%, 0.1) 50%, transparent 100%)',
-            filter: 'blur(60px)',
-            top: '15%',
-            right: '10%',
-            animationDelay: '3s'
-          }} 
-        />
-        
-        <div 
-          className="absolute w-48 h-48 morph-blob animate-morph"
-          style={{
-            background: 'radial-gradient(circle, hsla(13, 100%, 91%, 0.2) 0%, hsla(262, 70%, 54%, 0.15) 50%, transparent 100%)',
-            filter: 'blur(50px)',
-            bottom: '20%',
-            left: '60%',
-            animationDelay: '6s'
-          }} 
-        />
-
-        {/* Floating particles */}
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 rounded-full animate-particle-galaxy"
-            style={{
-              background: `linear-gradient(45deg, 
-                hsl(${(i * 45) % 360}, 100%, 70%), 
-                hsl(${(i * 45 + 60) % 360}, 100%, 60%))`,
-              left: `${10 + (i * 10)}%`,
-              top: `${20 + (i * 8)}%`,
-              animationDelay: `${i * 1.5}s`,
-              boxShadow: `0 0 20px hsl(${(i * 45) % 360}, 100%, 70%)`,
-            }}
-          />
-        ))}
-      </div>
       
       <motion.div 
         className="relative z-10 text-center max-w-8xl mx-auto px-8"

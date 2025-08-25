@@ -114,37 +114,6 @@ export default function BrandActivation() {
           />
         ))}
 
-        {/* Connecting lines between nodes */}
-        <svg className="absolute inset-0 w-full h-full opacity-20">
-          <defs>
-            <linearGradient id="connectionGradient">
-              <stop offset="0%" stopColor="var(--neon-purple)"/>
-              <stop offset="50%" stopColor="var(--neon-cyan)"/>
-              <stop offset="100%" stopColor="var(--neon-green)"/>
-            </linearGradient>
-          </defs>
-          {Array.from({ length: 8 }).map((_, i) => (
-            <motion.path
-              key={i}
-              d={`M ${200 + i * 150} ${150 + Math.sin(i) * 100} Q ${400 + i * 100} ${200} ${600 + i * 80} ${250 + Math.cos(i) * 100}`}
-              stroke="url(#connectionGradient)"
-              strokeWidth="2"
-              fill="none"
-              opacity="0.4"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={isIntersecting ? { 
-                pathLength: 1, 
-                opacity: [0, 0.6, 0],
-              } : {}}
-              transition={{
-                duration: 3,
-                delay: i * 0.3,
-                repeat: Infinity,
-                repeatDelay: 2
-              }}
-            />
-          ))}
-        </svg>
       </div>
       
       <motion.div 
