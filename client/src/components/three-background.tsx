@@ -381,10 +381,11 @@ export default function ThreeBackground({
 
   // Handle dynamic shape morphing when targetShape changes
   useEffect(() => {
+    console.log('ThreeBackground useEffect - targetShape:', targetShape, 'morphProgress:', morphProgress);
     if (sceneRef.current?.particles && (sceneRef.current.particles as any).updateTargetPositions) {
       (sceneRef.current.particles as any).updateTargetPositions(targetShape);
     }
-  }, [targetShape]);
+  }, [targetShape, morphProgress]);
 
   return (
     <div 

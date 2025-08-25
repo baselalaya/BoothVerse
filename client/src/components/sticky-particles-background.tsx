@@ -215,10 +215,11 @@ export default function StickyParticlesBackground({ className }: StickyParticles
         }}
       >
         <ThreeBackground 
+          key={`${config.shape}-${currentSection}`}
           introOpacity={config.opacity} 
           cinematicPhase={config.cinematicPhase}
           targetShape={config.shape || 'infinity'}
-          morphProgress={config.morphProgress || 0}
+          morphProgress={config.morphProgress || scrollBasedMorphProgress}
         />
       </motion.div>
 
