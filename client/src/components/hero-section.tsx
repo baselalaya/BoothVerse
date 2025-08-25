@@ -97,26 +97,26 @@ export default function HeroSection() {
       >
 
         {/* Cinematic Headline */}
-        <motion.div className="mb-8 md:mb-12" variants={cinematicVariants}>
+        <motion.div className="mb-6" variants={cinematicVariants}>
           <h1 
-            className="text-6xl md:text-8xl xl:text-9xl font-black leading-[0.85] tracking-normal text-white mb-4" 
+            className="text-4xl md:text-6xl xl:text-7xl font-black leading-tight tracking-tight text-white" 
             data-testid="hero-headline"
             style={{
               textShadow: '0 0 40px rgba(255,255,255,0.3)'
             }}
           >
-            <span className="block text-white font-black mb-1">Get Your</span>
-            <span className="block text-white font-black mb-1">Brand</span>
+            <span className="block text-white font-black">Get Your</span>
+            <span className="block text-white font-black">Brand</span>
             <span className="block text-white font-black">Noticed</span>
           </h1>
         </motion.div>
         
         <motion.div
           variants={cinematicVariants}
-          className="mb-10 md:mb-16"
+          className="mb-8"
         >
           <p 
-            className="text-xl md:text-2xl xl:text-3xl text-white/80 max-w-4xl mx-auto leading-relaxed font-light px-4"
+            className="text-lg md:text-xl xl:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed font-light px-4"
             data-testid="hero-description"
             style={{ 
               fontFamily: 'var(--font-sans)',
@@ -130,40 +130,40 @@ export default function HeroSection() {
         </motion.div>
         
         <motion.div 
-          className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center max-w-4xl mx-auto mb-16 px-4"
+          className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 px-4"
           variants={cinematicVariants}
         >
           <Button 
             size="lg"
-            className="group px-8 py-4 text-lg font-bold hover:scale-105 transition-all duration-500 backdrop-blur-2xl border-2 border-white/20 rounded-2xl bg-white/10 hover:bg-white/20 min-w-[280px]"
+            className="group px-6 py-3 text-base font-bold hover:scale-105 transition-all duration-500 backdrop-blur-2xl border-2 border-white/20 rounded-xl bg-white/10 hover:bg-white/20 w-full sm:w-auto"
             data-testid="cta-custom-concept"
           >
             <span className="text-white font-bold">
               Request a Custom Concept
             </span>
-            <ArrowRight className="ml-3 group-hover:translate-x-3 transition-transform duration-300" size={20} />
+            <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform duration-300" size={18} />
           </Button>
           
           <Button 
             variant="outline"
             size="lg"
-            className="group px-8 py-4 text-lg font-semibold hover:scale-105 transition-all duration-500 border-2 border-white/30 rounded-2xl backdrop-blur-xl bg-transparent hover:bg-white/10 min-w-[280px]"
+            className="group px-6 py-3 text-base font-semibold hover:scale-105 transition-all duration-500 border-2 border-white/30 rounded-xl backdrop-blur-xl bg-transparent hover:bg-white/10 w-full sm:w-auto"
             data-testid="cta-consultation"
           >
             <span className="text-white group-hover:text-white/80 transition-colors font-semibold">
               Schedule a Virtual Consultation
             </span>
-            <Calendar className="ml-3 group-hover:rotate-12 transition-transform duration-300" size={20} />
+            <Calendar className="ml-2 group-hover:rotate-6 transition-transform duration-300" size={18} />
           </Button>
         </motion.div>
 
         {/* Scroll indicator */}
         <motion.div
           variants={cinematicVariants}
-          className="absolute bottom-8 md:bottom-12 left-1/2 transform -translate-x-1/2"
+          className="mt-8"
         >
           <div className="flex flex-col items-center gap-3">
-            <span className="text-white/60 text-xs md:text-sm font-light tracking-widest">SCROLL TO EXPLORE</span>
+            <span className="text-white/60 text-xs font-light tracking-widest">SCROLL TO EXPLORE</span>
             <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
               <div className="w-1 h-3 bg-white/60 rounded-full mt-2 animate-bounce" />
             </div>
