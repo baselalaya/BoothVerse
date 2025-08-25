@@ -110,10 +110,32 @@ export default function ThreeBackground() {
         attribute float size;
         varying vec3 vColor;
         
+        // Infinity shape function
+        vec3 infinityPosition(float t, float scale) {
+          float s = sin(t);
+          float c = cos(t);
+          float denominator = 1.0 + s * s;
+          float x = scale * c / denominator;
+          float y = scale * s * c / denominator;
+          return vec3(x, y, 0.0);
+        }
+        
         void main() {
           vColor = color;
-          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = size * (300.0 / -mvPosition.z) * (0.5 + 0.5 * sin(uTime * 2.0 + position.x * 0.1));
+          
+          // Create flowing effect along infinity curve
+          float t = uTime * 0.3 + position.x * 0.1 + position.y * 0.05;
+          float progress = mod(t, 6.28318); // 2*PI for full loop
+          
+          // Get base infinity position
+          vec3 basePos = infinityPosition(progress, 8.0);
+          
+          // Mix original position with flowing infinity position
+          float flowStrength = 0.7;
+          vec3 newPosition = mix(position, basePos, flowStrength * (0.5 + 0.5 * sin(uTime + position.x)));
+          
+          vec4 mvPosition = modelViewMatrix * vec4(newPosition, 1.0);
+          gl_PointSize = size * (300.0 / -mvPosition.z) * (0.6 + 0.4 * sin(uTime * 1.5 + progress));
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
@@ -134,26 +156,7 @@ export default function ThreeBackground() {
     const particles = new THREE.Points(geometry, material);
     scene.add(particles);
 
-    // Enhanced rotation for infinity symbol
-    const curve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-8, 0, -8),
-      new THREE.Vector3(-8, 4, 0),
-      new THREE.Vector3(0, 0, 8),
-      new THREE.Vector3(10, 5, 0),
-      new THREE.Vector3(10, 0, -10),
-      new THREE.Vector3(0, -5, -20),
-      new THREE.Vector3(-10, 0, -10)
-    ], true);
-
-    const tubeGeometry = new THREE.TubeGeometry(curve, 200, 0.02, 8, true);
-    const tubeMaterial = new THREE.MeshBasicMaterial({ 
-      color: 0x8B5FBF, 
-      transparent: true, 
-      opacity: 0.3,
-      side: THREE.DoubleSide
-    });
-    const tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
-    scene.add(tube);
+    // Remove tube geometry - particles will create the infinity shape themselves
 
     camera.position.z = 10;
     camera.position.y = 3;
@@ -170,12 +173,7 @@ export default function ThreeBackground() {
         material.uniforms.uTime.value = elapsedTime;
       }
 
-      // Rotate galaxy
-      particles.rotation.y = elapsedTime * 0.05;
-      
-      // Animate infinity loop
-      tube.rotation.x = elapsedTime * 0.1;
-      tube.rotation.y = elapsedTime * 0.2;
+      // No rotation - particles flow along infinity path via shader
 
       // Camera gentle movement
       camera.position.x = Math.sin(elapsedTime * 0.1) * 2;
