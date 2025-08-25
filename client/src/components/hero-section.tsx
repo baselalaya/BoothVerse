@@ -1,7 +1,6 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Calendar, Sparkles } from "lucide-react";
-import ThreeBackground from "./three-background";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useEffect, useRef, useState } from "react";
 
@@ -10,12 +9,8 @@ export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   
-  // Cinematic intro animation states
-  const [introPhase, setIntroPhase] = useState<'particles' | 'buildup' | 'climax' | 'transition' | 'content'>('particles');
-  const [particleOpacity, setParticleOpacity] = useState(1.0); // Start at 100% opacity
+  // Content visibility state
   const [contentVisible, setContentVisible] = useState(false);
-  const [cinematicScale, setCinematicScale] = useState(1.2); // Start zoomed in
-  const [cinematicBlur, setCinematicBlur] = useState(2); // Start with subtle blur
   
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -25,51 +20,14 @@ export default function HeroSection() {
   const y = useTransform(scrollYProgress, [0, 1], [0, -100]);
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
   
-  // Modern scroll-triggered flip animation for particles
-  const particleRotateX = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 15, 45, 180]);
-  const particleScale = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [1, 1.05, 0.95, 0.8]);
-  const particleOpacityScroll = useTransform(scrollYProgress, [0, 0.4, 0.8, 1], [1, 0.8, 0.5, 0.2]);
 
-  // Intro animation sequence
+  // Simple content reveal animation
   useEffect(() => {
-    if (prefersReducedMotion) {
-      // Skip intro for reduced motion
-      setIntroPhase('content');
-      setParticleOpacity(0.8);
+    const timer = setTimeout(() => {
       setContentVisible(true);
-      setCinematicScale(1.0);
-      setCinematicBlur(0);
-      return;
-    }
-
-    const cinematicSequence = [
-      // Phase 1: Start with full particles at 100% opacity (2 seconds)
-      { delay: 0, phase: 'particles' as const, opacity: 1.0, content: false, scale: 1.2, blur: 2 },
-      
-      // Phase 2: Dramatic buildup - particles intensify (1.5 seconds)
-      { delay: 2000, phase: 'buildup' as const, opacity: 1.2, content: false, scale: 1.1, blur: 1 },
-      { delay: 2800, phase: 'buildup' as const, opacity: 1.5, content: false, scale: 1.05, blur: 0.5 },
-      
-      // Phase 3: Cinematic climax - maximum intensity (1 second)
-      { delay: 3500, phase: 'climax' as const, opacity: 1.8, content: false, scale: 1.0, blur: 0 },
-      
-      // Phase 4: Smooth transition with content reveal (1.5 seconds)
-      { delay: 4500, phase: 'transition' as const, opacity: 1.2, content: true, scale: 1.0, blur: 0 },
-      { delay: 5500, phase: 'transition' as const, opacity: 0.8, content: true, scale: 1.0, blur: 0 },
-      
-      // Phase 5: Final state - refined and elegant
-      { delay: 6000, phase: 'content' as const, opacity: 0.6, content: true, scale: 1.0, blur: 0 }
-    ];
+    }, prefersReducedMotion ? 0 : 500);
     
-    cinematicSequence.forEach(({ delay, phase, opacity, content, scale, blur }) => {
-      setTimeout(() => {
-        setIntroPhase(phase);
-        setParticleOpacity(opacity);
-        setContentVisible(content);
-        setCinematicScale(scale);
-        setCinematicBlur(blur);
-      }, delay);
-    });
+    return () => clearTimeout(timer);
   }, [prefersReducedMotion]);
 
   // Mouse parallax effect
@@ -136,21 +94,6 @@ export default function HeroSection() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden hero-brand"
       data-testid="hero-section"
     >
-      <motion.div
-        className="absolute inset-0"
-        style={{
-          rotateX: prefersReducedMotion ? 0 : particleRotateX,
-          scale: prefersReducedMotion ? 1 : particleScale,
-          opacity: prefersReducedMotion ? 1 : particleOpacityScroll,
-          transformStyle: 'preserve-3d',
-          transformOrigin: 'center center'
-        }}
-      >
-        <ThreeBackground 
-          introOpacity={particleOpacity} 
-          cinematicPhase={introPhase}
-        />
-      </motion.div>
       
       
       <motion.div 
@@ -160,9 +103,7 @@ export default function HeroSection() {
         style={{ 
           y: prefersReducedMotion ? 0 : y, 
           opacity: prefersReducedMotion ? 1 : (contentVisible ? opacity : 0),
-          transform: prefersReducedMotion ? 'none' : `translate(${mousePosition.x * 0.5}px, ${mousePosition.y * 0.5}px) scale(${cinematicScale})`,
-          filter: prefersReducedMotion ? 'none' : `blur(${cinematicBlur}px)`,
-          transition: 'all 1.5s cubic-bezier(0.19, 1, 0.22, 1)'
+          transform: prefersReducedMotion ? 'none' : `translate(${mousePosition.x * 0.5}px, ${mousePosition.y * 0.5}px)`
         }}
         variants={staggerContainer}
         initial="hidden"
