@@ -34,17 +34,13 @@ export default function HeroSection() {
   const cinematicVariants = {
     hidden: { 
       opacity: 0, 
-      y: 100,
-      rotateX: -45,
-      scale: 0.8
+      y: 30
     },
     visible: { 
       opacity: 1, 
       y: 0,
-      rotateX: 0,
-      scale: 1,
       transition: { 
-        duration: prefersReducedMotion ? 0.01 : 1.2,
+        duration: prefersReducedMotion ? 0.01 : 0.8,
         ease: [0.19, 1, 0.22, 1]
       }
     }
@@ -135,38 +131,30 @@ export default function HeroSection() {
         
         <motion.div 
           className="flex flex-col lg:flex-row gap-8 justify-center items-center"
-          variants={staggerContainer}
+          variants={cinematicVariants}
         >
-          <motion.div variants={cinematicVariants}>
-            <Button 
-              size="lg"
-              className="group px-12 py-6 text-xl font-bold hover:scale-105 transition-all duration-500 backdrop-blur-2xl border-2 border-white/20 rounded-2xl bg-white/10 hover:bg-white/20"
-              data-testid="cta-custom-concept"
-            >
-              <motion.span 
-                className="text-white font-bold"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.2 }}
-              >
-                Request a Custom Concept
-              </motion.span>
-              <ArrowRight className="ml-3 group-hover:translate-x-3 transition-transform duration-300" size={24} />
-            </Button>
-          </motion.div>
+          <Button 
+            size="lg"
+            className="group px-12 py-6 text-xl font-bold hover:scale-105 transition-all duration-500 backdrop-blur-2xl border-2 border-white/20 rounded-2xl bg-white/10 hover:bg-white/20"
+            data-testid="cta-custom-concept"
+          >
+            <span className="text-white font-bold">
+              Request a Custom Concept
+            </span>
+            <ArrowRight className="ml-3 group-hover:translate-x-3 transition-transform duration-300" size={24} />
+          </Button>
           
-          <motion.div variants={cinematicVariants}>
-            <Button 
-              variant="outline"
-              size="lg"
-              className="group px-12 py-6 text-xl font-semibold hover:scale-105 transition-all duration-500 border-2 border-white/30 rounded-2xl backdrop-blur-xl bg-transparent hover:bg-white/10"
-              data-testid="cta-consultation"
-            >
-              <span className="text-white group-hover:text-white/80 transition-colors font-semibold">
-                Schedule a Virtual Consultation
-              </span>
-              <Calendar className="ml-3 group-hover:rotate-12 transition-transform duration-300" size={24} />
-            </Button>
-          </motion.div>
+          <Button 
+            variant="outline"
+            size="lg"
+            className="group px-12 py-6 text-xl font-semibold hover:scale-105 transition-all duration-500 border-2 border-white/30 rounded-2xl backdrop-blur-xl bg-transparent hover:bg-white/10"
+            data-testid="cta-consultation"
+          >
+            <span className="text-white group-hover:text-white/80 transition-colors font-semibold">
+              Schedule a Virtual Consultation
+            </span>
+            <Calendar className="ml-3 group-hover:rotate-12 transition-transform duration-300" size={24} />
+          </Button>
         </motion.div>
 
         {/* Scroll indicator */}
@@ -177,7 +165,7 @@ export default function HeroSection() {
           <div className="flex flex-col items-center gap-4">
             <span className="text-white/60 text-sm font-light tracking-widest">SCROLL TO EXPLORE</span>
             <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-              <div className="w-1 h-3 bg-gradient-to-b from-neon-cyan to-transparent rounded-full mt-2 animate-bounce" />
+              <div className="w-1 h-3 bg-white/60 rounded-full mt-2 animate-bounce" />
             </div>
           </div>
         </motion.div>
