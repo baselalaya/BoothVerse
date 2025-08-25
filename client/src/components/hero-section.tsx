@@ -99,26 +99,11 @@ export default function HeroSection() {
         initial="hidden"
         animate="visible"
       >
-        {/* Premium badge */}
-        <motion.div 
-          variants={cinematicVariants}
-          className="mb-8"
-        >
-          <div className="glass-premium px-8 py-4 rounded-full mx-auto w-fit interactive-glow mb-12">
-            <div className="flex items-center gap-3">
-              <Sparkles className="text-white/80 animate-pulse-neon" size={20} />
-              <span className="text-white font-medium text-lg tracking-wider">
-                AWARD-WINNING EXPERIENCES
-              </span>
-              <Sparkles className="text-white/80 animate-pulse-neon" size={20} />
-            </div>
-          </div>
-        </motion.div>
 
         {/* 3D Cinematic Headline */}
         <motion.div className="mb-12 space-y-2 perspective-1000" variants={staggerContainer}>
           <motion.h1 
-            className="text-8xl md:text-[12rem] xl:text-[14rem] font-black leading-[0.8] tracking-tighter" 
+            className="text-5xl md:text-7xl xl:text-8xl font-black leading-[0.9] tracking-tight" 
             data-testid="hero-headline"
             style={{
               fontFamily: 'var(--font-display)',
