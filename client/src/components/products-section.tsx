@@ -32,7 +32,7 @@ const products = [
     description: "Dream team.",
     image: "/images/mirror-tech-purple.png",
     bgColor: "from-green-300 to-blue-400",
-    isDarkImage: true
+    isDarkImage: false
   },
   {
     id: "gumball-x",
@@ -41,7 +41,7 @@ const products = [
     description: "Mac runs your favorite apps.",
     image: "/images/gumball-x-purple.png",
     bgColor: "from-blue-300 to-purple-400",
-    isDarkImage: true
+    isDarkImage: false
   },
   {
     id: "gift-box",
