@@ -65,7 +65,6 @@ export default function ThreeBackground() {
       
       // Assign each particle a specific position along the infinity curve
       const t = (i / particleCount) * Math.PI * 4; // Full infinity loop
-      const phase = (i / particleCount) * 6.28318; // Store phase for animation
       
       // Lemniscate equations: creates perfect infinity symbol
       const denominator = 1 + Math.sin(t) * Math.sin(t);
@@ -82,19 +81,30 @@ export default function ThreeBackground() {
       const normalizedPos = i / particleCount;
       const mixedColor = colorInside.clone();
       mixedColor.lerp(colorOutside, normalizedPos);
+      
+      // Store individual particle properties 
+      const speed = 0.5 + Math.random() * 1.5;  // Individual speed multiplier
 
+      // Store original color and speed in blue channel
       colors[i3] = mixedColor.r;
-      colors[i3 + 1] = mixedColor.g;
-      colors[i3 + 2] = mixedColor.b;
+      colors[i3 + 1] = mixedColor.g; 
+      colors[i3 + 2] = speed; // Store speed in blue channel
 
-      // Size based on position for flow effect  
-      sizes[i] = Math.random() * 1.0 + 0.2;  // Much smaller particles
+      // Size variations for dynamic behavior
+      sizes[i] = Math.random() * 1.2 + 0.3;
+    }
+
+    // Add individual particle phases for more variation
+    const phases = new Float32Array(particleCount);
+    for (let i = 0; i < particleCount; i++) {
+      phases[i] = Math.random() * 6.28318;
     }
 
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+    geometry.setAttribute('phase', new THREE.BufferAttribute(phases, 1));
 
     const material = new THREE.ShaderMaterial({
       depthWrite: false,
@@ -103,44 +113,70 @@ export default function ThreeBackground() {
       vertexShader: `
         uniform float uTime;
         attribute float size;
+        attribute float phase;
         varying vec3 vColor;
         varying float vIntensity;
         
         void main() {
+          // Individual particle properties
+          float particleSpeed = color.b; // Speed stored in blue channel
+          float particlePhase = phase;
+          
           // Calculate particle's position along infinity curve
           float curvePosition = atan(position.y, position.x);
           
-          // Flowing motion along the infinity path
-          float flowSpeed = uTime * 0.8;
-          float flow = sin(curvePosition + flowSpeed) * 0.3;
+          // Dynamic time with individual speed
+          float dynamicTime = uTime * particleSpeed;
           
-          // Multiple layered wave effects
-          float wave1 = sin(uTime * 2.0 + position.x * 0.4 + position.y * 0.3);
-          float wave2 = cos(uTime * 1.3 + length(position.xy) * 0.15);
-          float wave3 = sin(uTime * 3.2 + curvePosition * 2.0);
-          float wave4 = cos(uTime * 0.7 + position.x * 0.2);
+          // Flowing motion along the infinity path with individual variation
+          float flowSpeed = dynamicTime * 1.2 + particlePhase;
+          float flow = sin(curvePosition + flowSpeed) * 0.4;
           
-          // Breathing effect for the whole shape
-          float breathe = 1.0 + sin(uTime * 0.5) * 0.1;
+          // Complex multi-layered wave system
+          float wave1 = sin(dynamicTime * 2.5 + position.x * 0.6 + particlePhase);
+          float wave2 = cos(dynamicTime * 1.8 + length(position.xy) * 0.25 + particlePhase * 0.5);
+          float wave3 = sin(dynamicTime * 4.1 + curvePosition * 3.0 + particlePhase * 2.0);
+          float wave4 = cos(dynamicTime * 0.9 + position.x * 0.3 + particlePhase * 1.5);
+          float wave5 = sin(dynamicTime * 3.7 + position.y * 0.5 + particlePhase * 0.8);
           
-          // Dynamic pulsing with complexity
-          float complexity = (wave1 + wave2 + wave3 + wave4) / 4.0;
-          float fluidPulse = 0.4 + 0.6 * complexity;
+          // Individual particle drift and momentum
+          float drift = sin(dynamicTime * 0.6 + particlePhase) * 0.3;
+          float momentum = cos(dynamicTime * 1.4 + particlePhase * 1.2) * 0.2;
           
-          // Orbital motion around curve points
-          float orbit = sin(uTime * 2.5 + curvePosition) * 0.2;
+          // Breathing effect with variation
+          float breathe = 1.0 + sin(dynamicTime * 0.7 + particlePhase * 0.3) * 0.15;
+          
+          // Dynamic clustering behavior
+          float cluster = sin(curvePosition * 4.0 + dynamicTime * 1.6) * 0.1;
+          
+          // Complex pulsing with individual character
+          float complexity = (wave1 + wave2 + wave3 + wave4 + wave5) / 5.0;
+          float individualPulse = 0.3 + 0.7 * abs(complexity);
+          
+          // Advanced orbital and spiral motion
+          float spiral = sin(dynamicTime * 2.0 + curvePosition * 2.0 + particlePhase) * 0.25;
+          float orbit = cos(dynamicTime * 3.5 + particlePhase * 2.0) * 0.15;
+          
+          // Apply all transformations
           vec3 animatedPosition = position;
-          animatedPosition.x += flow + orbit;
-          animatedPosition.y += sin(uTime + curvePosition * 1.5) * 0.15;
+          animatedPosition.x += flow + drift + spiral + cluster;
+          animatedPosition.y += momentum + orbit + sin(dynamicTime + curvePosition * 2.0 + particlePhase) * 0.2;
+          animatedPosition.z += cos(dynamicTime * 2.2 + particlePhase) * 0.1;
           
-          // Scale with breathing
-          animatedPosition *= breathe;
+          // Scale with breathing and individual variation
+          animatedPosition *= breathe * (0.9 + particleSpeed * 0.2);
           
-          vColor = color;
-          vIntensity = fluidPulse;
+          // Restore original color (without speed data)
+          vColor = vec3(color.r, color.g, color.r); // Use red for blue to maintain white
+          vIntensity = individualPulse;
           
           vec4 mvPosition = modelViewMatrix * vec4(animatedPosition, 1.0);
-          gl_PointSize = size * (300.0 / -mvPosition.z) * fluidPulse * (1.2 + wave3 * 0.3);
+          
+          // Dynamic size with multiple influences
+          float dynamicSize = size * (300.0 / -mvPosition.z) * individualPulse;
+          dynamicSize *= (1.0 + wave3 * 0.5 + sin(dynamicTime * 4.0 + particlePhase) * 0.3);
+          
+          gl_PointSize = dynamicSize;
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
