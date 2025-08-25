@@ -48,19 +48,15 @@
   --brand-dark-violet: #7042D2;
   --brand-white: #FFFFFF;
   --brand-light-pink: #FFD9D1;
-  --brand-sunburst-flame: #65CF83;
-  --brand-crimson-pulse: #126228;
   
   /* Brand Color Variables (HSL for manipulation) */
   --dark-violet: hsl(262, 70%, 54%);
   --light-pink: hsl(13, 100%, 91%);
-  --sunburst-flame: hsl(142, 50%, 60%);
-  --crimson-pulse: hsl(142, 69%, 15%);
   
   /* Brand Gradients */
   --brand-primary-gradient: linear-gradient(135deg, var(--brand-dark-violet) 0%, var(--brand-white) 100%);
   --brand-secondary-gradient: linear-gradient(135deg, var(--brand-dark-violet) 0%, var(--brand-light-pink) 100%);
-  --brand-accent-gradient: linear-gradient(135deg, var(--brand-dark-violet) 0%, var(--brand-sunburst-flame) 50%, var(--brand-crimson-pulse) 100%);
+  --brand-accent-gradient: linear-gradient(135deg, var(--brand-light-pink) 0%, var(--brand-dark-violet) 100%);
   --brand-hover-gradient: linear-gradient(135deg, var(--brand-light-pink) 0%, var(--brand-dark-violet) 100%);
   
   /* Advanced Glass Materials */
@@ -73,7 +69,6 @@
   
   /* Brand Shadows */
   --shadow-brand-violet: 0 0 40px hsl(262 70% 54% / 0.3), 0 0 80px hsl(262 70% 54% / 0.1);
-  --shadow-brand-flame: 0 0 40px hsl(142 50% 60% / 0.3), 0 0 80px hsl(142 50% 60% / 0.1);
   --shadow-brand-pink: 0 0 40px hsl(13 100% 91% / 0.3), 0 0 80px hsl(13 100% 91% / 0.1);
   --shadow-depth: 0 20px 40px rgba(0, 0, 0, 0.4), 0 40px 80px rgba(0, 0, 0, 0.2);
   --shadow-float: 0 10px 20px rgba(0, 0, 0, 0.3), 0 20px 40px rgba(0, 0, 0, 0.1);

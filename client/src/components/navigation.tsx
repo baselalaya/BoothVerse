@@ -48,10 +48,10 @@ export default function Navigation() {
             transition={{ duration: 0.2 }}
             data-testid="logo"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-dark-violet to-brand-sunburst-flame flex items-center justify-center">
-              <Zap className="w-6 h-6 text-brand-white" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-white to-white/80 flex items-center justify-center">
+              <Zap className="w-6 h-6 text-black" />
             </div>
-            <span className="text-2xl font-black brand-text-primary tracking-tight">
+            <span className="text-2xl font-black text-white tracking-tight">
               iBooth.me
             </span>
           </motion.div>
@@ -71,7 +71,7 @@ export default function Navigation() {
               >
                 <span className="relative z-10">{item.name}</span>
                 <motion.div
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-brand-dark-violet to-brand-sunburst-flame rounded-full"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-full"
                   initial={{ scaleX: 0 }}
                   whileHover={{ scaleX: 1 }}
                   transition={{ duration: 0.3 }}
@@ -83,14 +83,10 @@ export default function Navigation() {
           {/* CTA Button */}
           <div className="hidden lg:block">
             <Button 
-              className="group glass-heavy px-8 py-3 font-bold animate-brand-glow border-2 border-brand-dark-violet/50 rounded-xl hover:scale-105 transition-all duration-300"
-              style={{
-                background: 'var(--brand-primary-gradient)',
-                boxShadow: 'var(--shadow-brand-violet)'
-              }}
+              className="group px-8 py-3 font-bold border-2 border-white/30 rounded-xl hover:scale-105 transition-all duration-300 bg-white/10 hover:bg-white/20"
               data-testid="nav-get-started"
             >
-              <span className="text-brand-white font-bold group-hover:text-brand-light-pink">
+              <span className="text-white font-bold">
                 Get Started
               </span>
               <Zap className="ml-2 w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
@@ -141,10 +137,8 @@ export default function Navigation() {
               animate={{ opacity: isOpen ? 1 : 0, y: isOpen ? 0 : 20 }}
               transition={{ duration: 0.3, delay: 0.4 }}
             >
-              <Button className="w-full glass-heavy border-2 border-brand-dark-violet/50 rounded-xl font-bold text-lg py-3" style={{
-                background: 'var(--brand-primary-gradient)'
-              }}>
-                <span className="text-brand-white font-bold">Get Started</span>
+              <Button className="w-full border-2 border-white/30 rounded-xl font-bold text-lg py-3 bg-white/10">
+                <span className="text-white font-bold">Get Started</span>
               </Button>
             </motion.div>
           </div>

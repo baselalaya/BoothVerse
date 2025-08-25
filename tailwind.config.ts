@@ -65,12 +65,8 @@ export default {
         "brand-dark-violet": "var(--brand-dark-violet)",
         "brand-white": "var(--brand-white)",
         "brand-light-pink": "var(--brand-light-pink)",
-        "brand-sunburst-flame": "var(--brand-sunburst-flame)",
-        "brand-crimson-pulse": "var(--brand-crimson-pulse)",
         "dark-violet": "var(--dark-violet)",
         "light-pink": "var(--light-pink)",
-        "sunburst-flame": "var(--sunburst-flame)",
-        "crimson-pulse": "var(--crimson-pulse)",
       },
       fontFamily: {
         sans: ["var(--font-sans)"],

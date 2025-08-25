@@ -159,11 +159,11 @@ export default function HeroSection() {
         >
           <div className="glass-premium px-8 py-4 rounded-full mx-auto w-fit interactive-glow mb-12">
             <div className="flex items-center gap-3">
-              <Sparkles className="text-brand-sunburst-flame animate-pulse-neon" size={20} />
-              <span className="brand-text-primary font-medium text-lg tracking-wider">
+              <Sparkles className="text-white/80 animate-pulse-neon" size={20} />
+              <span className="text-white font-medium text-lg tracking-wider">
                 AWARD-WINNING EXPERIENCES
               </span>
-              <Sparkles className="text-brand-dark-violet animate-pulse-neon" size={20} />
+              <Sparkles className="text-white/80 animate-pulse-neon" size={20} />
             </div>
           </div>
         </motion.div>
@@ -178,31 +178,34 @@ export default function HeroSection() {
             }}
           >
             <motion.span 
-              className="block brand-text-primary brand-glow animate-brand-gradient transform-gpu font-black"
+              className="block text-white font-black transform-gpu"
               variants={wordVariants}
               custom={0}
               style={{
                 transformStyle: 'preserve-3d',
+                textShadow: '0 0 40px rgba(255,255,255,0.3)'
               }}
             >
               Get Your
             </motion.span>
             <motion.span 
-              className="block brand-text-accent brand-glow transform-gpu font-black"
+              className="block text-white font-black transform-gpu"
               variants={wordVariants}
               custom={1}
               style={{
                 transformStyle: 'preserve-3d',
+                textShadow: '0 0 40px rgba(255,255,255,0.3)'
               }}
             >
               Brand
             </motion.span>
             <motion.span 
-              className="block brand-text-primary brand-glow animate-brand-gradient transform-gpu font-black"
+              className="block text-white font-black transform-gpu"
               variants={wordVariants}
               custom={2}
               style={{
                 transformStyle: 'preserve-3d',
+                textShadow: '0 0 40px rgba(255,255,255,0.3)'
               }}
             >
               Noticed
@@ -222,9 +225,9 @@ export default function HeroSection() {
               textShadow: '0 0 20px rgba(255,255,255,0.1)'
             }}
           >
-            Revolutionary <span className="brand-text-accent font-semibold">AI-powered</span> brand activations that create 
-            <span className="brand-text-primary font-semibold"> unforgettable experiences</span> and drive 
-            <span className="brand-text-accent font-semibold">massive engagement</span>
+            Revolutionary <span className="text-white/90 font-semibold">AI-powered</span> brand activations that create 
+            <span className="text-white/90 font-semibold"> unforgettable experiences</span> and drive 
+            <span className="text-white/90 font-semibold">massive engagement</span>
           </p>
         </motion.div>
         
@@ -235,15 +238,11 @@ export default function HeroSection() {
           <motion.div variants={cinematicVariants}>
             <Button 
               size="lg"
-              className="group glass-heavy px-12 py-6 text-xl font-bold hover:scale-105 transition-all duration-500 animate-brand-glow backdrop-blur-2xl border-2 border-brand-dark-violet/50 rounded-2xl"
-              style={{
-                background: 'var(--brand-primary-gradient)',
-                boxShadow: 'var(--shadow-brand-violet)'
-              }}
+              className="group px-12 py-6 text-xl font-bold hover:scale-105 transition-all duration-500 backdrop-blur-2xl border-2 border-white/20 rounded-2xl bg-white/10 hover:bg-white/20"
               data-testid="cta-custom-concept"
             >
               <motion.span 
-                className="text-brand-white font-bold group-hover:text-brand-light-pink"
+                className="text-white font-bold"
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.2 }}
               >
@@ -257,14 +256,10 @@ export default function HeroSection() {
             <Button 
               variant="outline"
               size="lg"
-              className="group glass-premium px-12 py-6 text-xl font-semibold hover:scale-105 transition-all duration-500 border-2 border-brand-sunburst-flame rounded-2xl backdrop-blur-xl"
-              style={{
-                background: 'var(--brand-white)',
-                color: 'var(--brand-dark-violet)'
-              }}
+              className="group px-12 py-6 text-xl font-semibold hover:scale-105 transition-all duration-500 border-2 border-white/30 rounded-2xl backdrop-blur-xl bg-transparent hover:bg-white/10"
               data-testid="cta-consultation"
             >
-              <span className="text-brand-dark-violet group-hover:text-brand-crimson-pulse transition-colors font-semibold">
+              <span className="text-white group-hover:text-white/80 transition-colors font-semibold">
                 Schedule a Virtual Consultation
               </span>
               <Calendar className="ml-3 group-hover:rotate-12 transition-transform duration-300" size={24} />
