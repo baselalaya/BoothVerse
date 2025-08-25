@@ -188,7 +188,7 @@ export default function HeroSection() {
               Get Your
             </motion.span>
             <motion.span 
-              className="block brand-text-accent brand-glow relative transform-gpu font-black"
+              className="block brand-text-accent brand-glow transform-gpu font-black"
               variants={wordVariants}
               custom={1}
               style={{
@@ -196,9 +196,6 @@ export default function HeroSection() {
               }}
             >
               Brand
-              {/* Brand-compliant underline animation with Sunburst Flame */}
-              <div className="absolute bottom-0 left-0 w-full h-3 bg-gradient-to-r from-brand-dark-violet via-brand-sunburst-flame to-brand-crimson-pulse animate-brand-gradient opacity-80 blur-sm" />
-              <div className="absolute bottom-1 left-0 w-full h-1 bg-brand-sunburst-flame animate-brand-gradient" />
             </motion.span>
             <motion.span 
               className="block brand-text-primary brand-glow animate-brand-gradient transform-gpu font-black"
