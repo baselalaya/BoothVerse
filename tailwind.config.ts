@@ -61,7 +61,7 @@ export default {
           border: "var(--sidebar-border)",
           ring: "var(--sidebar-ring)",
         },
-        // iBooth.me Brand Colors
+        // iBoothme Brand Colors
         "brand-dark-violet": "var(--brand-dark-violet)",
         "brand-white": "var(--brand-white)",
         "brand-light-pink": "var(--brand-light-pink)",

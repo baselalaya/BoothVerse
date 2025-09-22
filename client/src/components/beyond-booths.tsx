@@ -7,28 +7,28 @@ const services = [
     id: "production",
     title: "Production",
     description: "End-to-end content creation and brand storytelling",
-    image: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800",
+    video: "/videos/1.mp4",
     gradient: "from-neon-purple/0 to-neon-purple/60"
   },
   {
     id: "hybrid-experiences",
     title: "Hybrid Experiences",
     description: "Seamless blend of physical and digital interactions",
-    image: "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800",
+    video: "/videos/2.mp4",
     gradient: "from-neon-blue/0 to-neon-blue/60"
   },
   {
     id: "gamification",
     title: "Gamification",
     description: "Interactive challenges and competitive experiences",
-    image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800",
+    video: "/videos/3.mp4",
     gradient: "from-neon-green/0 to-neon-green/60"
   },
   {
     id: "web-app",
     title: "Web App",
     description: "Custom digital platforms and brand ecosystems",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800",
+    video: "/videos/4.mp4",
     gradient: "from-orange-500/0 to-orange-500/60"
   }
 ];
@@ -63,55 +63,77 @@ export default function BeyondBooths() {
   return (
     <section 
       ref={ref}
-      className="py-32 bg-gradient-to-b from-black to-gray-900" 
+      className="py-20 sm:py-28 md:py-32 relative overflow-hidden" 
       data-testid="beyond-booths-section"
     >
-      <div className="max-w-7xl mx-auto px-6">
+      {/* Ambient brand-tinted background */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-[#0b0b12] to-black" />
+        <div className="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_15%,rgba(112,66,210,0.12),transparent_60%)]" />
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <motion.div 
-          className="text-center mb-20"
+          className="text-center mb-12 sm:mb-16 md:mb-20"
           initial="hidden"
           animate={isIntersecting ? "visible" : "hidden"}
           variants={cardVariants}
         >
-          <h2 className="text-5xl md:text-6xl font-black mb-6 gradient-text" data-testid="beyond-booths-headline">
+          <h2 className="text-3xl sm:text-4xl md:text-6xl font-black mb-4 sm:mb-6 gradient-text leading-tight" data-testid="beyond-booths-headline">
             Beyond Photo Booths
           </h2>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto" data-testid="beyond-booths-description">
+          <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto px-1" data-testid="beyond-booths-description">
             Complete ecosystem of immersive brand activation solutions
           </p>
         </motion.div>
         
-        <motion.div 
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+        {/* 4-up premium grid */}
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 lg:gap-7"
           initial="hidden"
           animate={isIntersecting ? "visible" : "hidden"}
           variants={containerVariants}
         >
-          {services.map((service) => (
-            <motion.div 
-              key={service.id}
-              className="group relative overflow-hidden rounded-2xl aspect-square cursor-pointer"
-              variants={cardVariants}
-              whileHover={{ scale: prefersReducedMotion ? 1 : 1.05 }}
-              data-testid={`service-card-${service.id}`}
-            >
-              <img 
-                src={service.image} 
-                alt={service.title}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              <div className={`absolute inset-0 bg-gradient-to-r ${service.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-              <div className="absolute bottom-6 left-6 right-6">
-                <h3 className="text-2xl font-bold mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500" data-testid={`service-title-${service.id}`}>
-                  {service.title}
-                </h3>
-                <p className="text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100" data-testid={`service-description-${service.id}`}>
-                  {service.description}
-                </p>
-              </div>
-            </motion.div>
-          ))}
+          {services.map((service) => {
+            return (
+              <motion.div
+                key={service.id}
+                className={`group relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-[10/14] sm:aspect-[10/16] cursor-pointer bg-white/5 border border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.35)]`}
+                variants={cardVariants}
+                whileHover={{ scale: prefersReducedMotion ? 1 : 1.02 }}
+                data-testid={`service-card-${service.id}`}
+              >
+                <video
+                  src={service.video}
+                  className="absolute inset-0 z-0 w-full h-full object-cover object-center transition-transform duration-700 will-change-transform group-hover:scale-105"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                />
+                {/* base and tint overlays */}
+                <div className="absolute inset-0 z-[0] bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                <div className={`absolute inset-0 z-[1] bg-gradient-to-r ${service.gradient} opacity-0 group-hover:opacity-30 transition-opacity duration-500`} />
+                {/* corner accent glows */}
+                <div className="absolute -top-10 -left-10 w-40 sm:w-56 h-40 sm:h-56 rounded-full bg-neon-purple/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                <div className="absolute -bottom-16 -right-16 w-40 sm:w-56 h-40 sm:h-56 rounded-full bg-neon-blue/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                {/* sheen */}
+                <div className="absolute z-[2] -inset-y-12 -left-1/2 w-3/4 sm:w-2/3 rotate-12 bg-gradient-to-r from-white/0 via-white/20 to-white/0 opacity-15 group-hover:opacity-35 transition-opacity duration-500" />
+                {/* content */}
+                <div className="absolute z-[3] bottom-5 sm:bottom-6 left-5 sm:left-6 right-5 sm:right-6">
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold mb-1.5 sm:mb-2 translate-y-3 group-hover:translate-y-0 transition-transform duration-500 drop-shadow-[0_6px_24px_rgba(0,0,0,0.45)]" data-testid={`service-title-${service.id}`}>
+                    {service.title}
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-100/90 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100" data-testid={`service-description-${service.id}`}>
+                    {service.description}
+                  </p>
+                </div>
+                <div className="absolute z-[3] top-3 sm:top-4 right-3 sm:right-4 px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-white/10 text-white/90 border border-white/20 backdrop-blur-sm">
+                  Explore
+                </div>
+              </motion.div>
+            );
+          })}
         </motion.div>
       </div>
     </section>

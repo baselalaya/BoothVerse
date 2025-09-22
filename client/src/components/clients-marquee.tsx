@@ -3,11 +3,76 @@ import { Badge } from "@/components/ui/badge";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 
-const brands = [
-  "Apple", "Google", "Nike", "Coca-Cola", "Samsung", 
-  "Tesla", "Netflix", "Spotify", "Amazon", "Microsoft",
-  "Adobe", "Intel", "IBM", "Oracle", "PayPal"
+type PartnerLogo = {
+  alt: string;
+  webp: string;
+};
+
+// Partners logos sourced from client/public/partners
+const partners: PartnerLogo[] = [
+  { alt: "Adidas", webp: "/partners/adidas-logo.webp" },
+  { alt: "Dell", webp: "/partners/dell-logo.webp" },
+  { alt: "Nike", webp: "/partners/nike-logo.webp" },
+  { alt: "Philips", webp: "/partners/philip-logo.webp" },
+  { alt: "Samsung", webp: "/partners/samsung-logo.webp" },
+  { alt: "Saudi Electricity", webp: "/partners/sep-logo.webp" },
+  { alt: "TikTok", webp: "/partners/tik-tok-logo.webp" },
 ];
+
+function Logo({ item }: { item: PartnerLogo }) {
+  return (
+    <div className="inline-block mx-4 sm:mx-10 md:mx-20 opacity-90 hover:opacity-100 transition-opacity duration-300">
+      <div className="rounded-md bg-white px-4 py-2 shadow-sm">
+        <img
+          src={item.webp}
+          alt={item.alt}
+          aria-label={`${item.alt} logo`}
+          className="h-8 sm:h-10 md:h-12 min-w-[40px] sm:min-w-[56px] w-auto object-contain block mix-blend-normal opacity-100 filter-none"
+          loading="lazy"
+          draggable={false}
+          onError={(e: any) => {
+            // Keep row height if an asset fails
+            e.currentTarget.style.display = 'inline-block';
+            e.currentTarget.style.height = '1.75rem';
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function MarqueeRow({ items, reverse = false }: { items: PartnerLogo[]; reverse?: boolean }) {
+  const prefersReducedMotion = useReducedMotion();
+  // Duplicate for seamless loop
+  const track = [...items, ...items];
+  return (
+    <div
+      className={`flex items-center whitespace-nowrap will-change-transform min-h-[2.75rem] sm:min-h-[3rem] relative z-10 ${
+        prefersReducedMotion ? '' : 'animate-marquee-centered sm:hover:pause'
+      }`}
+      data-testid="marquee-container"
+      onMouseEnter={(e) => {
+        if (!prefersReducedMotion) e.currentTarget.style.animationPlayState = 'paused';
+      }}
+      onMouseLeave={(e) => {
+        if (!prefersReducedMotion) e.currentTarget.style.animationPlayState = 'running';
+      }}
+      onPointerDown={(e) => {
+        if (!prefersReducedMotion) (e.currentTarget as HTMLElement).style.animationPlayState = 'paused';
+      }}
+      onPointerUp={(e) => {
+        if (!prefersReducedMotion) (e.currentTarget as HTMLElement).style.animationPlayState = 'running';
+      }}
+      onPointerCancel={(e) => {
+        if (!prefersReducedMotion) (e.currentTarget as HTMLElement).style.animationPlayState = 'running';
+      }}
+    >
+      {track.map((p, index) => (
+        <Logo key={`${p.alt}-${index}`} item={p} />
+      ))}
+    </div>
+  );
+}
 
 export default function ClientsMarquee() {
   const prefersReducedMotion = useReducedMotion();
@@ -28,20 +93,20 @@ export default function ClientsMarquee() {
   return (
     <section 
       ref={ref}
-      className="py-32 bg-gradient-to-b from-gray-900 to-black overflow-hidden" 
+      className="py-16 sm:py-24 md:py-32 bg-gradient-to-b from-white to-gray-100 overflow-hidden" 
       data-testid="clients-marquee-section"
     >
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <motion.div 
-          className="text-center mb-20"
+          className="text-center mb-10 sm:mb-14 md:mb-20"
           initial="hidden"
           animate={isIntersecting ? "visible" : "hidden"}
           variants={fadeUpVariants}
         >
-          <h2 className="text-4xl md:text-5xl font-black mb-6 gradient-text" data-testid="clients-headline">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-3 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 leading-tight" data-testid="clients-headline">
             Trusted by Global Brands
           </h2>
-          <p className="text-xl text-gray-400" data-testid="clients-description">
+          <p className="text-base sm:text-lg text-gray-600 px-1" data-testid="clients-description">
             Join the world's most innovative companies creating unforgettable experiences
           </p>
         </motion.div>
@@ -52,33 +117,11 @@ export default function ClientsMarquee() {
           animate={isIntersecting ? "visible" : "hidden"}
           variants={fadeUpVariants}
         >
-          <div 
-            className={`flex ${prefersReducedMotion ? '' : 'animate-marquee hover:pause'}`}
-            data-testid="marquee-container"
-            onMouseEnter={(e) => {
-              if (!prefersReducedMotion) {
-                e.currentTarget.style.animationPlayState = 'paused';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!prefersReducedMotion) {
-                e.currentTarget.style.animationPlayState = 'running';
-              }
-            }}
-          >
-            {/* Double the brands for seamless loop */}
-            {[...brands, ...brands].map((brand, index) => (
-              <div key={`${brand}-${index}`} className="flex-shrink-0 mx-8">
-                <Badge 
-                  className="glass-effect px-6 py-4 rounded-full hover:scale-110 transition-all duration-300 hover:animate-glow-pulse cursor-pointer"
-                  data-testid={`brand-logo-${brand.toLowerCase()}`}
-                >
-                  <span className="text-xl font-bold gradient-text">
-                    {brand}
-                  </span>
-                </Badge>
-              </div>
-            ))}
+          {/* Light background (chips handle contrast) */}
+          <div className="relative rounded-xl">
+            <div className="relative z-10 py-2">
+              <MarqueeRow items={partners} />
+            </div>
           </div>
         </motion.div>
       </div>

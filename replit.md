@@ -1,6 +1,6 @@
 # Overview
 
-This is a modern full-stack web application for iBooth.me, a brand activation and interactive experience company. The project showcases an immersive, cinematic website with advanced UI components, 3D elements, and micro-animations. It's built as a sophisticated marketing platform to demonstrate the company's cutting-edge photo booth technology, AI capabilities, and brand activation services.
+This is a modern full-stack web application for iBoothme, a brand activation and interactive experience company. The project showcases an immersive, cinematic website with advanced UI components, 3D elements, and micro-animations. It's built as a sophisticated marketing platform to demonstrate the company's cutting-edge photo booth technology, AI capabilities, and brand activation services.
 
 The application features a comprehensive landing page with multiple sections including hero presentation, product showcases, technology demonstrations, and client testimonials, all designed with premium visual effects and interactions.
 

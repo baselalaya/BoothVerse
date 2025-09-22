@@ -9,48 +9,120 @@ import CTASplit from "@/components/cta-split";
 import AnalyticsSection from "@/components/analytics-section";
 import ClientsMarquee from "@/components/clients-marquee";
 import FooterSection from "@/components/footer-section";
-import StickyParticlesBackground from "@/components/sticky-particles-background";
+import ThreeDShape from "@/components/three-d-shape";
+import React, { useState, useEffect, lazy, Suspense } from 'react';
+import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
+const RobotTaliaViewer = lazy(() => import("@/components/robot-talia-viewer"));
 
 export default function Home() {
+  const [fadeHero, setFadeHero] = useState(false);
+  const [fadeBrand, setFadeBrand] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const heroSection = document.querySelector('[data-section="hero"]');
+    const brandSection = document.querySelector('[data-section="brand-activation"]');
+
+    if (!heroSection || !brandSection) return;
+
+    const observerOptions = { root: null, threshold: Array.from({ length: 101 }, (_, i) => i / 100) };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.target === heroSection) {
+          setFadeHero(entry.intersectionRatio < 0.7);
+        } else if (entry.target === brandSection) {
+          setFadeBrand(entry.intersectionRatio > 0.3);
+        }
+      });
+    }, observerOptions);
+
+    observer.observe(heroSection);
+    observer.observe(brandSection);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-black text-white relative" data-testid="home-page">
-      {/* Sticky 3D Background */}
-      <StickyParticlesBackground />
-      
-      {/* Page Sections */}
+    <>
+      <div className="absolute inset-0 z-10 pointer-events-none">
+        <ThreeDShape />
+        {/* Readability overlay to blend background with content */}
+        <div className="absolute inset-0 mix-blend-multiply bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
+      </div>
       <div className="relative z-10">
+        <div className="min-h-screen text-white" data-testid="home-page">
         <Navigation />
-        <div data-section="hero">
+        <div
+          data-section="hero"
+          className={`relative transition-opacity duration-1000 ${fadeHero ? 'opacity-30' : 'opacity-100'}`}
+        >
           <HeroSection />
         </div>
-        <div data-section="brand-activation">
-          <BrandActivation />
+        <div
+          data-section="brand-activation"
+          className={`relative overflow-hidden transition-opacity duration-1000 flex items-center justify-center px-6 py-8 md:py-12 max-w-full mx-auto bg-opacity-50 backdrop-blur-md ${fadeBrand ? 'opacity-100' : 'opacity-0'}`}
+          style={{ minHeight: '300px' }}
+        >
+          <video
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ zIndex: -2 }}
+            src="/video/iboothme_f.mp4"
+            autoPlay
+            loop
+            muted
+            preload="metadata"
+            playsInline
+          />
+          <div className="relative max-w-4xl mx-auto">
+            <BrandActivation />
         </div>
-        <div data-section="products">
+        </div>
+        <div data-section="products" className="py-12 md:py-16">
           <ProductsSection />
         </div>
-        <div data-section="meet-talia">
+          <div data-section="meet-talia" className="py-12 md:py-16">
           <MeetTalia />
         </div>
-        <div data-section="beyond-booths">
+        {/* Interactive 3D — Robot Talia (lazy-loaded on view) */}
+        <div data-section="beyond-booths" className="py-12 md:py-16">
           <BeyondBooths />
         </div>
-        <div data-section="stats">
+        <div data-section="stats" className="py-12 md:py-16">
           <StatsSection />
         </div>
-        <div data-section="cta">
+        <div data-section="cta" className="py-12 md:py-16">
           <CTASplit />
         </div>
-        <div data-section="analytics">
+        <div data-section="analytics" className="py-12 md:py-16">
           <AnalyticsSection />
         </div>
-        <div data-section="clients">
+        <div data-section="clients" className="py-12 md:py-16">
           <ClientsMarquee />
         </div>
         <div data-section="footer">
           <FooterSection />
         </div>
       </div>
+    </div>
+    </>
+  );
+}
+
+function LazyRobot() {
+  const [ref, visible] = useIntersectionObserver({ root: null, threshold: 0.15 });
+  return (
+    <div ref={ref as any}>
+      {visible ? (
+        <Suspense fallback={<div className="w-full h-[520px] rounded-3xl border border-white/10 bg-black/30 animate-pulse" />}> 
+          <RobotTaliaViewer src="/models/robot-talia.glb" className="w-full h-[520px] rounded-3xl border border-white/10 bg-gradient-to-b from-black/60 to-black/30" />
+        </Suspense>
+      ) : (
+        <div className="w-full h-[520px] rounded-3xl border border-white/10 bg-black/30" />
+      )}
     </div>
   );
 }

@@ -1,21 +1,36 @@
 import { useEffect, useRef } from "react";
-import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import * as THREE from "three";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 interface InfinityShapeProps {
   className?: string;
+  shapeFrom?: "infinity" | "questionMark" | "ring" | "galaxy";
+  shapeTo?: "infinity" | "questionMark" | "ring" | "galaxy";
+  morphProgress?: number;
 }
 
-export default function InfinityShape({ className }: InfinityShapeProps) {
+class InfinityCurve extends THREE.Curve<THREE.Vector3> {
+  getPoint(t: number) {
+    const scale = 2.5;
+    const angle = t * Math.PI * 4;
+    const denom = 1 + Math.sin(angle) * Math.sin(angle);
+    const x = scale * Math.cos(angle) / denom;
+    const y = scale * Math.sin(angle) * Math.cos(angle) / denom;
+    return new THREE.Vector3(x, y, 0);
+  }
+}
+
+export default function InfinityShape({ className, morphProgress = 0 }: InfinityShapeProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const sceneRef = useRef<{
     scene: THREE.Scene | null;
     camera: THREE.PerspectiveCamera | null;
     renderer: THREE.WebGLRenderer | null;
-    infinity: THREE.Mesh | null;
+    mesh: THREE.Mesh | null;
+    material: THREE.MeshPhysicalMaterial | null;
     animationId: number | null;
-  }>({ scene: null, camera: null, renderer: null, infinity: null, animationId: null });
+  }>({ scene: null, camera: null, renderer: null, mesh: null, material: null, animationId: null });
 
   useEffect(() => {
     if (!mountRef.current || prefersReducedMotion) {
@@ -23,130 +38,88 @@ export default function InfinityShape({ className }: InfinityShapeProps) {
     }
 
     const container = mountRef.current;
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 0, 15);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 3)); // increased max DPR from 2 to 3
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1;
+    renderer.setClearColor(0x000000, 0);
+    renderer.physicallyCorrectLights = true; // enable physically correct lighting
+
     container.appendChild(renderer.domElement);
 
-    // Create infinity curve path with perfect proportions
-    class InfinityCurve extends THREE.Curve<THREE.Vector3> {
-      getPoint(t: number): THREE.Vector3 {
-        const scale = 2.5;
-        const angle = t * Math.PI * 4; // Full infinity loop
-        
-        // Proper lemniscate equations for correct proportions
-        const denominator = 1 + Math.sin(angle) * Math.sin(angle);
-        const x = scale * Math.cos(angle) / denominator;
-        const y = scale * Math.sin(angle) * Math.cos(angle) / denominator;
-        const z = 0;
-
-        return new THREE.Vector3(x, y, z);
-      }
-    }
-
     const curve = new InfinityCurve();
-    
-    // Create high-quality tube geometry with more detail
-    const tubeGeometry = new THREE.TubeGeometry(curve, 300, 0.4, 20, false);
-    
-    // Create chrome/metallic material to match reference
+    // Increased segments and radius for sharper and bolder geometry
+    const geometry = new THREE.TubeGeometry(curve, 600, 0.4, 72, true); // radius 0.4 from 0.3, radialSegments 72 from 48
+
     const material = new THREE.MeshPhysicalMaterial({
-      color: 0xf8f8f8,
-      metalness: 0.9,
-      roughness: 0.1,
-      reflectivity: 1.0,
-      envMapIntensity: 1.5,
+      color: 0xe0e0f0,
+      metalness: 0.25,
+      roughness: 0.2, // increased roughness from 0.1
+      transmission: 0.2, // reduced transmission from 0.8 for less blur
+      thickness: 0.8,
       clearcoat: 1.0,
-      clearcoatRoughness: 0.1,
+      clearcoatRoughness: 0.05,
+      envMapIntensity: 1.2,
+      reflectivity: 0.9,
+      opacity: 1.0,
+      transparent: true
     });
 
-    const infinityMesh = new THREE.Mesh(tubeGeometry, material);
-    scene.add(infinityMesh);
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    scene.add(mesh);
 
-    // Enhanced lighting setup to match the dramatic reference image
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
-    scene.add(ambientLight);
-
-    // Key light - main dramatic lighting from top-right
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    keyLight.position.set(4, 4, 3);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    keyLight.position.set(5, 10, 7);
     keyLight.castShadow = true;
     scene.add(keyLight);
 
-    // Fill light - softer light from left to fill shadows
-    const fillLight = new THREE.DirectionalLight(0xffffff, 0.6);
-    fillLight.position.set(-3, 2, 2);
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    fillLight.position.set(-5, 5, 5);
     scene.add(fillLight);
 
-    // Rim light - creates the bright edges like in reference
-    const rimLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    rimLight.position.set(0, -2, 4);
-    scene.add(rimLight);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    scene.add(ambientLight);
 
-    // Back light for depth
-    const backLight = new THREE.DirectionalLight(0xffffff, 0.4);
-    backLight.position.set(0, 0, -4);
-    scene.add(backLight);
-
-    // Position camera for perfect viewing angle
-    camera.position.z = 7;
-    camera.position.y = 0.5;
-    camera.position.x = 0;
-    camera.lookAt(0, 0, 0);
-
-    // Store references
-    sceneRef.current = { scene, camera, renderer, infinity: infinityMesh, animationId: null };
-
-    // Static render - no rotation animation
-    const render = () => {
-      if (!sceneRef.current) return;
+    let theta = 0;
+    const animate = () => {
+      theta += 0.005;
+      mesh.rotation.y = theta;
       renderer.render(scene, camera);
+      sceneRef.current.animationId = requestAnimationFrame(animate);
     };
 
-    // Initial render
-    render();
+    animate();
 
-    // Handle resize
-    const handleResize = () => {
-      if (!sceneRef.current) return;
-      
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      
-      sceneRef.current.camera!.aspect = width / height;
-      sceneRef.current.camera!.updateProjectionMatrix();
-      sceneRef.current.renderer!.setSize(width, height);
-      render(); // Re-render on resize
+    const onResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', onResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      
+      window.removeEventListener('resize', onResize);
+      if (sceneRef.current.animationId) {
+        cancelAnimationFrame(sceneRef.current.animationId);
+      }
       if (container && renderer.domElement) {
         container.removeChild(renderer.domElement);
       }
-      
-      tubeGeometry.dispose();
+      geometry.dispose();
       material.dispose();
       renderer.dispose();
     };
   }, [prefersReducedMotion]);
 
-  return (
-    <div 
-      ref={mountRef}
-      className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}
-      data-testid="infinity-shape"
-    />
-  );
+  return <div ref={mountRef} className={`absolute inset-0 w-full h-full ${className ?? ""}`} data-testid="infinity-shape-liquid-glass" />;
 }
+

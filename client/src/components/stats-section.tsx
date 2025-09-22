@@ -12,11 +12,20 @@ function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref);
   const motionValue = useMotionValue(0);
-  const springValue = useSpring(motionValue, { duration: 2000 });
+  // Use a spring that does not overshoot; clamp to target and limit bounce
+  const springValue = useSpring(motionValue, {
+    duration: 2000,
+    bounce: 0,
+    damping: 40,
+    stiffness: 200,
+  } as any);
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     if (isInView && !prefersReducedMotion) {
+      // Reset to 0 before animating to avoid residual overshoot
+      motionValue.set(0);
+      // Animate up to the target value
       motionValue.set(value);
     } else if (prefersReducedMotion) {
       springValue.set(value);
@@ -25,8 +34,10 @@ function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
 
   useEffect(() => {
     return springValue.on("change", (latest) => {
+      // Clamp to [0, value] to avoid visual overshoot (e.g., >100%)
+      const clamped = Math.max(0, Math.min(latest, value));
       if (ref.current) {
-        ref.current.textContent = Math.round(latest).toString() + suffix;
+        ref.current.textContent = Math.round(clamped).toString() + suffix;
       }
     });
   }, [springValue, suffix]);
@@ -62,21 +73,16 @@ export default function StatsSection() {
   };
 
   return (
-    <section 
-      ref={ref}
-      className="py-32 relative overflow-hidden" 
-      data-testid="stats-section"
-    >
-      <div className="absolute inset-0 bg-gradient-to-b from-gray-900 to-black" />
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute w-32 h-32 bg-gradient-to-r from-neon-purple/50 to-transparent rounded-full animate-pulse blur-xl top-20 left-10" />
-        <div className="absolute w-24 h-24 bg-gradient-to-r from-neon-blue/50 to-transparent rounded-full animate-pulse blur-xl top-60 right-15" style={{animationDelay: '2s'}} />
-        <div className="absolute w-16 h-16 bg-gradient-to-r from-neon-green/50 to-transparent rounded-full animate-pulse blur-xl top-40 left-[70%]" style={{animationDelay: '4s'}} />
+    <section ref={ref} className="py-16 sm:py-20 md:py-32 relative overflow-hidden" data-testid="stats-section">
+      {/* Ambient background aligned with site visuals */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-[#0b0b12] to-black" />
+        <div className="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_20%,rgba(112,66,210,0.12),transparent_60%)]" />
       </div>
-      
-      <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
-        <motion.h2 
-          className="text-4xl md:text-5xl font-black mb-20 gradient-text"
+
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 text-center">
+        <motion.h2
+          className="text-3xl sm:text-4xl md:text-5xl font-black mb-3 sm:mb-4 gradient-text leading-tight"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={itemVariants}
@@ -84,21 +90,33 @@ export default function StatsSection() {
         >
           Proven Impact
         </motion.h2>
-        
-        <motion.div 
-          className="grid md:grid-cols-3 gap-12"
+        <motion.p
+          className="text-sm sm:text-base md:text-lg text-white/70 max-w-2xl mx-auto mb-10 sm:mb-12 md:mb-14 px-1"
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={itemVariants}
+        >
+          Real performance across social, engagement, and activation scale.
+        </motion.p>
+
+        {/* Stat cards with premium shells */}
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={containerVariants}
         >
           {stats.map((stat) => (
-            <motion.div key={stat.id} className="group" variants={itemVariants}>
-              <div className="text-6xl md:text-8xl font-black gradient-text neon-glow mb-4" data-testid={`stat-value-${stat.id}`}>
-                <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+            <motion.div key={stat.id} variants={itemVariants}>
+              <div className="relative rounded-2xl sm:rounded-3xl lg:rounded-[2.5rem] border border-white/10 bg-white/5 p-6 sm:p-7 md:p-8 text-center overflow-hidden transition-all duration-500 hover:bg-gradient-to-br hover:from-white/10 hover:to-white/5 hover:border-white/20">
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120px_60px_at_50%_0%,rgba(255,255,255,0.12),transparent)]" />
+                <div className="text-4xl sm:text-5xl md:text-6xl font-black mb-1.5 sm:mb-2 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400" data-testid={`stat-value-${stat.id}`}>
+                  <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                </div>
+                <p className="text-sm sm:text-base md:text-lg text-white/75 tracking-wide" data-testid={`stat-label-${stat.id}`}>
+                  {stat.label}
+                </p>
               </div>
-              <p className="text-xl text-gray-300 group-hover:text-white transition-colors duration-300" data-testid={`stat-label-${stat.id}`}>
-                {stat.label}
-              </p>
             </motion.div>
           ))}
         </motion.div>

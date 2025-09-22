@@ -1,12 +1,17 @@
 import { motion } from "framer-motion";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Grid3X3, Play, ChevronLeft, ChevronRight } from "lucide-react";
+import CTAGroup from "@/components/ui/cta-group";
+import { ArrowRight, Grid3X3, Play } from "lucide-react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
-import useEmblaCarousel from 'embla-carousel-react';
-import { useCallback } from "react";
+import { useEffect, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { EffectCoverflow, Autoplay, Navigation as SwiperNavigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/effect-coverflow";
 
-const products = [
+const defaultProducts = [
   {
     id: "holo-booth",
     title: "AI-Powered Experiences",
@@ -64,23 +69,33 @@ const products = [
 ];
 
 export default function ProductsSection() {
+  const [products, setProducts] = useState(defaultProducts);
+
+  useEffect(() => {
+    let isMounted = true;
+    const url =
+      (typeof window !== 'undefined' && (window as any).__PRODUCTS_URL__) ||
+      "/data/products.json";
+    fetch(url, { cache: 'no-store' })
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        if (Array.isArray(data) && data.length && isMounted) {
+          setProducts(data);
+        }
+      })
+      .catch(() => {
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const prefersReducedMotion = useReducedMotion();
   const [ref, isIntersecting] = useIntersectionObserver();
-  const [emblaRef, emblaApi] = useEmblaCarousel({ 
-    loop: true,
-    dragFree: true,
-    containScroll: 'trimSnaps',
-    startIndex: 0,
-    skipSnaps: false
-  });
-
-  const scrollPrev = useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev()
-  }, [emblaApi]);
-
-  const scrollNext = useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext()
-  }, [emblaApi]);
+  // Swiper coverflow used for consistency across pages
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -111,7 +126,7 @@ export default function ProductsSection() {
       data-testid="products-section"
       data-section="products"
     >
-      <div className="relative max-w-7xl mx-auto px-6">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <motion.div 
           className="text-center mb-16"
@@ -127,101 +142,105 @@ export default function ProductsSection() {
           </motion.div>
           
           <motion.h2
-            className="text-5xl md:text-6xl font-bold text-white mb-4"
+            className="text-3xl sm:text-4xl md:text-6xl font-bold text-white mb-3 md:mb-4 leading-tight"
             variants={cardVariants}
             data-testid="products-headline"
           >
-            More Than Photo Booths
+            Our Engagement Arsenal
           </motion.h2>
           
           <motion.p
             variants={cardVariants}
-            className="text-xl text-white/80 max-w-2xl mx-auto"
+            className="text-base sm:text-lg md:text-xl text-white/80 max-w-2xl mx-auto px-1"
             data-testid="products-description"
           >
-            Immersive experiences that create unforgettable brand moments
+Award-winning installations that transform events into unforgettable experiences.
+
+
           </motion.p>
         </motion.div>
 
-        {/* Navigation */}
-        <div className="flex justify-between items-center mb-8">
-          <motion.button
-            variants={cardVariants}
-            onClick={scrollPrev}
-            className="group p-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300"
-            data-testid="carousel-prev"
-          >
-            <ChevronLeft className="w-6 h-6 text-white group-hover:text-white/80" />
-          </motion.button>
-          
-          <motion.button
-            variants={cardVariants}
-            onClick={scrollNext}
-            className="group p-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300"
-            data-testid="carousel-next"
-          >
-            <ChevronRight className="w-6 h-6 text-white group-hover:text-white/80" />
-          </motion.button>
-        </div>
+
         
         {/* Vertical Cards Carousel */}
         <motion.div 
-          className="relative mb-16"
+          className="relative mb-10 md:mb-16"
           initial="hidden"
           animate={isIntersecting ? "visible" : "hidden"}
           variants={containerVariants}
         >
-          <motion.div 
-            ref={emblaRef}
-            className="overflow-hidden rounded-3xl"
-            variants={cardVariants}
-          >
-            <div className="flex gap-4 pl-4 pr-4">
+          <motion.div variants={cardVariants}>
+            <div className="relative h-[360px] sm:h-[420px] md:h-[480px]">
+              <button
+                type="button"
+                aria-label="Previous"
+                className="products-prev absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-30 h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-white/10 border border-white/20 backdrop-blur grid place-items-center hover:bg-white/20 transition"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-white/80">
+                  <path d="M15 18l-6-6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                aria-label="Next"
+                className="products-next absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-30 h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-white/10 border border-white/20 backdrop-blur grid place-items-center hover:bg-white/20 transition"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-white/80">
+                  <path d="M9 18l6-6-6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              <Swiper
+                modules={[EffectCoverflow, Autoplay, SwiperNavigation]}
+                effect="coverflow"
+                centeredSlides
+                slidesPerView="auto"
+                spaceBetween={16}
+                autoplay={{ delay: 4500, disableOnInteraction: false, pauseOnMouseEnter: true }}
+                coverflowEffect={{ rotate: 14, stretch: 0, depth: 120, modifier: 1, scale: 0.9, slideShadows: false }}
+                navigation={{ prevEl: '.products-prev', nextEl: '.products-next' }}
+                className="absolute inset-0 !px-6 sm:!px-10 md:!px-12 !overflow-visible"
+              >
               {products.map((product) => (
-                <div key={product.id} className="flex-[0_0_320px] group cursor-pointer">
-                  <div 
-                    className={`
-                      relative h-[600px] rounded-3xl overflow-hidden
-                      bg-gradient-to-br ${product.bgColor}
-                      transform hover:scale-[1.02] transition-all duration-500
-                      shadow-xl hover:shadow-2xl
-                    `}
-                    data-testid={`product-card-${product.id}`}
-                  >
-                    {/* Full Background Image */}
-                    <div 
-                      className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                      style={{
-                        backgroundImage: `linear-gradient(135deg, ${product.bgColor.includes('gray-900') ? 'rgba(17,24,39,0.8)' : 'rgba(255,255,255,0.1)'} 0%, ${product.bgColor.includes('gray-900') ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.05)'} 100%), url('${product.image}')`
+                <SwiperSlide key={product.id} className="!w-[min(78vw,320px)] sm:!w-[min(70vw,360px)] md:!w-[min(38vw,360px)] xl:!w-[min(28vw,380px)] !min-w-[240px] sm:!min-w-[260px] md:!min-w-[320px]">
+                  <div className="group cursor-pointer relative z-10">
+                    <motion.div
+                      whileHover={{
+                        scale: 1.04,
+                        boxShadow: "0 16px 48px 0 rgba(80,130,255,0.17), 0 1.5px 23px 0 rgba(0,0,0,0.08)",
+                        transition: { type: "spring", stiffness: 275, damping: 23 }
                       }}
-                    />
-                    
-                    {/* Content Overlay */}
-                    <div className="relative z-10 p-8 h-full flex flex-col justify-between">
-                      <div className="space-y-4">
-                        <p className={`text-sm font-medium ${product.isDarkImage ? 'text-white/90' : 'text-gray-900/80'}`}>
-                          {product.title}
-                        </p>
-                        <h3 className={`text-4xl font-bold leading-tight ${product.isDarkImage ? 'text-white' : 'text-gray-900'}`}>
-                          {product.subtitle}
-                        </h3>
-                        <p className={`text-xl leading-relaxed ${product.isDarkImage ? 'text-white/95' : 'text-gray-900/90'}`}>
-                          {product.description}
-                        </p>
+                      className={`relative h-[360px] sm:h-[420px] md:h-[480px] rounded-[28px] sm:rounded-[32px] md:rounded-[34px] overflow-hidden transform-gpu will-change-transform bg-gradient-to-br ${product.bgColor} shadow-2xl transition-all duration-700 ease-[cubic-bezier(.77,0,.18,1)]`}
+                      data-testid={`product-card-${product.id}`}
+                    >
+                      <div
+                        className="absolute inset-0 w-full h-full bg-cover bg-center transform-gpu will-change-transform"
+                        style={{ backgroundImage: `url('${product.image}')` }}
+                      />
+                      <div className="absolute inset-0 z-10 pointer-events-none transform-gpu will-change-transform" style={{ backfaceVisibility: 'hidden' }}>
+                        <div className="absolute inset-0 bg-black/20" />
+                        <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.18)_0%,transparent_28%,transparent_72%,rgba(255,255,255,0.09)_100%)] mix-blend-overlay" />
+                        <div className="absolute inset-0 bg-gradient-radial from-black/45 via-transparent to-black/65" />
+                        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black/70 to-transparent" />
+                        <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-black/40 to-transparent" />
                       </div>
-
-                      {/* Plus icon */}
-                      <div className="flex justify-end">
-                        <div className="w-8 h-8 rounded-full bg-black/20 backdrop-blur-sm border border-white/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                          </svg>
+                      <div className="relative z-20 pt-36 sm:pt-44 md:pt-48 pb-6 sm:pb-8 px-5 sm:px-8 flex flex-col h-full" style={{ transform: 'translateZ(0)' }}>
+                        <div className="space-y-2 drop-shadow-[0_0_18px_rgba(0,0,0,0.16)] mt-auto">
+                          <span className="uppercase tracking-[0.14em] sm:tracking-[0.19em] font-medium text-[10px] sm:text-xs px-2.5 py-1 bg-white/15 rounded-full backdrop-blur-sm text-white/90 shadow-white/30">
+                            {product.title}
+                          </span>
+                          <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold leading-tight tracking-[-0.6px] sm:tracking-[-1.2px] font-display text-white">
+                            <span className="drop-shadow-glow">{product.subtitle}</span>
+                          </h3>
+                          <p className="text-sm sm:text-base md:text-xl leading-relaxed font-medium text-white/92 line-clamp-2">
+                            {product.description}
+                          </p>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   </div>
-                </div>
+                </SwiperSlide>
               ))}
+              </Swiper>
             </div>
           </motion.div>
         </motion.div>
@@ -233,25 +252,32 @@ export default function ProductsSection() {
           animate={isIntersecting ? "visible" : "hidden"}
           variants={cardVariants}
         >
-          <div className="flex flex-col md:flex-row gap-4 justify-center">
-            <Button 
-              variant="outline"
+          <CTAGroup breakpoint="md" className="gap-3 md:gap-4 justify-center px-4 max-w-2xl mx-auto">
+            <Link href="/products">
+              <a className="inline-block w-full md:w-auto">
+                <Button 
+                  variant="creativePrimary"
+                  size="lg"
+                  className="group w-full md:w-auto text-base sm:text-lg py-6"
+                  data-testid="view-all-models"
+                >
+                  <span className="text-white">View All Booths</span>
+                </Button>
+              </a>
+            </Link>
+
+            <Button
               size="lg"
-              className="group px-8 py-4 text-lg font-semibold hover:scale-105 transition-all duration-300 backdrop-blur-xl border border-white/20 rounded-2xl bg-white/10 hover:bg-white/15"
-              data-testid="view-all-models"
-            >
-              <span className="text-white">View All Models</span>
-              <Grid3X3 className="ml-2 w-5 h-5" />
-            </Button>
-            
-            <Button 
-              size="lg"
-              className="group px-8 py-4 text-lg font-semibold hover:scale-105 transition-all duration-300 backdrop-blur-xl border border-white/20 rounded-2xl bg-white/15 hover:bg-white/20"
+              variant="creativeSecondary"
+              className="group w-full md:w-auto text-base sm:text-lg py-6"
               data-testid="product-lineup-video"
             >
-              <span className="text-white">Product Lineup Video</span>
+              <span className="text-white">Product Lineup Video 2025</span>
               <Play className="ml-2 w-5 h-5" />
             </Button>
+          </CTAGroup>
+          <div className="text-center pt-2 px-4 max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base text-white/80">Explore our complete product range or watch our showcase video</p>
           </div>
         </motion.div>
       </div>
