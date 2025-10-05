@@ -7,7 +7,7 @@ import { createPortal } from "react-dom";
 import { useLocation } from "wouter";
 import { applySeoToHead, fetchSeoConfig } from "@/lib/seoOverride";
 import { apiRequest } from "@/lib/queryClient";
-import { getStoredUtm } from "@/lib/utm";
+import { getEffectiveUtm } from "@/lib/utm";
 import { useToast } from "@/hooks/use-toast";
 import { trackEvent } from "@/lib/ga";
 import { validateLeadBasics } from "@/lib/validation";
@@ -363,10 +363,8 @@ export default function AiEffectsGallery() {
                       }
                       try {
                         setSending(true);
-                        const params = new URLSearchParams(
-                          window.location.search
-                        );
-                        const stored = getStoredUtm?.();
+                        const params = new URLSearchParams(window.location.search);
+                        const eff = getEffectiveUtm?.();
                         const packed = {
                           ideaTitle: open?.title,
                           ideaTag: open?.tag,
@@ -385,30 +383,13 @@ export default function AiEffectsGallery() {
                           product: open?.title,
                           message: `[extra] ${JSON.stringify(packed)}`,
                           source_path: window.location.pathname,
-                          utm_source:
-                            params.get("utm_source") ||
-                            stored?.utm_source ||
-                            undefined,
-                          utm_medium:
-                            params.get("utm_medium") ||
-                            stored?.utm_medium ||
-                            undefined,
-                          utm_campaign:
-                            params.get("utm_campaign") ||
-                            stored?.utm_campaign ||
-                            undefined,
-                          utm_term:
-                            params.get("utm_term") ||
-                            stored?.utm_term ||
-                            undefined,
-                          utm_content:
-                            params.get("utm_content") ||
-                            stored?.utm_content ||
-                            undefined,
-                          gclid:
-                            params.get("gclid") || stored?.gclid || undefined,
-                          fbclid:
-                            params.get("fbclid") || stored?.fbclid || undefined,
+                          utm_source: params.get("utm_source") || eff?.utm_source || undefined,
+                          utm_medium: params.get("utm_medium") || eff?.utm_medium || undefined,
+                          utm_campaign: params.get("utm_campaign") || eff?.utm_campaign || undefined,
+                          utm_term: params.get("utm_term") || eff?.utm_term || undefined,
+                          utm_content: params.get("utm_content") || eff?.utm_content || undefined,
+                          gclid: params.get("gclid") || eff?.gclid || undefined,
+                          fbclid: params.get("fbclid") || eff?.fbclid || undefined,
                         });
                         try {
                           trackEvent("generate_lead", {

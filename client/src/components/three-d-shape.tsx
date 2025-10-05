@@ -46,9 +46,15 @@ export default function ThreeDShape() {
     const camera = new THREE.PerspectiveCamera(isMobile ? 60 : 55, width / height, 0.1, 1000);
     camera.position.set(0, 0, 16);
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: !isMobile, powerPreference: isMobile ? 'low-power' : 'high-performance' });
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: isMobile ? 'low-power' : 'high-performance' });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1 : 1.35));
+    // Adaptive pixel ratio: balance clarity and performance
+    const dpr = window.devicePixelRatio || 1;
+    // Heuristic: lower cap on mobile/low-power, higher on desktop
+    const maxCap = isMobile ? 2 : 3;
+    // If GPU is likely weak (coarse pointer or low-power preference), be conservative
+    const perfCap = (navigator as any).hardwareConcurrency && (navigator as any).hardwareConcurrency < 6 ? Math.min(maxCap, 2) : maxCap;
+    renderer.setPixelRatio(Math.min(dpr, perfCap));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.setClearColor(0x000000, 0);
@@ -58,16 +64,18 @@ export default function ThreeDShape() {
     const composer = new EffectComposer(renderer);
     const renderPass = new RenderPass(scene, camera);
     composer.addPass(renderPass);
-    const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), isMobile ? 0.05 : 0.1, 0.1, 0.5);
-    bloomPass.threshold = 0.85;
-    bloomPass.strength = isMobile ? 0.02 : 0.04;
-    bloomPass.radius = isMobile ? 0.12 : 0.18;
+    // Reintroduce a very faint bloom for depth without visible blur
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 0.25, 0.6, 0.95);
+    bloomPass.threshold = 0.92; // only brightest points
+    bloomPass.strength = isMobile ? 0.025 : 0.045; // very low glow
+    bloomPass.radius = isMobile ? 0.06 : 0.09; // small radius
+    // Keep subtle to avoid softness
     composer.addPass(bloomPass);
 
     // Configurable look
     const DENSITY = isMobile ? 0.45 : 0.8; // density scale (lower on mobile for performance)
-    const POINT_SIZE = isMobile ? 1.3 : 1.7; // adjust particle visibility per device
-    const COLOR_A = new THREE.Color('#7042d2'); // soft neon purple
+    const POINT_SIZE = isMobile ? 1.6 : 2.0; // slightly larger points for sharper appearance
+    const COLOR_A = new THREE.Color('#7042d2');
     const COLOR_B = new THREE.Color('#7042d2');
 
     // Futuristic nebula backdrop (procedural shader plane)
@@ -300,7 +308,10 @@ export default function ThreeDShape() {
           float ndcDist = distance(vNDC, uMaskCenter);
           float hole = smoothstep(0.0, uMaskRadius, ndcDist);
           alpha *= hole;
-          vec3 color = mix(uColorA, uColorB, clamp(vMix + vBoost * 0.2, 0.0, 1.0));
+          vec3 color = mix(uColorA, uColorB, clamp(vMix + vBoost * 0.15, 0.0, 1.0));
+          // slight center emphasis for perceived sharpness
+          float core = smoothstep(0.5, 0.0, dist);
+          color += 0.04 * core;
           gl_FragColor = vec4(color, alpha);
         }
       `,
@@ -569,6 +580,10 @@ export default function ThreeDShape() {
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
+      // Re-evaluate DPR on resize (e.g., zoom changes)
+      const ndpr = window.devicePixelRatio || 1;
+      const nCap = w <= 768 ? 2 : perfCap;
+      renderer.setPixelRatio(Math.min(ndpr, nCap));
       composer.setSize(w, h);
       // keep responsive vertical offset on resize
       group.position.y = getGroupOffsetY(w);

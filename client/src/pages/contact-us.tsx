@@ -9,7 +9,7 @@ import { useMemo, useState } from "react";
 import { products } from "@/data/products";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
-import { getStoredUtm } from "@/lib/utm";
+import { getEffectiveUtm } from "@/lib/utm";
 import { trackEvent } from "@/lib/ga";
 import { useToast } from "@/hooks/use-toast";
 
@@ -49,7 +49,7 @@ export default function ContactUsPage() {
     setSubmitting(true);
     try {
       const params = new URLSearchParams(window.location.search);
-      const stored = getStoredUtm();
+      const eff = getEffectiveUtm();
       await apiRequest('POST','/api/leads', {
         name: form.name.trim(),
         email: form.email.trim(),
@@ -58,13 +58,13 @@ export default function ContactUsPage() {
         product: form.product || undefined,
         message: form.message.trim() || undefined,
         source_path: window.location.pathname,
-        utm_source: params.get('utm_source') || stored?.utm_source || undefined,
-        utm_medium: params.get('utm_medium') || stored?.utm_medium || undefined,
-        utm_campaign: params.get('utm_campaign') || stored?.utm_campaign || undefined,
-        utm_term: params.get('utm_term') || stored?.utm_term || undefined,
-        utm_content: params.get('utm_content') || stored?.utm_content || undefined,
-        gclid: params.get('gclid') || stored?.gclid || undefined,
-        fbclid: params.get('fbclid') || stored?.fbclid || undefined,
+        utm_source: params.get('utm_source') || eff?.utm_source || undefined,
+        utm_medium: params.get('utm_medium') || eff?.utm_medium || undefined,
+        utm_campaign: params.get('utm_campaign') || eff?.utm_campaign || undefined,
+        utm_term: params.get('utm_term') || eff?.utm_term || undefined,
+        utm_content: params.get('utm_content') || eff?.utm_content || undefined,
+        gclid: params.get('gclid') || eff?.gclid || undefined,
+        fbclid: params.get('fbclid') || eff?.fbclid || undefined,
       });
       trackEvent('generate_lead', {
         form_id: 'contact_us',
@@ -75,7 +75,7 @@ export default function ContactUsPage() {
       });
       toast({ title: 'Request sent', description: 'We will contact you shortly.' });
       setForm({ name:'', email:'', phone:'', company:'', product:'', message:'' });
-      setLocation('/');
+      // Stay on the same page after successful submit (no redirect)
     } catch (err:any) {
       // Provide a friendlier error message
       const msg = typeof err?.message === 'string' ? err.message : 'Please try again.';

@@ -8,7 +8,7 @@ import Breadcrumbs from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { getStoredUtm } from "@/lib/utm";
+import { getEffectiveUtm } from "@/lib/utm";
 import { trackEvent } from "@/lib/ga";
 import { validateLeadBasics } from "@/lib/validation";
 
@@ -139,7 +139,7 @@ export default function CreativeResultsPage() {
                     setSending(true);
                     try{
                       const params = new URLSearchParams(typeof window!== 'undefined' ? window.location.search : '');
-                      const stored = getStoredUtm();
+                      const eff = getEffectiveUtm();
                       await apiRequest('POST','/api/lead',{ 
                         name: form.name,
                         email: form.email,
@@ -152,13 +152,13 @@ export default function CreativeResultsPage() {
                         location: form.location,
                         idea: form.idea || `I like: ${open?.title || ''}`,
                         source: 'creative_results_modal',
-                        utm_source: params.get('utm_source') || stored?.utm_source || undefined,
-                        utm_medium: params.get('utm_medium') || stored?.utm_medium || undefined,
-                        utm_campaign: params.get('utm_campaign') || stored?.utm_campaign || undefined,
-                        utm_term: params.get('utm_term') || stored?.utm_term || undefined,
-                        utm_content: params.get('utm_content') || stored?.utm_content || undefined,
-                        gclid: params.get('gclid') || stored?.gclid || undefined,
-                        fbclid: params.get('fbclid') || stored?.fbclid || undefined,
+                        utm_source: params.get('utm_source') || eff?.utm_source || undefined,
+                        utm_medium: params.get('utm_medium') || eff?.utm_medium || undefined,
+                        utm_campaign: params.get('utm_campaign') || eff?.utm_campaign || undefined,
+                        utm_term: params.get('utm_term') || eff?.utm_term || undefined,
+                        utm_content: params.get('utm_content') || eff?.utm_content || undefined,
+                        gclid: params.get('gclid') || eff?.gclid || undefined,
+                        fbclid: params.get('fbclid') || eff?.fbclid || undefined,
                       });
                       try { trackEvent('generate_lead', { form_id:'creative_results_modal', method:'modal', value:1, currency:'USD', items:[{ item_id: open?.title, item_name: open?.title }] }); } catch {}
                       toast({ title:'Request sent', description:'We will contact you shortly.' });

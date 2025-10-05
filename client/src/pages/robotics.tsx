@@ -1,10 +1,16 @@
 import Navigation from "@/components/navigation";
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { applySeoToHead, fetchSeoConfig } from "@/lib/seoOverride";
 import Seo from "@/components/seo";
 import FooterSection from "@/components/footer-section";
 import { Button } from "@/components/ui/button";
+import { createPortal } from "react-dom";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { getEffectiveUtm } from "@/lib/utm";
+import { validateLeadBasics } from "@/lib/validation";
 import CTAGroup from "@/components/ui/cta-group";
+import { trackEvent } from "@/lib/ga";
 import { motion } from "framer-motion";
 import {
   Shirt,
@@ -19,6 +25,25 @@ import {
 
 export default function RoboticsPage() {
   useEffect(() => { (async () => { const cfg = await fetchSeoConfig('/robotics'); if (cfg) applySeoToHead(cfg); })(); }, []);
+  const [open, setOpen] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [openVideo, setOpenVideo] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    company: "",
+    eventDate: "",
+    eventType: "",
+    guests: "",
+    duration: "",
+    location: "",
+    idea: "",
+  });
+  const { toast } = useToast?.() || ({ toast: (args: any) => console.log(args) } as any);
+  const formRef = useRef<HTMLFormElement|null>(null);
+  useEffect(() => { if (!open) return; const onKey = (e: KeyboardEvent)=>{ if (e.key==='Escape') setOpen(false); }; document.addEventListener('keydown', onKey); return ()=>document.removeEventListener('keydown', onKey); }, [open]);
   return (
     <div className="relative min-h-screen text-white">
       <Seo
@@ -97,11 +122,11 @@ TALIA is a next-gen humanoid AI, a true crowd magnet and online buzz creator. Sh
             </motion.p>
             <motion.p><b>Your Story. Your Spotlight. Your TALIA.</b></motion.p>
             <CTAGroup breakpoint="lg" className="mt-6 sm:mt-8 w-full">
-              <Button variant="creativePrimary" size="lg" className="w-full lg:w-auto text-base sm:text-lg py-6">
+              <Button variant="creativePrimary" size="lg" className="w-full lg:w-auto text-base sm:text-lg py-6" onClick={()=>{ try { trackEvent('select_promotion', { creative_name: 'robotics_hero', promotion_name: 'reserve_talia_now' }); } catch {} setOpen(true); setSent(false); }}>
                 Reserve Talia Now!
 
               </Button>
-              <Button variant="creativeSecondary" size="lg" className="w-full lg:w-auto text-base sm:text-lg py-6">
+              <Button variant="creativeSecondary" size="lg" className="w-full lg:w-auto text-base sm:text-lg py-6" onClick={()=>{ try { trackEvent('select_promotion', { creative_name: 'robotics_hero', promotion_name: 'schedule_demo' }); } catch {} setOpenVideo(true); }}>
                 Watch Demo
               </Button>
             </CTAGroup>
@@ -197,10 +222,10 @@ TALIA is a next-gen humanoid AI, a true crowd magnet and online buzz creator. Sh
 
               <div className="pt-8">
                 <CTAGroup breakpoint="md" className="justify-center text-center">
-                  <Button variant="creativePrimary" size="lg" className="w-full md:w-auto text-base sm:text-lg py-6">
+                  <Button variant="creativePrimary" size="lg" className="w-full md:w-auto text-base sm:text-lg py-6" onClick={()=>{ try { trackEvent('select_promotion', { creative_name: 'robotics_mid', promotion_name: 'rent_talia' }); } catch {} setOpen(true); setSent(false); }}>
                     Rent Talia
                   </Button>
-                  <Button variant="creativeSecondary" size="lg" className="w-full md:w-auto text-base sm:text-lg py-6">
+                  <Button variant="creativeSecondary" size="lg" className="w-full md:w-auto text-base sm:text-lg py-6" onClick={()=>{ try { trackEvent('select_promotion', { creative_name: 'robotics_mid', promotion_name: 'schedule_demo' }); } catch {} setOpen(true); setSent(false); }}>
                     Schedule Demo
                   </Button>
                 </CTAGroup>
@@ -241,7 +266,11 @@ TALIA is a next-gen humanoid AI, a true crowd magnet and online buzz creator. Sh
               <p className="text-white/70 text-sm">
 Don’t miss on the updates!              </p>
               <div className="mt-3">
-                <Button variant="creativeSecondary" size="lg">
+                <Button
+                  variant="creativeSecondary"
+                  size="lg"
+                  onClick={()=>{ try { trackEvent('select_promotion', { creative_name: 'robotics_future', promotion_name: 'join_waitlist' }); } catch {} setOpen(true); setSent(false); }}
+                >
                   Join the Waitlist
                 </Button>
               </div>
@@ -323,10 +352,20 @@ Don’t miss on the updates!              </p>
             Transform your next event into an unforgettable experience. All focus will be around your brand thanks to Talia’s incredible presence and AI capabilities.
           </p>
           <CTAGroup breakpoint="md">
-            <Button variant="creativePrimary" size="lg" className="w-full md:w-auto text-base sm:text-lg py-6">
+            <Button
+              variant="creativePrimary"
+              size="lg"
+              className="w-full md:w-auto text-base sm:text-lg py-6"
+              onClick={()=>{ try { trackEvent('select_promotion', { creative_name: 'robotics_footer', promotion_name: 'rent_talia_for_event' }); } catch {} setOpen(true); setSent(false); }}
+            >
               Rent Talia for Your Event
             </Button>
-            <Button variant="creativeSecondary" size="lg" className="w-full md:w-auto text-base sm:text-lg py-6">
+            <Button
+              variant="creativeSecondary"
+              size="lg"
+              className="w-full md:w-auto text-base sm:text-lg py-6"
+              onClick={()=>{ try { trackEvent('select_promotion', { creative_name: 'robotics_footer', promotion_name: 'see_it_in_action' }); } catch {} setOpenVideo(true); }}
+            >
               See it in action
             </Button>
           </CTAGroup>
@@ -355,6 +394,132 @@ Don’t miss on the updates!              </p>
           ))}
         </section>
       </main>
+      {open && createPortal(
+        <div className="fixed inset-0 z-[9999] grid min-h-screen place-items-center p-4">
+          <div className="absolute inset-0 bg-black/70" onClick={()=>setOpen(false)} />
+          <div className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-3xl border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.55)] backdrop-blur-xl">
+            <button aria-label="Close" className="absolute top-3 right-3 z-20 h-10 w-10 rounded-full bg-white/90 text-black grid place-items-center shadow" onClick={()=>setOpen(false)}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+            </button>
+            <div className="absolute inset-0 -z-10 bg-gradient-to-b from-neutral-900/95 via-neutral-900/80 to-black/90" />
+            <div className="absolute inset-0 -z-10 bg-[linear-gradient(120deg,rgba(147,51,234,0.08),rgba(59,130,246,0.06))]" />
+            <div className="absolute inset-0 -z-10 bg-[radial-gradient(120%_100%_at_50%_-10%,rgba(255,255,255,0.06),transparent_45%)]" />
+            <div className="absolute inset-0 -z-10 bg-[url('/images/noise.svg')] opacity-10 mix-blend-overlay" />
+            <div className="p-4 sm:p-7 md:p-8">
+              <header className="mb-5">
+                <h3 className="text-2xl font-black leading-tight bg-clip-text text-transparent bg-gradient-to-r from-purple-200 via-white to-pink-200">Let's Create Something Extraordinary</h3>
+                <p className="text-white/85 text-sm mt-1">Tell us your vision, and we’ll craft a custom activation.</p>
+              </header>
+              <div className="rounded-xl bg-white/5 border border-white/10 ring-1 ring-white/10 p-3 sm:p-5 mb-5">
+                <div className="flex items-center gap-3">
+                  <img src="/images/robotics-talia.png" alt="Talia" className="h-12 w-12 rounded-lg object-cover shadow-md" />
+                  <div>
+                    <div className="text-white/95 font-semibold leading-snug">Talia</div>
+                    <div className="text-white/70 text-xs">Product: Robotics</div>
+                  </div>
+                </div>
+              </div>
+              <form ref={formRef}
+                onSubmit={async (e)=>{
+                  e.preventDefault();
+                  const res = validateLeadBasics({ name: form.name, email: form.email, phone: form.phone });
+                  if (!res.ok) { toast({ title:'Invalid input', description: res.message, variant: 'destructive' as any }); return; }
+                  if (sending) return;
+                  setSending(true);
+                  try{
+                    const params = new URLSearchParams(typeof window!== 'undefined' ? window.location.search : '');
+                    const eff = getEffectiveUtm();
+                    await apiRequest('POST','/api/leads',{
+                      name: form.name.trim(),
+                      email: form.email.trim(),
+                      phone: form.phone.trim() || undefined,
+                      company: form.company.trim() || undefined,
+                      product: 'Talia',
+                      message: `[extra] ${JSON.stringify({ ideaTitle:'Talia', ideaNotes: form.idea, eventDate: form.eventDate, eventType: form.eventType, guests: form.guests, duration: form.duration, location: form.location })}`,
+                      source_path: typeof window!== 'undefined' ? window.location.pathname : '/robotics',
+                      utm_source: params.get('utm_source') || eff?.utm_source || undefined,
+                      utm_medium: params.get('utm_medium') || eff?.utm_medium || undefined,
+                      utm_campaign: params.get('utm_campaign') || eff?.utm_campaign || undefined,
+                      utm_term: params.get('utm_term') || eff?.utm_term || undefined,
+                      utm_content: params.get('utm_content') || eff?.utm_content || undefined,
+                      gclid: params.get('gclid') || eff?.gclid || undefined,
+                      fbclid: params.get('fbclid') || eff?.fbclid || undefined,
+                    });
+                    toast({ title:'Request sent', description:'We will contact you shortly.' });
+                    setSent(true);
+                    setForm({ name:'', email:'', phone:'', company:'', eventDate:'', eventType:'', guests:'', duration:'', location:'', idea:'' });
+                  } catch(err:any){
+                    toast({ title:'Failed to send', description: err?.message || 'Please try again.', variant: 'destructive' as any });
+                  } finally { setSending(false); }
+                }}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
+              >
+                <label className="block"><span className="text-[11px] uppercase tracking-wide text-white/70">Full Name</span>
+                  <input autoComplete="name" value={form.name} onChange={e=>setForm(f=>({...f, name: e.target.value}))} className="mt-1 w-full h-12 rounded-xl bg-white/95 text-black px-4 text-base focus:outline-none focus:ring-2 focus:ring-purple-300/60" placeholder="Your Full Name"/>
+                </label>
+                <label className="block"><span className="text-[11px] uppercase tracking-wide text-white/70">Company (optional)</span>
+                  <input autoComplete="organization" value={form.company} onChange={e=>setForm(f=>({...f, company: e.target.value}))} className="mt-1 w-full h-12 rounded-xl bg-white/95 text-black px-4 text-base focus:outline-none focus:ring-2 focus:ring-purple-300/60" placeholder="Your Company"/>
+                </label>
+                <label className="block"><span className="text-[11px] uppercase tracking-wide text-white/70">Email</span>
+                  <input type="email" autoComplete="email" value={form.email} onChange={e=>setForm(f=>({...f, email: e.target.value}))} className="mt-1 w-full h-12 rounded-xl bg-white/95 text-black px-4 text-base focus:outline-none focus:ring-2 focus:ring-purple-300/60" placeholder="your@email.com"/>
+                </label>
+                <label className="block"><span className="text-[11px] uppercase tracking-wide text-white/70">Phone Number</span>
+                  <input type="tel" inputMode="tel" autoComplete="tel" value={form.phone} onChange={e=>setForm(f=>({...f, phone: e.target.value}))} className="mt-1 w-full h-12 rounded-xl bg-white/95 text-black px-4 text-base focus:outline-none focus:ring-2 focus:ring-purple-300/60" placeholder="Phone Number"/>
+                </label>
+                <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-1">
+                  <select value={form.eventType} onChange={e=>setForm(f=>({...f, eventType: e.target.value}))} className="h-12 rounded-full bg-white/95 text-black px-4 text-base focus:outline-none focus:ring-2 focus:ring-purple-300/60">
+                    <option>Select Event Type</option>
+                    <option>Corporate</option>
+                    <option>Retail</option>
+                    <option>Festival</option>
+                  </select>
+                  <input inputMode="numeric" value={form.guests} onChange={e=>setForm(f=>({...f, guests: e.target.value}))} className="h-12 rounded-full bg-white/95 text-black px-4 text-base focus:outline-none focus:ring-2 focus:ring-purple-300/60" placeholder="Expected Guests"/>
+                  <input value={form.duration} onChange={e=>setForm(f=>({...f, duration: e.target.value}))} className="h-12 rounded-full bg-white/95 text-black px-4 text-base focus:outline-none focus:ring-2 focus:ring-purple-300/60" placeholder="Duration (e.g., 4 hours)"/>
+                </div>
+                <label className="block"><span className="text-[11px] uppercase tracking-wide text-white/70">Event Date</span>
+                  <input type="date" value={form.eventDate} onChange={e=>setForm(f=>({...f, eventDate: e.target.value}))} className="mt-1 w-full h-11 rounded-xl bg-white/95 text-black px-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-purple-300/60"/>
+                </label>
+                <div className="block"><span className="text-[11px] uppercase tracking-wide text-white/70">Event Location</span>
+                  <input autoComplete="address-level1" value={form.location} onChange={e=>setForm(f=>({...f, location: e.target.value}))} className="mt-1 w-full h-11 rounded-xl bg-white/95 text-black px-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-purple-300/60" placeholder="Event Location"/>
+                </div>
+                <div className="sm:col-span-2"><label className="text-[11px] uppercase tracking-wide text-white/70">Got a Bold Idea?</label>
+                  <textarea value={form.idea} onChange={e=>setForm(f=>({...f, idea: e.target.value}))} className="mt-1 w-full h-32 rounded-xl bg-white/95 text-black px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-purple-300/60" placeholder="Describe your idea..."/>
+                </div>
+                {sent ? (<div className="mt-5 rounded-xl border border-emerald-400/30 bg-emerald-500/10 p-4 text-emerald-200">Thank you! Your request has been received. We’ll get back to you shortly.</div>) : null}
+              </form>
+              <div className="mt-5 pt-4 border-t border-white/10 -mx-4 sm:-mx-6 w-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 w-full px-4 sm:px-6">
+                  <div>
+                    <button type="button" onClick={()=>setOpen(false)} className="w-full px-4 py-2 rounded-full border border-white/25 text-white/90 hover:bg-white/10">{sent? 'Close':'Cancel'}</button>
+                  </div>
+                  {!sent && (
+                    <div>
+                      <Button type="button" onClick={()=>formRef.current?.requestSubmit()} disabled={sending} variant="creativePrimary" className="w-full rounded-full px-6">{sending? 'Sending…':'Send Request'}</Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>, document.body)}
+      {openVideo && createPortal(
+        <div className="fixed inset-0 z-[9999] grid min-h-screen place-items-center p-4">
+          <div className="absolute inset-0 bg-black/80" onClick={()=>setOpenVideo(false)} />
+          <div className="relative w-full max-w-5xl">
+            <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.55)]">
+              <iframe
+                className="absolute inset-0 w-full h-full"
+                src="https://www.youtube.com/embed/1zdCE7vdh8Y?autoplay=1&mute=0&controls=1&rel=0&modestbranding=1&start=0"
+                title="Talia Robotics Demo"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
+            <button aria-label="Close" className="absolute -top-3 -right-3 z-20 h-10 w-10 rounded-full bg-white/90 text-black grid place-items-center shadow" onClick={()=>setOpenVideo(false)}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>, document.body)}
       <FooterSection />
     </div>
   );

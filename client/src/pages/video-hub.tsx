@@ -7,7 +7,7 @@ import { createPortal } from "react-dom";
 import { applySeoToHead, fetchSeoConfig } from "@/lib/seoOverride";
 import Breadcrumbs from "@/components/breadcrumbs";
 import { apiRequest } from "@/lib/queryClient";
-import { getStoredUtm } from "@/lib/utm";
+import { getEffectiveUtm } from "@/lib/utm";
 import { useToast } from "@/hooks/use-toast";
 import { trackEvent } from "@/lib/ga";
 
@@ -121,7 +121,7 @@ export default function VideoHubPage(){
                 try {
                   setSending(true);
                   const params = new URLSearchParams(window.location.search);
-                  const stored = getStoredUtm?.();
+                  const eff = getEffectiveUtm?.();
                   const packed = { ideaTitle: open?.title, ideaTag: open?.tag, ideaNotes: form.idea, eventDate: form.eventDate, eventType: form.eventType, guests: form.guests, duration: form.duration, location: form.location };
                   await apiRequest('POST','/api/leads', {
                     name: form.name.trim(),
@@ -131,13 +131,13 @@ export default function VideoHubPage(){
                     product: open?.title,
                     message: `[extra] ${JSON.stringify(packed)}`,
                     source_path: window.location.pathname,
-                    utm_source: params.get('utm_source') || stored?.utm_source || undefined,
-                    utm_medium: params.get('utm_medium') || stored?.utm_medium || undefined,
-                    utm_campaign: params.get('utm_campaign') || stored?.utm_campaign || undefined,
-                    utm_term: params.get('utm_term') || stored?.utm_term || undefined,
-                    utm_content: params.get('utm_content') || stored?.utm_content || undefined,
-                    gclid: params.get('gclid') || stored?.gclid || undefined,
-                    fbclid: params.get('fbclid') || stored?.fbclid || undefined,
+                    utm_source: params.get('utm_source') || eff?.utm_source || undefined,
+                    utm_medium: params.get('utm_medium') || eff?.utm_medium || undefined,
+                    utm_campaign: params.get('utm_campaign') || eff?.utm_campaign || undefined,
+                    utm_term: params.get('utm_term') || eff?.utm_term || undefined,
+                    utm_content: params.get('utm_content') || eff?.utm_content || undefined,
+                    gclid: params.get('gclid') || eff?.gclid || undefined,
+                    fbclid: params.get('fbclid') || eff?.fbclid || undefined,
                   });
                   try { trackEvent('generate_lead', { form_id:'video_hub_modal', method:'modal', value:1, currency:'USD', items:[{ item_id: open?.title, item_name: open?.title }] }); } catch {}
                   toast({ title:'Request sent', description:'We will contact you shortly.' });

@@ -253,36 +253,46 @@ export default function PersonalisedMerchPage() {
             Works with Your Iboothme Setup
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
+            <a href="/products/iboothme-x" className="block">
             <SetupCard
               title="Iboothme X"
               desc="Touchscreen photo booth integration."
               media={{ type: "image", src: "/iboothmex.jpg" }}
               chip="Touchscreen"
             />
+            </a>
+            <a href="/products/retro-x" className="block">
             <SetupCard
               title="Retro X"
               desc="Retro-styled immersive activation system."
               media={{ type: "image", src: "/images/retro-x.jpg" }}
               chip="Retro"
             />
+            </a>
+            <a href="/products/vending-x" className="block">
             <SetupCard
               title="Vending X"
               desc="Product delivery meets brand engagement."
               media={{ type: "image", src: "/vendingx.jpg" }}
               chip="Vending"
             />
+            </a>
+            <a href="/products/the-claw" className="block">
             <SetupCard
               title="The Claw"
               desc="Gamified engagement and data capture."
               media={{ type: "image", src: "/TheClaw.jpg" }}
               chip="Gaming"
             />
+            </a>
+            <a href="/products/gumball-x" className="block">
             <SetupCard
               title="The GumBall"
               desc="Interactive acrylic ball activation."
               media={{ type: "image", src: "/images/gumball-x-purple.png" }}
               chip="Interactive"
             />
+            </a>
           </div>
         </section>
 
