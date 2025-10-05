@@ -53,10 +53,10 @@ export default function CTASplit() {
       >
         <div className="text-center mb-10 sm:mb-12 md:mb-14">
           <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-[10px] sm:text-xs tracking-wide uppercase text-white/80 mb-3 sm:mb-4">
-            Get Started
+            The Hub
           </div>
-          <h3 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-2 sm:mb-3 leading-tight">Bring Your Ideas To Life</h3>
-          <p className="text-sm sm:text-base text-white/80 max-w-2xl mx-auto px-1">Two simple ways to get started — browse ready-made inspirations or craft something completely bespoke with our team.</p>
+          <h3 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-2 sm:mb-3 leading-tight">Get Ideas</h3>
+          <p className="text-sm sm:text-base text-white/80 max-w-2xl mx-auto px-1">1. 250+ case studies, AI innovations, trendy results, and secret lab creations — all in one curated hub.</p>
         </div>
         <div className="grid md:grid-cols-2 gap-6 sm:gap-8 md:gap-10 items-stretch relative">
           <motion.div variants={cardVariants}>
@@ -71,22 +71,24 @@ export default function CTASplit() {
                     <Lightbulb size={32} className="hidden md:block" />
                   </div>
                   <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-3 sm:mb-4 gradient-text" data-testid="get-ideas-title">
-                    Get Ideas
+                    The Hub
                   </h3>
                   <p className="text-sm sm:text-base text-white/85 mb-6 sm:mb-8 leading-relaxed" data-testid="get-ideas-description">
-                    Explore our inspiration gallery and see how top brands create unforgettable experiences with our technology
+                    Dive into a collection of engagement tools, AI effects, immersive features, campaign insights, and content-worthy ideas. All in one place, ready to plug into your next activation.
                   </p>
                 </div>
                 <CTAGroup breakpoint="md">
-                  <Button 
-                    size="lg"
-                    variant="creativePrimary"
-                    className="group w-full md:w-auto text-base sm:text-lg py-5 sm:py-6"
-                    data-testid="browse-gallery"
-                  >
-                    Ideas Hub
-                    <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform duration-300" />
-                  </Button>
+                  <a href="/get-ideas">
+                    <Button 
+                      size="lg"
+                      variant="creativePrimary"
+                      className="group w-full md:w-auto text-base sm:text-lg py-5 sm:py-6"
+                      data-testid="browse-gallery"
+                    >
+                      Explore The Hub
+                      <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform duration-300" />
+                    </Button>
+                  </a>
                 </CTAGroup>
               </div>
             </Card>
@@ -106,10 +108,10 @@ export default function CTASplit() {
                     <Settings size={32} className="hidden md:block" />
                   </div>
                   <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-3 sm:mb-4 gradient-text" data-testid="request-customization-title">
-                    Request Customisation
+                    Request Customization
                   </h3>
                   <p className="text-sm sm:text-base text-white/85 mb-6 sm:mb-8 leading-relaxed" data-testid="request-customization-description">
-                    Work with our team to create a bespoke brand activation tailored specifically to your vision and objectives
+                    Your brand deserves experiences that match its objectives. If the tech doesn’t exist, we’ll build it. And if your idea isn’t clear, our creative team will shape it with you.
                   </p>
                 </div>
                 <CTAGroup breakpoint="md">
@@ -119,7 +121,7 @@ export default function CTASplit() {
                     className="group w-full md:w-auto text-base sm:text-lg py-5 sm:py-6"
                     data-testid="start-project"
                   >
-                    Personalised Merch
+                    Request Customization
                     <Rocket className="ml-2 group-hover:translate-x-2 transition-transform duration-300" />
                   </Button>
                 </CTAGroup>

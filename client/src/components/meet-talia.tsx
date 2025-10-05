@@ -7,9 +7,9 @@ import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import RobotTaliaViewer from "@/components/robot-talia-viewer";
 
 const features = [
-"Professional-grade robotics without massive upfront cost",
-"Monthly rental with full support and maintenance",
-"Perfect for events, demonstrations, and brand activations"
+  "Learns your products, answers questions, and hosts brand quizzes.",
+  "She can be styled in outfits that represent your brand.",
+  "Soon to become your autonomous AI-powered event photographer."
 ];
 
 
@@ -69,7 +69,7 @@ export default function MeetTalia() {
               variants={fadeUpVariants}
               data-testid="meet-talia-headline"
             >
-              Meet Talia
+              Meet TALIA
             </motion.h2>
             
             <motion.p 
@@ -77,8 +77,7 @@ export default function MeetTalia() {
               variants={fadeUpVariants}
               data-testid="talia-description"
             >
-Our humanoid robot available for rent. Transform your events with cutting-edge robotics technology that captivates audiences and creates unforgettable experiences.
-
+Meet TALIA.\n\nTALIA is the humanoid robot everyone wants to experience, a true crowd magnet that keeps the spotlight on your brand.
             </motion.p>
             
             <motion.ul 
@@ -99,7 +98,6 @@ Our humanoid robot available for rent. Transform your events with cutting-edge r
             </motion.ul>
             
             <motion.div variants={fadeUpVariants}>
-              <CTAGroup breakpoint="md">
                 <Button 
                   size="lg"
                   variant="creativePrimary"
@@ -108,7 +106,6 @@ Our humanoid robot available for rent. Transform your events with cutting-edge r
                 >
                   Discover Talia
                 </Button>
-              </CTAGroup>
             </motion.div>
           </motion.div>
           

@@ -1,4 +1,7 @@
 import Navigation from "@/components/navigation";
+import { useEffect } from 'react';
+import { applySeoToHead, fetchSeoConfig } from "@/lib/seoOverride";
+import Seo from "@/components/seo";
 import FooterSection from "@/components/footer-section";
 import { Button } from "@/components/ui/button";
 import CTAGroup from "@/components/ui/cta-group";
@@ -15,8 +18,23 @@ import {
 } from "lucide-react";
 
 export default function RoboticsPage() {
+  useEffect(() => { (async () => { const cfg = await fetchSeoConfig('/robotics'); if (cfg) applySeoToHead(cfg); })(); }, []);
   return (
     <div className="relative min-h-screen text-white">
+      <Seo
+        title="Robotics for Events"
+        description="Robotic experiences and interactive activations that attract, engage, and delight audiences."
+        canonical="/robotics"
+        ogImage="/images/robotics-talia.png"
+        keywords={["robotics", "event robots", "interactive activations"]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: "Robotics",
+          description: "Robotic experiences for events.",
+          provider: { "@type": "Organization", name: "iboothme" }
+        }}
+      />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(70%_50%_at_50%_0%,rgba(112,66,210,0.12),transparent_60%),radial-gradient(60%_40%_at_80%_100%,rgba(34,212,253,0.10),transparent_60%)]"
@@ -58,7 +76,7 @@ export default function RoboticsPage() {
               transition={{ duration: 0.45, delay: 0.05 }}
               className="text-3xl sm:text-5xl md:text-6xl font-black mt-1 gradient-text leading-tight"
             >
-              Meet Talia
+              Meet TALIA.
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 8 }}
@@ -66,7 +84,8 @@ export default function RoboticsPage() {
               transition={{ duration: 0.45, delay: 0.1 }}
               className="text-lg sm:text-xl md:text-2xl text-white/85 mt-2"
             >
-              Humanoid Agent AI Avatar
+              The robot everyone wants to meet.
+
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 8 }}
@@ -74,13 +93,13 @@ export default function RoboticsPage() {
               transition={{ duration: 0.5, delay: 0.15 }}
               className="max-w-3xl mx-auto mt-4 sm:mt-6 text-white/80 px-2"
             >
-              Our team of two dedicated robotics engineers is innovating in the
-              world of robotics specifically for brand activations, creating
-              unforgettable experiences that captivate audiences.
+TALIA is a next-gen humanoid AI, a true crowd magnet and online buzz creator. She holds natural conversations, represents your brand, shares product knowledge, and builds real connections with audiences. Your Brand. Your Audience. Your TALIA.
             </motion.p>
+            <motion.p><b>Your Story. Your Spotlight. Your TALIA.</b></motion.p>
             <CTAGroup breakpoint="lg" className="mt-6 sm:mt-8 w-full">
               <Button variant="creativePrimary" size="lg" className="w-full lg:w-auto text-base sm:text-lg py-6">
-                Rent Talia Now
+                Reserve Talia Now!
+
               </Button>
               <Button variant="creativeSecondary" size="lg" className="w-full lg:w-auto text-base sm:text-lg py-6">
                 Watch Demo
@@ -98,12 +117,8 @@ export default function RoboticsPage() {
           </div>
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-8 opacity-60">⸻</div>
-            <h2 className="text-2xl md:text-3xl font-bold text-center text-white mb-3 px-3">
-              Why Talia is Perfect for Brand Activations
-            </h2>
-            <p className="text-center text-white/80 max-w-4xl mx-auto mb-12 px-4">
-              Talia can pull a crowd, speak in your brand voice, and collect meaningful data—all while looking like a hero on your stand.
-            </p>
+            <h2 className="text-2xl md:text-3xl font-bold text-center text-white mb-3 px-3">Why TALIA for Brand Activations?</h2>
+            <p className="text-center text-white/80 max-w-4xl mx-auto mb-12 px-4">TALIA draws crowds, showcases your products, and keeps the spotlight on your brand.</p>
 
             <div className="relative rounded-[32px] border border-white/10 bg-white/[0.04] backdrop-blur-xl overflow-hidden px-6 md:px-10 lg:px-16 py-12">
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(75%_60%_at_50%_15%,rgba(112,66,210,0.18),transparent_70%)]" />
@@ -170,9 +185,9 @@ export default function RoboticsPage() {
                     { label: "Setup time", value: "Under 30 minutes" },
                     { label: "Footprint", value: "Fits standard booth spaces" },
                     { label: "Connectivity", value: "5G/LTE or secure venue Wi‑Fi" },
-                    { label: "Branding", value: "Apparel + digital avatar customization" },
+                    { label: "Branding", value: "Branded Tshirt" },
                   ].map(({ label, value }) => (
-                    <div key={label} className="w-full sm:flex-1 px-5 py-5 rounded-2xl border border-white/10 bg-white/5 text-left flex flex-col gap-1">
+                    <div key={label} className="w-full sm:flex-1 px-5 py-5 rounded-2xl border border-white/10 bg-white/5 text-center flex flex-col gap-1">
                       <span className="text-xs uppercase tracking-[0.28em] text-white/55">{label}</span>
                       <span className="text-white/90 font-semibold">{value}</span>
                     </div>
@@ -194,6 +209,17 @@ export default function RoboticsPage() {
           </div>
         </section>
 
+        {/* Call-to-action: SEE IT IN ACTION */}
+        <section className="relative mb-12 sm:mb-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="text-center mb-6 opacity-60">⸻</div>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-4 leading-tight">
+              SEE IT IN ACTION
+            </h2>
+            <VideoTeaser />
+          </div>
+        </section>
+
         {/* Creating the Future */}
         <section className="relative mb-10 sm:mb-12 pb-8 sm:pb-10">
           <div className="absolute inset-0 -z-10">
@@ -205,22 +231,15 @@ export default function RoboticsPage() {
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-2 sm:mb-3 leading-tight">
               Creating the Future (SOON)
             </h2>
-            <p className="text-center text-white/80 max-w-3xl mx-auto mb-8 sm:mb-10 px-2">
-              We are working to create the world’s first independent
-              Photographer Humanoid robot. Imagine Talia not just attracting
-              crowds to your brand, but also capturing perfect moments and
-              creating content that your prospects will share across social
-              media.
-            </p>
+            <p className="text-center text-white/80 max-w-3xl mx-auto mb-8 sm:mb-10 px-2">Our robotic engineers are pushing the capabilities of Talia to provide you unique robotic solutions that will be jaw dropping!</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 px-2 sm:px-0">
-              <FutureCard title="Independent Photography" desc="Revolutionary AI-powered photography for autonomous content creation." media={{ src: "/images/photography.jpg", alt: "Independent Photography" }} />
-              <FutureCard title="Crowd Engagement" desc="Natural interactions that draw people in and keep them engaged." media={{ src: "/images/crowd.jpg", alt: "Crowd Engagement" }} />
-              <FutureCard title="Brand Activation" desc="Perfect for launches, events, and activations that need the wow." media={{ src: "/images/events.png", alt: "Brand Activation" }} />
+              <FutureCard title="Humanoid Photographer" desc="Revolutionary AI-powered photography for autonomous content creation." media={{ src: "/images/Independent Photography.jpg", alt: "Independent Photography" }} />
+              <FutureCard title="AI Videographer Modes" desc="Records smooth cinematic clips (hero shots, entries) with built-in effects." media={{ src: "/images/Crowd Engagement.jpg", alt: "Crowd Engagement" }} />
+              <FutureCard title="AI Song Generator" desc="Generates and plays custom songs live based on the description provided by the guest. " media={{ src: "/images/Brand Activation.jpg", alt: "Brand Activation" }} />
             </div>
             <div className="mt-8 text-center">
               <p className="text-white/70 text-sm">
-                Get early access to Talia’s Photographer mode
-              </p>
+Don’t miss on the updates!              </p>
               <div className="mt-3">
                 <Button variant="creativeSecondary" size="lg">
                   Join the Waitlist
@@ -308,7 +327,7 @@ export default function RoboticsPage() {
               Rent Talia for Your Event
             </Button>
             <Button variant="creativeSecondary" size="lg" className="w-full md:w-auto text-base sm:text-lg py-6">
-              Schedule a Demo
+              See it in action
             </Button>
           </CTAGroup>
         </section>
@@ -337,6 +356,46 @@ export default function RoboticsPage() {
         </section>
       </main>
       <FooterSection />
+    </div>
+  );
+}
+
+function VideoTeaser() {
+  return (
+    <div className="relative mx-auto max-w-4xl rounded-2xl overflow-hidden border border-white/15 bg-white/5 shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
+      <div className="relative aspect-video">
+        <iframe
+          id="yt-inline-player"
+          className="absolute inset-0 w-full h-full"
+          src="https://www.youtube.com/embed/1zdCE7vdh8Y?autoplay=0&mute=1&controls=0&loop=1&playlist=1zdCE7vdh8Y&modestbranding=1&rel=0"
+          title="Talia Robotics Demo"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        />
+        {/* Overlay play button: removes itself and starts playback from beginning with sound */}
+        <button
+          type="button"
+          onClick={() => {
+            const iframe = document.getElementById('yt-inline-player') as HTMLIFrameElement | null;
+            if (iframe) {
+              // restart unmuted with controls
+              iframe.src = 'https://www.youtube.com/embed/1zdCE7vdh8Y?autoplay=1&mute=0&controls=1&rel=0&modestbranding=1&start=0';
+            }
+            // remove overlay
+            const btn = document.getElementById('yt-inline-overlay');
+            btn?.parentElement?.removeChild(btn as any);
+          }}
+          id="yt-inline-overlay"
+          className="group absolute inset-0 grid place-items-center bg-black/0 hover:bg-black/10 transition-colors"
+          aria-label="Play video"
+        >
+          <span className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-white/90 text-black shadow-lg group-hover:scale-105 transition-transform">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </span>
+        </button>
+      </div>
     </div>
   );
 }

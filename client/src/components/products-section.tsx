@@ -6,6 +6,7 @@ import { ArrowRight, Grid3X3, Play } from "lucide-react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import { useEffect, useState } from "react";
+import { products as dataProducts } from "@/data/products";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Autoplay, Navigation as SwiperNavigation } from "swiper/modules";
 import "swiper/css";
@@ -24,7 +25,7 @@ const defaultProducts = [
   {
     id: "360-booth", 
     title: "Performance and Content",
-    subtitle: "360 Booth",
+    subtitle: "360 Video Booth",
     description: "Go fast. Go far.",
     image: "/images/360-purple.png", 
     bgColor: "from-gray-900 to-black",
@@ -51,7 +52,7 @@ const defaultProducts = [
   {
     id: "gift-box",
     title: "Surprise & Delight", 
-    subtitle: "Gift Box",
+    subtitle: "Giftbox",
     description: "Branded gift reveals and social moments",
     image: "/images/gift-box-purple.png",
     bgColor: "from-yellow-300 to-orange-400",
@@ -60,7 +61,7 @@ const defaultProducts = [
   {
     id: "gobooth",
     title: "Portable Solutions",
-    subtitle: "GoBooth", 
+    subtitle: "Goboothme X", 
     description: "Mobile photo booth experiences for any event",
     image: "/images/gobooth-purple.png",
     bgColor: "from-indigo-400 to-blue-500",
@@ -86,6 +87,17 @@ export default function ProductsSection() {
         }
       })
       .catch(() => {
+        // Fallback to in-app data order
+        const mapped = dataProducts.slice(0, 6).map((p) => ({
+          id: p.id,
+          title: p.meta,
+          subtitle: p.name,
+          description: p.description,
+          image: p.image,
+          bgColor: "from-gray-900 to-black",
+          isDarkImage: true,
+        }));
+        if (isMounted && mapped.length) setProducts(mapped);
       });
 
     return () => {
@@ -137,7 +149,7 @@ export default function ProductsSection() {
           <motion.div variants={cardVariants} className="mb-6">
             <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">
               <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
-              <span className="text-sm font-medium text-white tracking-wide uppercase">Our Technology</span>
+              <span className="text-sm font-medium text-white tracking-wide uppercase">Our Solutions</span>
             </div>
           </motion.div>
           
@@ -146,17 +158,15 @@ export default function ProductsSection() {
             variants={cardVariants}
             data-testid="products-headline"
           >
-            Our Engagement Arsenal
+            Photobooth and Beyond
           </motion.h2>
           
           <motion.p
             variants={cardVariants}
-            className="text-base sm:text-lg md:text-xl text-white/80 max-w-2xl mx-auto px-1"
+            className="text-base sm:text-lg md:text-xl text-white/80 max-w-4xl mx-auto px-1"
             data-testid="products-description"
           >
-Award-winning installations that transform events into unforgettable experiences.
-
-
+All our tech is built in-house and if you don’t find what you need, we’ll build it.
           </motion.p>
         </motion.div>
 
@@ -202,7 +212,7 @@ Award-winning installations that transform events into unforgettable experiences
               >
               {products.map((product) => (
                 <SwiperSlide key={product.id} className="!w-[min(78vw,320px)] sm:!w-[min(70vw,360px)] md:!w-[min(38vw,360px)] xl:!w-[min(28vw,380px)] !min-w-[240px] sm:!min-w-[260px] md:!min-w-[320px]">
-                  <div className="group cursor-pointer relative z-10">
+                  <a href={`/products/${product.id}`} className="group cursor-pointer relative z-10 block" aria-label={`${product.subtitle} product`}>
                     <motion.div
                       whileHover={{
                         scale: 1.04,
@@ -237,7 +247,7 @@ Award-winning installations that transform events into unforgettable experiences
                         </div>
                       </div>
                     </motion.div>
-                  </div>
+                  </a>
                 </SwiperSlide>
               ))}
               </Swiper>
@@ -245,40 +255,41 @@ Award-winning installations that transform events into unforgettable experiences
           </motion.div>
         </motion.div>
         
-        {/* CTA section */}
+        {/* CTA section (mobile-optimized) */}
         <motion.div 
           className="text-center"
           initial="hidden"
           animate={isIntersecting ? "visible" : "hidden"}
           variants={cardVariants}
         >
-          <CTAGroup breakpoint="md" className="gap-3 md:gap-4 justify-center px-4 max-w-2xl mx-auto">
-            <Link href="/products">
-              <a className="inline-block w-full md:w-auto">
-                <Button 
-                  variant="creativePrimary"
-                  size="lg"
-                  className="group w-full md:w-auto text-base sm:text-lg py-6"
-                  data-testid="view-all-models"
-                >
-                  <span className="text-white">View All Booths</span>
-                </Button>
-              </a>
-            </Link>
-
-            <Button
-              size="lg"
-              variant="creativeSecondary"
-              className="group w-full md:w-auto text-base sm:text-lg py-6"
-              data-testid="product-lineup-video"
-            >
-              <span className="text-white">Product Lineup Video 2025</span>
-              <Play className="ml-2 w-5 h-5" />
-            </Button>
-          </CTAGroup>
-          <div className="text-center pt-2 px-4 max-w-2xl mx-auto">
-            <p className="text-sm sm:text-base text-white/80">Explore our complete product range or watch our showcase video</p>
+          <div className="px-2">
+            <div className="mx-auto max-w-xl grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 items-stretch">
+              <Link href="/products?utm_source=site&utm_medium=section-products-cta&utm_campaign=home">
+                <a className="block" onClick={() => { try { const { trackEvent } = require('@/lib/ga'); trackEvent('select_promotion', { creative_name: 'home_products_section', promotion_name: 'View All Booths' }); } catch {} }}>
+                  <Button 
+                    variant="creativePrimary"
+                    size="lg"
+                    className="w-full text-base sm:text-lg py-5 sm:py-6"
+                    data-testid="view-all-models"
+                  >
+                    <span className="text-white">View All Booths</span>
+                  </Button>
+                </a>
+              </Link>
+              <Button
+                size="lg"
+                variant="creativeSecondary"
+                className="w-full text-base sm:text-lg py-5 sm:py-6"
+                data-testid="product-lineup-video"
+                onClick={() => { try { const { trackEvent } = require('@/lib/ga'); trackEvent('select_promotion', { creative_name: 'home_products_section', promotion_name: 'Lineup Video 2026' }); } catch {} }}
+              >
+                <span className="text-white">Lineup Video 2026</span>
+                <Play className="ml-2 w-5 h-5" />
+              </Button>
+            </div>
+            <p className="mt-3 text-xs text-white/60 sm:hidden">Faster taps, larger buttons, and stacked layout for small screens.</p>
           </div>
+          
         </motion.div>
       </div>
     </section>

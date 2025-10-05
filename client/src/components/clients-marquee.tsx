@@ -104,10 +104,10 @@ export default function ClientsMarquee() {
           variants={fadeUpVariants}
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-3 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 leading-tight" data-testid="clients-headline">
-            Trusted by Global Brands
+            Trusted by Premium Brands
           </h2>
           <p className="text-base sm:text-lg text-gray-600 px-1" data-testid="clients-description">
-            Join the world's most innovative companies creating unforgettable experiences
+            Where Global Brands Come to Engage! From global sportswear to luxury beauty, we deliver activations that redefine engagement.
           </p>
         </motion.div>
         

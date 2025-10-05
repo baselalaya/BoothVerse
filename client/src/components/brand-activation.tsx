@@ -16,7 +16,7 @@ export default function BrandActivation() {
       className="relative overflow-hidden bg-transparent max-w-7xl mx-auto flex items-center justify-center px-4 sm:px-6 py-12 sm:py-14 md:py-16"
       data-testid="brand-activation-section"
       data-section="brand-activation"
-      style={{ minHeight: '50vh' }}
+      style={{ minHeight: '100vh' }}
     >
 
 
@@ -39,7 +39,7 @@ export default function BrandActivation() {
             <span className="block">brand activations</span>
           </h2>
           <p className="text-sm sm:text-base md:text-lg xl:text-xl text-black max-w-[36ch] sm:max-w-3xl leading-relaxed mx-auto px-1">
-            Elevate your brand with our cutting-edge AI solutions tailored for immersive brand activations and unforgettable experiences.
+            Because your brand deserves more than face swaps.
           </p>
           <CTAGroup breakpoint="md" className="mt-5 sm:mt-8">
             <a href="/ai-technology" className="inline-block w-full md:w-auto" data-testid="brand-activation-cta">

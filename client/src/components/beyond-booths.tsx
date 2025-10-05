@@ -5,31 +5,35 @@ import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 const services = [
   {
     id: "production",
-    title: "Production",
+    title: "Personalized Merch",
     description: "End-to-end content creation and brand storytelling",
-    video: "/videos/1.mp4",
-    gradient: "from-neon-purple/0 to-neon-purple/60"
+    video: "/videos/tata-notebook.mp4",
+    gradient: "from-neon-purple/0 to-neon-purple/60",
+    href: "/personalised-merch",
   },
   {
     id: "hybrid-experiences",
-    title: "Hybrid Experiences",
+    title: "Experiential Marketing",
     description: "Seamless blend of physical and digital interactions",
-    video: "/videos/2.mp4",
-    gradient: "from-neon-blue/0 to-neon-blue/60"
+    video: "/videos/philips-coasters.mp4",
+    gradient: "from-neon-blue/0 to-neon-blue/60",
+    href: "/experiential-marketing",
   },
   {
     id: "gamification",
     title: "Gamification",
     description: "Interactive challenges and competitive experiences",
-    video: "/videos/3.mp4",
-    gradient: "from-neon-green/0 to-neon-green/60"
+    video: "/videos/gamification-iboothme.mp4",
+    gradient: "from-neon-green/0 to-neon-green/60",
+    href: "/gamifications",
   },
   {
     id: "web-app",
-    title: "Web App",
+    title: "Tailored Software Solutions",
     description: "Custom digital platforms and brand ecosystems",
-    video: "/videos/4.mp4",
-    gradient: "from-orange-500/0 to-orange-500/60"
+    video: "/videos/tailored.mp4",
+    gradient: "from-orange-500/0 to-orange-500/60",
+    href: "/get-ideas#software",
   }
 ];
 
@@ -82,7 +86,7 @@ export default function BeyondBooths() {
             Beyond Photo Booths
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto px-1" data-testid="beyond-booths-description">
-            Complete ecosystem of immersive brand activation solutions
+            A broad mix of technologies for brand engagement.
           </p>
         </motion.div>
         
@@ -95,8 +99,9 @@ export default function BeyondBooths() {
         >
           {services.map((service) => {
             return (
-              <motion.div
+              <motion.a
                 key={service.id}
+                href={service.href}
                 className={`group relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-[10/14] sm:aspect-[10/16] cursor-pointer bg-white/5 border border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.35)]`}
                 variants={cardVariants}
                 whileHover={{ scale: prefersReducedMotion ? 1 : 1.02 }}
@@ -131,7 +136,7 @@ export default function BeyondBooths() {
                 <div className="absolute z-[3] top-3 sm:top-4 right-3 sm:right-4 px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-white/10 text-white/90 border border-white/20 backdrop-blur-sm">
                   Explore
                 </div>
-              </motion.div>
+              </motion.a>
             );
           })}
         </motion.div>

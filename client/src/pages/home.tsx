@@ -11,14 +11,20 @@ import ClientsMarquee from "@/components/clients-marquee";
 import FooterSection from "@/components/footer-section";
 import ThreeDShape from "@/components/three-d-shape";
 import React, { useState, useEffect, lazy, Suspense } from 'react';
+import Seo from "@/components/seo";
+import { applySeoToHead, fetchSeoConfig } from "@/lib/seoOverride";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 const RobotTaliaViewer = lazy(() => import("@/components/robot-talia-viewer"));
+// removed hook-based SEO override usage
 
 export default function Home() {
   const [fadeHero, setFadeHero] = useState(false);
   const [fadeBrand, setFadeBrand] = useState(false);
 
   useEffect(() => {
+    // Fetch and apply runtime SEO overrides
+    (async () => { const cfg = await fetchSeoConfig('/'); if (cfg) applySeoToHead(cfg); })();
+
     if (typeof window === 'undefined') return;
 
     const heroSection = document.querySelector('[data-section="hero"]');
@@ -48,6 +54,20 @@ export default function Home() {
 
   return (
     <>
+      <Seo
+        title="Experiential Marketing Tech & Photo Booths"
+        description="iboothme delivers cutting-edge experiential marketing: AI tech, gamifications, analytics, and immersive photo/video booths for brand activations."
+        canonical="/"
+        ogImage="/images/icon.svg"
+        keywords={["experiential marketing", "photo booth", "AI", "gamification", "brand activation"]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "iboothme",
+          url: "https://www.iboothme.com/",
+          logo: "https://www.iboothme.com/images/icon.svg"
+        }}
+      />
       <div className="absolute inset-0 z-10 pointer-events-none">
         <ThreeDShape />
         {/* Readability overlay to blend background with content */}
@@ -64,7 +84,7 @@ export default function Home() {
         </div>
         <div
           data-section="brand-activation"
-          className={`relative overflow-hidden transition-opacity duration-1000 flex items-center justify-center px-6 py-8 md:py-12 max-w-full mx-auto bg-opacity-50 backdrop-blur-md ${fadeBrand ? 'opacity-100' : 'opacity-0'}`}
+          className={`relative overflow-hidden transition-opacity duration-1000 flex items-center justify-center px-6 max-w-full mx-auto bg-opacity-50 backdrop-blur-md ${fadeBrand ? 'opacity-100' : 'opacity-0'}`}
           style={{ minHeight: '300px' }}
         >
           <video
@@ -112,17 +132,17 @@ export default function Home() {
   );
 }
 
-function LazyRobot() {
-  const [ref, visible] = useIntersectionObserver({ root: null, threshold: 0.15 });
-  return (
-    <div ref={ref as any}>
-      {visible ? (
-        <Suspense fallback={<div className="w-full h-[520px] rounded-3xl border border-white/10 bg-black/30 animate-pulse" />}> 
-          <RobotTaliaViewer src="/models/robot-talia.glb" className="w-full h-[520px] rounded-3xl border border-white/10 bg-gradient-to-b from-black/60 to-black/30" />
-        </Suspense>
-      ) : (
-        <div className="w-full h-[520px] rounded-3xl border border-white/10 bg-black/30" />
-      )}
-    </div>
-  );
-}
+// function LazyRobot() {
+//   const [ref, visible] = useIntersectionObserver({ root: null, threshold: 0.15 });
+//   return (
+//     <div ref={ref as any}>
+//       {visible ? (
+//         <Suspense fallback={<div className="w-full h-[520px] rounded-3xl border border-white/10 bg-black/30 animate-pulse" />}> 
+//           <RobotTaliaViewer src="/models/robot-talia.glb" className="w-full h-[520px] rounded-3xl border border-white/10 bg-gradient-to-b from-black/60 to-black/30" />
+//         </Suspense>
+//       ) : (
+//         <div className="w-full h-[520px] rounded-3xl border border-white/10 bg-black/30" />
+//       )}
+//     </div>
+//   );
+// }

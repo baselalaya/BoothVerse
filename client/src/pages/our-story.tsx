@@ -1,4 +1,8 @@
 import Navigation from "@/components/navigation";
+import Seo from "@/components/seo";
+import { useEffect } from 'react';
+import { applySeoToHead, fetchSeoConfig } from "@/lib/seoOverride";
+// removed hook-based SEO override
 import FooterSection from "@/components/footer-section";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -6,9 +10,10 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation as SwiperNavigation, EffectCoverflow } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 export default function OurStoryPage() {
+  useEffect(() => { (async () => { const cfg = await fetchSeoConfig('/our-story'); if (cfg) applySeoToHead(cfg); })(); }, []);
   const [showVideo, setShowVideo] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
@@ -23,20 +28,19 @@ export default function OurStoryPage() {
   }, [showVideo])
   const storyRef = useRef<HTMLDivElement | null>(null);
   const team = [
-    { name: "Mayuri", role: "Customer Care" },
-    { name: "Laith", role: "Mechanical Engineer" },
-    { name: "Robin", role: "Finance Director" },
-    { name: "Saqib", role: "Client Manager" },
-    { name: "Howell", role: "Mechanical Engineer" },
-    { name: "Alex", role: "Creative Director" },
-    { name: "Shubneet", role: "Marketing Executive" },
-    { name: "Modar", role: "R&D Engineer" },
-    { name: "Ben", role: "Operations Director" },
-    { name: "Asem", role: "Mechanical Engineer" },
-    { name: "Wendel", role: "Procurement" },
-    { name: "Anis", role: "Senior Software Developer" },
-    { name: "Dilawar", role: "Operations" },
-    { name: "Hunzula", role: "C# Software Developer" },
+    { name: "Ben", role: "Sales Director" },
+            { name: "Sarah", role: "Marketing Specialist" },
+    { name: "Saqib", role: "Sales Manager" },
+    { name: "Modar", role: "Account Manager" },
+    { name: "Shubhneet", role: "Marketing Manager" },
+    { name: "Robin", role: "Senior Accountant" },
+    { name: "Alex", role: "Operations Manager" },
+    { name: "Laith", role: "Embedded System Engineer" },
+        { name: "Maya Lin ", role: "Project Coordinator" },
+    { name: "Asem", role: "Project Manager" },
+    { name: "Wendell", role: "Event Operations" },
+    { name: "Firas", role: "Event Operations" },
+    { name: "Howell", role: "Creative Head" },
   ];
 
   function formatNameForImage(name: string) {
@@ -48,6 +52,13 @@ export default function OurStoryPage() {
 
   return (
     <div className="relative min-h-screen text-white" data-testid="our-story-page">
+      <Seo
+        title="Our Story"
+        description="iboothme: crafting immersive experiential marketing technology and unforgettable brand activations."
+        canonical="/our-story"
+        ogImage="/images/Youssef-Founder.jpg"
+        keywords={["iboothme story", "about iboothme", "experiential marketing"]}
+      />
       <Navigation />
 
       {/* Hero */}
@@ -60,13 +71,14 @@ export default function OurStoryPage() {
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 md:h-40 bg-gradient-to-t from-black/40 via-black/20 to-transparent" />
         {/* ambient background video (muted) */}
         <div className="pointer-events-none absolute inset-0 -z-10 opacity-25 md:opacity-35 overflow-hidden">
-          <iframe
+          <video
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[177.78vh] h-[100vh] md:w-[177.78vw] md:h-[56.25vw] max-w-none"
-            src="https://www.youtube.com/embed/wS0lySfJEXo?autoplay=1&mute=1&controls=0&playsinline=1&loop=1&modestbranding=1&rel=0&showinfo=0&playlist=wS0lySfJEXo"
-            title="Our Story Background Ambient"
-            frameBorder="0"
-            allow="autoplay; encrypted-media; picture-in-picture;"
-            allowFullScreen
+            src="/videos/our-story.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
           />
         </div>
         <div className={`relative max-w-6xl mx-auto px-6 ${showVideo ? 'py-0' : 'py-20 md:py-24 lg:py-28'} text-center ${showVideo ? 'min-h-[100vh]' : 'min-h-[70vh]'} flex flex-col items-center justify-center transition-all duration-500 ease-out`}>
@@ -75,15 +87,15 @@ export default function OurStoryPage() {
             <span className="text-sm font-semibold tracking-wide uppercase">Our Story</span>
           </div>
           <h1 className={`text-4xl md:text-6xl font-black leading-tight mb-5 gradient-text transition-all duration-500 ease-out ${showVideo ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'} px-3`}>
-            Welcome to Our Family
+            WELCOME TO OUR FAMILY
           </h1>
           <p className={`text-lg md:text-xl text-white/85 max-w-3xl mx-auto transition-all duration-500 ease-out ${showVideo ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'} px-3`}>
-            Step into the heart of iboothme, where innovation meets passion, and every team member is part of something extraordinary.
+            Behind iboothme is a team of engineers, creators, and innovators building next-level activations for some of the world's top brands.
           </p>
           {!showVideo && (
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 transition-all duration-500 ease-out px-3">
               <Button variant="creativePrimary" size="lg" className="w-full sm:w-auto">Work With Us</Button>
-              <Button variant="creativeSecondary" size="lg" className="w-full sm:w-auto" onClick={() => setShowVideo(true)}>Watch Video</Button>
+          <Button variant="creativeSecondary" size="lg" className="w-full sm:w-auto" onClick={() => setShowVideo(true)}>Inside iboothme</Button>
             </div>
           )}
         </div>
@@ -95,13 +107,15 @@ export default function OurStoryPage() {
         >
           Close ✕
         </button>
-        <iframe
+        <video
           className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[177.78vh] h-[100vh] md:w-[177.78vw] md:h-[56.25vw] max-w-none z-10 transition-all duration-500 ease-out ${showVideo ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.98] pointer-events-none'}`}
-          src={`https://www.youtube.com/embed/wS0lySfJEXo?autoplay=1&mute=${showVideo ? '0' : '1'}&controls=1&playsinline=1&loop=1&modestbranding=1&rel=0&showinfo=0&playlist=wS0lySfJEXo`}
-          title="Our Story Fullscreen Video"
-          frameBorder="0"
-          allow="autoplay; encrypted-media; picture-in-picture;"
-          allowFullScreen
+          src="/videos/our-story.mp4"
+          autoPlay
+          loop
+          playsInline
+          preload="metadata"
+          muted={!showVideo}
+          controls={showVideo}
         />
       </section>
 
@@ -150,7 +164,7 @@ export default function OurStoryPage() {
                 viewport={{ once: true, amount: 0.4 }}
                 className="col-span-1"
               >
-                Hey, I'm Youssef—founder of iboothme. Back in 2011, I set out with one goal: to break the mold of event experiences.
+                I’m Youssef — founder of iboothme. Back in 2011, I saw a gap in the way brands connected with people at events. The tech felt generic. The experiences felt forgettable.
               </motion.p>
               <motion.p
                 initial={{ opacity: 0, y: 40, scale: 0.95 }}
@@ -159,7 +173,7 @@ export default function OurStoryPage() {
                 viewport={{ once: true, amount: 0.4 }}
                 className="col-span-1"
               >
-                I wanted the freedom to build our own software and hardware—so we could craft activations that aren't just cool, but strategic, seamless, and truly make sense for brands.
+                So I decided to change that. I wanted the freedom to create experiences tailored for every brand. Software and hardware engineered not just to impress, but to make every interaction meaningful, seamless, and truly make sense for brands.
               </motion.p>
             </div>
             <motion.blockquote
@@ -169,7 +183,7 @@ export default function OurStoryPage() {
               viewport={{ once: true, amount: 0.4 }}
               className="border-l-2 border-white/20 pl-4 italic text-white/90"
             >
-              “That's how iboothme was born—from a vision to transform how brands connect with their audiences.”
+              “That’s how iboothme was born — from a belief that brand activations should be more than a moment and a vision to transform how brands connect with their audiences.”
             </motion.blockquote>
             <motion.p
               initial={{ opacity: 0, y: 40, scale: 0.95 }}
@@ -177,10 +191,12 @@ export default function OurStoryPage() {
               transition={{ duration: 0.6, ease: "easeOut", delay: 0.45 }}
               viewport={{ once: true, amount: 0.4 }}
             >
-              Today, we're still driven by the same passion: creating custom, tech-powered experiences that help your brand stand out and make lasting connections.
+              Today, that vision is stronger than ever. Creating custom, tech-powered experiences that help your brand stand out and make lasting connections.
             </motion.p>
-            <Button variant="creativeSecondary" size="lg" className="group">
-              <span className="inline-block mr-2 text-lg font-bold leading-none">in</span>Connect with Youssef
+            <Button asChild variant="creativeSecondary" size="lg" className="group">
+              <a href="https://www.linkedin.com/in/youssefkibbe/" target="_blank" rel="noreferrer">
+                <span className="inline-block mr-2 text-lg font-bold leading-none">in</span>Connect with Youssef
+              </a>
             </Button>
           </section>
         </div>

@@ -103,14 +103,14 @@ export default function HeroSection() {
           className="mb-6 md:mb-8"
         >
           <p 
-            className="text-base sm:text-lg md:text-xl xl:text-2xl text-white/80 max-w-[32ch] sm:max-w-3xl mx-auto leading-relaxed font-regular px-4"
+            className="text-base sm:text-lg md:text-xl xl:text-2xl text-white/80 max-w-[32ch] sm:max-w-4xl mx-auto leading-relaxed font-regular px-2"
             data-testid="hero-description"
             style={{ 
               fontFamily: 'var(--font-sans)',
               textShadow: '0 0 20px rgba(255,255,255,0.1)'
             }}
           >
-            Creative Embedded technology for the best brands since <b>2011</b>.
+            Custom AI experiential marketing and tech for brand activations.
           </p>
         </motion.div>
         

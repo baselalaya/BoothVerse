@@ -3,6 +3,8 @@ import { BarChart3, PieChart, Gauge, Users, Clock3, Smile } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button"
 import Navigation from "@/components/navigation";
+import { applySeoToHead, fetchSeoConfig } from "@/lib/seoOverride";
+import Seo from "@/components/seo";
   import FooterSection from "@/components/footer-section";
 
 
@@ -35,8 +37,23 @@ function CountUp({ to, duration = 1200 }: { to: number; duration?: number }) {
 }
 
 export default function AnalyticsPage() {
+  useEffect(() => { (async () => { const cfg = await fetchSeoConfig('/analytics'); if (cfg) applySeoToHead(cfg); })(); }, []);
   return (
     <div className="relative min-h-screen text-white" data-testid="analytics-page">
+      <Seo
+        title="Event Analytics & Insights"
+        description="Real-time dashboards and post-event insights to measure engagement, ROI, and content performance across activations."
+        canonical="/analytics"
+        ogImage="/images/studio-ai-example.jpg"
+        keywords={["event analytics", "engagement metrics", "ROI tracking"]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: "Event Analytics",
+          description: "Dashboards and insights for event performance.",
+          provider: { "@type": "Organization", name: "iboothme" }
+        }}
+      />
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(70%_50%_at_50%_0%,rgba(112,66,210,0.12),transparent_60%),radial-gradient(60%_40%_at_80%_100%,rgba(34,212,253,0.10),transparent_60%)]" />
       <Navigation />
       <main className="relative z-10" data-testid="analytics-page">
@@ -68,12 +85,9 @@ export default function AnalyticsPage() {
                 <div className="w-2 h-2 rounded-full bg-[#7042D2] animate-pulse" />
                 <span className="text-sm font-medium tracking-wide uppercase">Campaign Analytics</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl md:text-6xl font-black leading-tight mb-4 md:mb-5 gradient-text px-3">Analytics Dashboard</h1>
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-black leading-tight mb-4 md:mb-5 gradient-text px-3">Analytics Dashboard</h1>
               <p className="text-base sm:text-lg md:text-xl text-white/85 max-w-[30ch] sm:max-w-3xl mx-auto leading-relaxed px-3">
-                Real-time analytics and insights for your Activation. Measure impact. Optimize performance. Drive results.
-              </p>
-              <p className="text-white/65 text-sm sm:text-base mx-auto mt-3 max-w-[36ch] sm:max-w-2xl leading-relaxed px-3">
-                Our solution is crafted for brands to understand their campaign impact and maximize their activation success.
+                Real-time analytics for your activation. Measure impact. Optimize performance. Maximize results.
               </p>
               {/* Inline Stats */}
               <div className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-left max-w-6xl mx-auto px-3">
@@ -171,7 +185,7 @@ export default function AnalyticsPage() {
           {/* AI Powered Analytics */}
           <section className="rounded-3xl px-6 md:px-8 py-12 md:py-16 mb-12">
             <h3 className="text-2xl font-bold text-center mb-2">AI-Powered Analytics</h3>
-            <p className="text-center text-white/70 mb-8">Advanced insights powered by artificial intelligence</p>
+            <p className="text-center text-white/70 mb-8">Discover deeper insights. Unlock advanced analytics to maximize your brand activation success.</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Card 1 */}
               <motion.div

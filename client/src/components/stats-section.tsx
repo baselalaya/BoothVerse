@@ -3,9 +3,9 @@ import { useRef, useEffect } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 const stats = [
-  { id: "social-shares", value: 500, suffix: "M+", label: "Social Shares Generated" },
-  { id: "engagement", value: 98, suffix: "%", label: "Average Engagement Uplift" },
-  { id: "activations", value: 150, suffix: "+", label: "Global Brand Activations" }
+  { id: "brand-engagements", value: 6, suffix: "M+", label: "Brand Engagements" },
+  { id: "client-satisfaction", value: 98, suffix: "%", label: "Client Satisfaction" },
+  { id: "brand-partnerships", value: 150, suffix: "+", label: "Premium Brand Partnerships" }
 ];
 
 function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
@@ -96,7 +96,7 @@ export default function StatsSection() {
           animate={isInView ? "visible" : "hidden"}
           variants={itemVariants}
         >
-          Real performance across social, engagement, and activation scale.
+          Measurable performance in social reach, engagement, and activations.
         </motion.p>
 
         {/* Stat cards with premium shells */}

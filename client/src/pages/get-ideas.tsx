@@ -1,6 +1,10 @@
 import Navigation from "@/components/navigation";
+import { useEffect } from 'react';
+import { applySeoToHead, fetchSeoConfig } from "@/lib/seoOverride";
+import Seo from "@/components/seo";
 import FooterSection from "@/components/footer-section";
 import { Button } from "@/components/ui/button";
+import Breadcrumbs from "@/components/breadcrumbs";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Autoplay } from "swiper/modules";
 import { useMemo, useState } from "react";
@@ -10,6 +14,7 @@ import "swiper/css/effect-coverflow";
 type Idea = { tag: string; title: string; subtitle: string; media?: { type: 'image'|'video'; src: string } };
 
 export default function GetIdeasPage() {
+  useEffect(() => { (async () => { const cfg = await fetchSeoConfig('/get-ideas'); if (cfg) applySeoToHead(cfg); })(); }, []);
   const [activeFilter, setActiveFilter] = useState<string>("All Effects");
   const featured: Idea[] = [
     { tag: 'AI Photo Effect', title: 'AI Portrait Enhancement', subtitle: 'Professional studio-quality portraits with AI-powered lighting and skin enhancement.', media: { type: 'image', src: '/images/studio-ai-example.jpg' } },
@@ -45,9 +50,19 @@ export default function GetIdeasPage() {
 
   return (
     <div className="relative min-h-screen text-white">
+      <Seo
+        title="Activation Ideas"
+        description="Explore fresh activation ideas and experiential concepts to inspire your next event."
+        canonical="/get-ideas"
+        ogImage="/images/Brand Activation.jpg"
+        keywords={["activation ideas", "experiential ideas", "event concepts"]}
+      />
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(70%_50%_at_50%_0%,rgba(112,66,210,0.12),transparent_60%),radial-gradient(60%_40%_at_80%_100%,rgba(34,212,253,0.10),transparent_60%)]" />
       <Navigation />
       <main className="relative z-10">
+        <div className="max-w-7xl mx-auto px-6">
+          <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Get Ideas' }]} />
+        </div>
         {/* Hero */}
         <section className="relative w-full overflow-hidden min-h-[70vh] text-center mb-14 rounded-[28px] flex items-center justify-center">
           <div className="absolute inset-0 -z-10 opacity-30 overflow-hidden">
@@ -63,9 +78,9 @@ export default function GetIdeasPage() {
               <span className="text-sm font-semibold tracking-wide uppercase">Get Ideas</span>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-6xl font-black gradient-text">Discover. Imagine. Activate.</h1>
-            <p className="text-base sm:text-lg md:text-xl text-white/85 mt-3 sm:mt-4 max-w-[34ch] sm:max-w-3xl mx-auto leading-relaxed">Get inspired with concepts that help you win your pitches and create unforgettable brand activations.</p>
+            <p className="text-base sm:text-lg md:text-xl text-white/85 mt-3 sm:mt-4 max-w-[34ch] sm:max-w-3xl mx-auto leading-relaxed">Get inspired with concepts that help you win your pitches and create unforgettable brand activations</p>
             <div className="mt-6 sm:mt-8">
-              <Button variant="creativePrimary" size="lg" className="w-full sm:w-auto">Explore Get Ideas</Button>
+              <Button variant="creativePrimary" size="lg" className="w-full sm:w-auto">Explore Ideas</Button>
             </div>
           </div>
         </section>
@@ -73,7 +88,8 @@ export default function GetIdeasPage() {
         {/* Featured Experiences (2-card layout) */}
         <section className="relative max-w-7xl mx-auto px-6 mb-12">
           <div className="text-center mb-8 opacity-60">⸻</div>
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-6">Featured Experiences</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-2">Inside the Ideas</h2>
+          <p className="text-white/80 text-center max-w-2xl mx-auto mb-6">Explore our curated collection of AI-powered concepts and creative solutions</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {featured.map((f, i) => (
               <div key={i} className="pb-2">
@@ -83,30 +99,33 @@ export default function GetIdeasPage() {
           </div>
         </section>
         
-        {/* Categories / Filters (static display) */}
-        <section className="max-w-7xl mx-auto px-6 mb-10">
-          <div className="text-center mb-8 opacity-60">⸻</div>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            {filters.map((f) => (
-              <button
-                key={f}
-                onClick={() => setActiveFilter(f)}
-                className={`px-4 py-2 rounded-full border text-sm font-semibold transition ${activeFilter === f ? 'bg-[#7042D2]/20 border-[#7042D2]/40 text-white' : 'bg-white/5 border-white/15 text-white/85 hover:bg-white/10 hover:text-white'}`}
-                aria-pressed={activeFilter === f}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
-        </section>
+        {/* Filters removed as requested */}
 
-        {/* Ideas Grid */}
+        {/* Ideas Grid mapped to cards in screenshot */}
         <section className="max-w-7xl mx-auto px-6 mb-12">
           <div className="text-center mb-8 opacity-60">⸻</div>
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-6">Ideas</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {grid.map((g, i) => (
-              <IdeaTile key={i} {...g} />
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-6">Inside the Ideas</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { title: 'AI Effects', desc: 'Ready-made AI effects that create instant impact in brand activations and events.', cta: 'Explore Effects', href: '/ai-effects' },
+              { title: 'Creative Results', desc: 'See the final results of projects we\'ve delivered to help you visualize possibilities.', cta: 'View Results',href: '/creative-results'  },
+              { title: 'Video Hub', desc: 'Watch videos showing how our innovations engage during events and brand activations.', cta: 'Watch Videos' ,href: '/video-hub' },
+              { title: 'Insights & Inspiration', desc: 'Blogs that unpack events we\'ve delivered and the ideas driving them.', cta: 'Read Insights' ,href: '/insights'  },
+              { title: 'Newsletter', desc: 'Your monthly round-up of new innovations and trends we\'ve applied in events.', cta: 'Browse Archive' },
+              { title: 'Concepts', desc: 'Fresh monthly ideas to help you stand out in pitches and win clients', cta: 'Explore Products' },
+            ].map((item, idx) => (
+              <a key={idx} href={item.href || '#'} className="relative rounded-3xl border border-white/10 bg-white/5 p-6 md:p-7 flex flex-col justify-between shadow-[0_18px_60px_rgba(0,0,0,0.35)] hover:bg-white/10 transition-colors">
+                <div>
+                  <h3 className="text-lg md:text-xl font-semibold mb-2">{item.title}</h3>
+                  <p className="text-white/80 text-sm md:text-base leading-relaxed">{item.desc}</p>
+                </div>
+                <div className="pt-4">
+                  <button className="text-sm md:text-base text-white font-semibold inline-flex items-center gap-2 opacity-90 hover:opacity-100">
+                    {item.cta}
+                    <span aria-hidden>›</span>
+                  </button>
+                </div>
+              </a>
             ))}
           </div>
         </section>
@@ -135,8 +154,12 @@ export default function GetIdeasPage() {
             Let’s discuss how we can customize these solutions for your brand activation needs.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button variant="creativePrimary" size="lg" className="w-full sm:w-auto">Start the Conversation</Button>
-            <Button variant="creativeSecondary" size="lg" className="w-full sm:w-auto">Book a Demo</Button>
+            <Button asChild variant="creativePrimary" size="lg" className="w-full sm:w-auto">
+              <a href="/creative-results">View Results</a>
+            </Button>
+            <Button asChild variant="creativeSecondary" size="lg" className="w-full sm:w-auto">
+              <a href="/contact-us">Start the Conversation</a>
+            </Button>
           </div>
         </section>
       </main>

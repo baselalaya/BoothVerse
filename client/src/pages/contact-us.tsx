@@ -1,31 +1,113 @@
 import Navigation from "@/components/navigation";
+import { useEffect } from 'react';
+import { applySeoToHead, fetchSeoConfig } from "@/lib/seoOverride";
+import Seo from "@/components/seo";
 import FooterSection from "@/components/footer-section";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, Clock, MapPin, Phone as PhoneIcon } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { products } from "@/data/products";
+import { useLocation } from "wouter";
+import { apiRequest } from "@/lib/queryClient";
+import { getStoredUtm } from "@/lib/utm";
+import { trackEvent } from "@/lib/ga";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ContactUsPage() {
+  useEffect(() => { (async () => { const cfg = await fetchSeoConfig('/contact-us'); if (cfg) applySeoToHead(cfg); })(); }, []);
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
+  const productId = urlParams.get('product') || '';
+  const selectedProduct = products.find(p => p.id === productId);
+
   const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
     company: "",
-    product: "",
+    product: productId,
     message: "",
   });
+  const [submitting, setSubmitting] = useState(false);
 
   function update<K extends keyof typeof form>(k: K, v: string) {
     setForm((f) => ({ ...f, [k]: v }));
   }
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // Hook up to your backend/email later
-    alert("Thanks! We received your message and will be in touch.");
+    if (!form.name.trim() || !form.email.trim()) {
+      toast({ title: 'Missing required fields', description: 'Please provide your name and email to continue.', variant: 'destructive' as any });
+      return;
+    }
+    // very basic email format check
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      toast({ title: 'Invalid email address', description: 'Please enter a valid email.', variant: 'destructive' as any });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const stored = getStoredUtm();
+      await apiRequest('POST','/api/leads', {
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim() || undefined,
+        company: form.company.trim() || undefined,
+        product: form.product || undefined,
+        message: form.message.trim() || undefined,
+        source_path: window.location.pathname,
+        utm_source: params.get('utm_source') || stored?.utm_source || undefined,
+        utm_medium: params.get('utm_medium') || stored?.utm_medium || undefined,
+        utm_campaign: params.get('utm_campaign') || stored?.utm_campaign || undefined,
+        utm_term: params.get('utm_term') || stored?.utm_term || undefined,
+        utm_content: params.get('utm_content') || stored?.utm_content || undefined,
+        gclid: params.get('gclid') || stored?.gclid || undefined,
+        fbclid: params.get('fbclid') || stored?.fbclid || undefined,
+      });
+      trackEvent('generate_lead', {
+        form_id: 'contact_us',
+        method: 'contact_form',
+        value: 1,
+        currency: 'USD',
+        items: form.product ? [{ item_id: form.product, item_name: selectedProduct?.name }] : undefined,
+      });
+      toast({ title: 'Request sent', description: 'We will contact you shortly.' });
+      setForm({ name:'', email:'', phone:'', company:'', product:'', message:'' });
+      setLocation('/');
+    } catch (err:any) {
+      // Provide a friendlier error message
+      const msg = typeof err?.message === 'string' ? err.message : 'Please try again.';
+      const friendly = msg.includes('Missing SUPABASE') || msg.includes('Invalid API key')
+        ? 'Server configuration error. Please try again later or email info@iboothme.com.'
+        : msg;
+      toast({ title: 'Failed to send', description: friendly, variant: 'destructive' as any });
+    }
+    finally {
+      setSubmitting(false);
+    }
   }
 
   return (
     <div className="relative min-h-screen text-white">
+      <Seo
+        title="Contact Us"
+        description="Talk to iboothme about your next activation. Get a demo or tailored quote."
+        canonical="/contact-us"
+        ogImage="/images/icon.svg"
+        keywords={["contact", "demo", "quote", "brand activation"]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          name: "Contact iboothme",
+          description: "Get in touch for demos and quotes.",
+          mainEntity: {
+            "@type": "Organization",
+            name: "iboothme"
+          }
+        }}
+      />
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(70%_50%_at_50%_0%,rgba(112,66,210,0.12),transparent_60%),radial-gradient(60%_40%_at_80%_100%,rgba(34,212,253,0.10),transparent_60%)]" />
       <Navigation />
       <main className="relative z-10">
@@ -54,6 +136,15 @@ export default function ContactUsPage() {
         <section className="max-w-7xl mx-auto px-6 mb-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8">
             <h2 className="text-2xl font-bold mb-4">Get Your Quote</h2>
+            {selectedProduct && (
+              <div className="mb-4 p-3 rounded-2xl border border-white/10 bg-white/5 flex items-center gap-3">
+                <img src={selectedProduct.image} alt={selectedProduct.name} className="w-12 h-12 rounded object-cover border border-white/10" />
+                <div>
+                  <div className="text-xs text-white/70">Selected Product</div>
+                  <div className="font-semibold">{selectedProduct.name}</div>
+                </div>
+              </div>
+            )}
             <form onSubmit={onSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="col-span-1 md:col-span-1">
                 <label className="block text-sm text-white/80 mb-1">Full Name *</label>
@@ -71,24 +162,25 @@ export default function ContactUsPage() {
                 <label className="block text-sm text-white/80 mb-1">Company</label>
                 <input value={form.company} onChange={(e) => update("company", e.target.value)} className="w-full rounded-xl bg-black/40 border border-white/15 px-4 py-3 outline-none focus:ring-2 focus:ring-[#7042D2]" placeholder="Your Company" />
               </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm text-white/80 mb-1">Product Interest</label>
-                <select value={form.product} onChange={(e) => update("product", e.target.value)} className="w-full rounded-xl bg-black/40 border border-white/15 px-4 py-3 outline-none focus:ring-2 focus:ring-[#7042D2]">
-                  <option value="">Select a product</option>
-                  <option>Iboothme X</option>
-                  <option>Cabine X</option>
-                  <option>Glossbooth X</option>
-                  <option>AI Technology</option>
-                  <option>Personalised Merch</option>
-                  <option>Robotics</option>
-                </select>
-              </div>
+              {!selectedProduct && (
+                <div className="md:col-span-2">
+                  <label className="block text-sm text-white/80 mb-1">Product Interest</label>
+                  <select value={form.product} onChange={(e) => update("product", e.target.value)} className="w-full rounded-xl bg-black/40 border border-white/15 px-4 py-3 outline-none focus:ring-2 focus:ring-[#7042D2]">
+                    <option value="">Select a product (optional)</option>
+                    {products.map(p => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div className="md:col-span-2">
                 <label className="block text-sm text-white/80 mb-1">Message</label>
                 <textarea value={form.message} onChange={(e) => update("message", e.target.value)} rows={6} className="w-full rounded-xl bg-black/40 border border-white/15 px-4 py-3 outline-none focus:ring-2 focus:ring-[#7042D2]" placeholder="Tell us about your event or activation needs…" />
               </div>
               <div className="md:col-span-2 mt-2">
-                <Button type="submit" variant="creativePrimary" size="lg">Send Message</Button>
+                <Button type="submit" variant="creativePrimary" size="lg" disabled={submitting}>
+                  {submitting ? 'Sending…' : 'Send Message'}
+                </Button>
               </div>
             </form>
           </div>

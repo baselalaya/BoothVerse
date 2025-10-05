@@ -6,41 +6,13 @@ import { AnimatePresence, LayoutGroup, motion, useScroll } from "framer-motion";
 import Portal from "@/components/portal";
 
 const navItems = [
-  {
-    name: "Products",
-    href: "/products",
-    description: "Discover modular booth ecosystems built for instant impact.",
-  },
-  {
-    name: "Robotics",
-    href: "/robotics",
-    description: "Step inside autonomous capture labs crafted for futuristic brands.",
-  },
-  {
-    name: "AI Technology",
-    href: "/ai-technology",
-    description: "See how our adaptive AI creates unforgettable experiences.",
-  },
-  {
-    name: "Personalised Merch",
-    href: "/personalised-merch",
-    description: "Generate signature keepsakes that ship before your guests get home.",
-  },
-  {
-    name: "Analytics",
-    href: "/analytics",
-    description: "Turn every guest interaction into actionable realtime insights.",
-  },
-  {
-    name: "Get Ideas",
-    href: "/get-ideas",
-    description: "Browse curated launch playbooks designed for your next event.",
-  },
-  {
-    name: "Our Story",
-    href: "/our-story",
-    description: "Meet the team reimagining photo experiences for 2025 and beyond.",
-  },
+  { name: "Solutions", href: "/products", description: "Discover modular booth ecosystems built for instant impact." },
+  { name: "AI Technology", href: "/ai-technology", description: "See how our adaptive AI creates unforgettable experiences." },
+  { name: "Get Ideas", href: "/get-ideas", description: "Browse curated launch playbooks designed for your next event." },
+  { name: "Insights", href: "/insights", description: "Insights & Inspiration articles, guides and case studies." },
+  { name: "Robotics", href: "/robotics", description: "Step inside autonomous capture labs crafted for futuristic brands." },
+  { name: "Personalized Merch", href: "/personalised-merch", description: "Generate signature keepsakes that ship before your guests get home." },
+  { name: "Our Story", href: "/our-story", description: "Meet the team reimagining photo experiences for 2026 and beyond." },
 ];
 
 export default function Navigation() {
