@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { adminApi, getAdminKey } from '@/lib/adminApi';
-import AdminNav from '@/components/admin-nav';
+// Top admin nav removed; using floating bottom nav
+import AdminBottomNav from '@/components/admin-bottom-nav';
 
 type Lead = {
   id: string;
@@ -58,7 +59,7 @@ export default function AdminLeadsPage() {
 
   return (
     <div className="min-h-screen bg-black text-white relative">
-      <AdminNav />
+      {null}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(70%_50%_at_50%_0%,rgba(112,66,210,0.12),transparent_60%),radial-gradient(60%_40%_at_80%_100%,rgba(34,212,253,0.10),transparent_60%)]" />
       <div className="p-6 max-w-6xl mx-auto space-y-4">
         <div className="flex items-center justify-between">
@@ -144,6 +145,7 @@ export default function AdminLeadsPage() {
           </div>
         )}
       </div>
+      <AdminBottomNav />
     </div>
   );
 }

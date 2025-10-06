@@ -278,69 +278,6 @@ Don’t miss on the updates!              </p>
           </div>
         </section>
 
-        {/* Vertical Reel — Creative Showcase */}
-        {/* <section className="relative py-16 md:py-24 mb-6">
-          <div className="absolute inset-0 -z-10">
-            <div className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_40%,rgba(112,66,210,0.10),transparent_60%)]" />
-            <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_55%,transparent_80%)]" />
-          </div>
-          <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-10 items-center">
-            <div className="order-2 lg:order-1">
-              <h3 className="text-3xl md:text-4xl font-black mb-4 gradient-text">
-                See Talia In Action
-              </h3>
-              <p className="text-white/80 mb-6 max-w-prose">
-                A vertical, social-first reel style that mirrors TikTok/Shorts,
-                perfect for showcasing real activations on the page without
-                breaking flow.
-              </p>
-              <div className="flex gap-3">
-                <Button variant="creativePrimary" size="lg">
-                  Rent Talia
-                </Button>
-                <Button variant="creativeSecondary" size="lg">
-                  Schedule Demo
-                </Button>
-              </div>
-            </div>
-            <div className="order-1 lg:order-2">
-              <div className="relative mx-auto w-[320px] sm:w-[360px] md:w-[400px] aspect-[9/16] rounded-[2rem] border border-white/15 bg-white/5 overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.5)] group">
-                <div className="pointer-events-none absolute inset-0 rounded-[2rem] ring-1 ring-inset ring-white/10" />
-                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.12)_0%,transparent_28%,transparent_72%,rgba(255,255,255,0.08)_100%)] opacity-60 mix-blend-overlay transition-transform duration-700 group-hover:translate-y-[-2%]" />
-                <video
-                  className="absolute inset-0 w-full h-full object-cover"
-                  src="https://vbth-cdn.s3.eu-central-1.amazonaws.com/media-content/robot.mp4"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  poster="/images/studio-ai-example.jpg"
-                />
-                <div className="absolute top-3 left-3 flex gap-2">
-                  <span className="px-2 py-1 text-[10px] rounded-full bg-black/50 border border-white/10">
-                    Live Demo
-                  </span>
-                  <span className="px-2 py-1 text-[10px] rounded-full bg-black/50 border border-white/10">
-                    Vertical Reel
-                  </span>
-                </div>
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                  <div className="text-xs text-white/80">
-                    @iboothme Robotics
-                  </div>
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="px-2 py-1 rounded-full bg-white/10 border border-white/10">
-                      AI
-                    </span>
-                    <span className="px-2 py-1 rounded-full bg-white/10 border border-white/10">
-                      Humanoid
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section> */}
 
         {/* Call-to-Action */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-12 text-center">

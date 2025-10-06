@@ -64,7 +64,17 @@ export default function InsightsPage(){
         {error && <div className="mb-6 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-red-200">{error}</div>}
 
         <section className="[column-fill:_balance] sm:columns-2 lg:columns-3 gap-4 space-y-4 min-h-[200px]">
-          {loading && <div className="opacity-70">Loading…</div>}
+          {loading && (
+            <div className="min-h-[40vh] w-full flex items-center justify-center">
+              <div className="flex items-center gap-3 text-white/80 bg-white/5 border border-white/10 rounded-xl px-4 py-3 animate-fade-in">
+                <svg className="animate-spin h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+                <span className="text-sm">Loading articles…</span>
+              </div>
+            </div>
+          )}
           {!loading && data.map(a => (
             <a key={a.id} href={`/insights/${a.slug}`} className="block break-inside-avoid rounded-2xl overflow-hidden bg-white/5 border border-white/10 hover:border-white/20">
               {a.cover_image && (
@@ -91,4 +101,3 @@ export default function InsightsPage(){
     </div>
   );
 }
-

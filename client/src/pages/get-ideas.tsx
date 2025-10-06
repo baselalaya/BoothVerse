@@ -18,7 +18,7 @@ export default function GetIdeasPage() {
   const [activeFilter, setActiveFilter] = useState<string>("All Effects");
   const featured: Idea[] = [
     { tag: 'AI Photo Effect', title: 'AI Portrait Enhancement', subtitle: 'Professional studio-quality portraits with AI-powered lighting and skin enhancement.', media: { type: 'image', src: '/images/studio-ai-example.jpg' } },
-    { tag: 'AI Video Effect', title: 'Cinematic Video Transform', subtitle: 'Transform photos into dynamic cinematic video sequences with AI motion.', media: { type: 'video', src: '/videos/ai-parallax.mp4' } },
+    { tag: 'AI Video Effect', title: 'Cinematic Video Transform', subtitle: 'Transform photos into dynamic cinematic video sequences with AI motion.', media: { type: 'video', src: '/videos/ai-parallax-new.mp4' } },
   ];
 
   const gridAll: Idea[] = [

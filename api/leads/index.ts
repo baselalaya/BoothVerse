@@ -3,6 +3,28 @@ import { getSupabaseAdmin, requireAdmin } from '../_supabase.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const supabase = getSupabaseAdmin();
+  // Sub-route: /api/leads/:id supported here by inspecting URL path
+  const url = new URL(req.url || '', 'http://localhost');
+  const parts = url.pathname.split('/').filter(Boolean);
+  const leadsIdx = parts.findIndex(p => p === 'leads');
+  const maybeId = leadsIdx >= 0 ? parts[leadsIdx + 1] : undefined;
+
+  if (maybeId) {
+    if (!requireAdmin(req, res)) return;
+    if (req.method === 'GET') {
+      const { data, error } = await supabase.from('leads').select('*').eq('id', maybeId).single();
+      if (error) return res.status(404).json({ message: 'Not found' });
+      return res.json(data);
+    }
+    if (req.method === 'PATCH') {
+      const patch = req.body || {};
+      const { data, error } = await supabase.from('leads').update(patch).eq('id', maybeId).select().single();
+      if (error) return res.status(500).json({ message: error.message });
+      return res.json(data);
+    }
+    res.setHeader('Allow', 'GET,PATCH');
+    return res.status(405).json({ message: 'Method Not Allowed' });
+  }
   if (req.method === 'POST') {
     try {
       const { name, email, phone, company, product, message, source_path, utm_source, utm_medium, utm_campaign, utm_term, utm_content, gclid, fbclid } = req.body || {};

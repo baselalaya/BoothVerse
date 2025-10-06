@@ -8,6 +8,10 @@
 @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .animate-spin-slow { animation: spin-slow 8s linear infinite; }
 
+/* Subtle fade in for loaders and UI elements */
+@keyframes fade-in { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-in { animation: fade-in 320ms var(--easing-smooth) both; }
+
 @keyframes rise { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 .animate-rise { animation: rise 600ms ease-out both; transform-origin: bottom; }
 

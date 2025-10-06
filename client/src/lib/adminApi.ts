@@ -12,22 +12,25 @@ export async function adminApi<T = any>(method: string, path: string, body?: any
   const key = getAdminKey();
   if (key) headers['x-admin-key'] = key;
   const url = base ? base.replace(/\/$/, '') + (path.startsWith('/') ? path : `/${path}`) : path;
+
   const res = await fetch(url, { method, headers, body: body ? JSON.stringify(body) : undefined });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text || res.statusText);
-  }
   const ct = res.headers.get('content-type') || '';
-  if (ct.includes('application/json')) {
-    return res.json();
+  const text = await res.text();
+
+  if (!res.ok) {
+    const snippet = text ? text.slice(0, 200) : res.statusText;
+    throw new Error(`${method} ${url} -> ${res.status} ${res.statusText} | ${snippet}`);
   }
-  // Fallback: try to parse text as JSON or return raw text
-  const txt = await res.text();
-  try { return JSON.parse(txt); } catch {}
-  if (!txt) throw new Error('Empty response');
+
+  if (ct.includes('application/json')) {
+    try { return JSON.parse(text) as T; } catch {}
+  }
+  if (!text) throw new Error('Empty response');
   // Detect if we accidentally got HTML (SPA fallback)
-  if (/<!DOCTYPE html>|<html[\s>]/i.test(txt)) {
+  if (/<!DOCTYPE html>|<html[\s>]/i.test(text)) {
     throw new Error('Received HTML from API (routing fallback). Check vercel routing.');
   }
+  try { return JSON.parse(text) as T; } catch {}
   throw new Error('Unexpected non-JSON response');
 }
+

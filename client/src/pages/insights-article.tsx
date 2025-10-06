@@ -29,12 +29,41 @@ export default function InsightArticlePage(){
   const [error, setError] = useState<string|undefined>();
 
   useEffect(()=>{ (async()=>{
-    try{
-      const res = await fetch(`/api/articles/${slug}`);
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.message||'Not found');
-      setArticle(json);
-    }catch(e:any){ setError(e?.message||'Failed'); }
+    const tryFetch = async (url: string) => {
+      const res = await fetch(url);
+      const ct = res.headers.get('content-type') || '';
+      // If JSON, parse normally
+      if (ct.includes('application/json')) {
+        const json = await res.json();
+        if (!res.ok) throw new Error(json?.message || res.statusText || 'Request failed');
+        return json;
+      }
+      // Otherwise read as text and detect HTML fallbacks
+      const txt = await res.text();
+      if (/<!DOCTYPE html>|<html[\s>]/i.test(txt)) {
+        throw new Error('Received HTML from API (routing fallback)');
+      }
+      try { return JSON.parse(txt); } catch {}
+      throw new Error('Unexpected non-JSON response');
+    };
+
+    setError(undefined);
+    try {
+      // Prefer query-based endpoint to avoid any dynamic route quirks on Vercel
+      const firstUrl = `/api/articles/by-slug?slug=${encodeURIComponent(slug)}`;
+      let data: any;
+      try {
+        data = await tryFetch(firstUrl);
+      } catch (e:any) {
+        // Fallback to dynamic route if the first attempt returns HTML or fails parsing
+        const fallbackUrl = `/api/articles/${encodeURIComponent(slug)}`;
+        data = await tryFetch(fallbackUrl);
+      }
+      setArticle(data);
+    } catch (e:any) {
+      const msg = typeof e?.message === 'string' ? e.message : 'Failed to load article';
+      setError(msg);
+    }
   })(); }, [slug]);
 
   const jsonLd = useMemo(()=>{
@@ -60,7 +89,15 @@ export default function InsightArticlePage(){
         <Breadcrumbs items={[{ label:'Insights & Inspiration', href:'/insights' }, { label: article?.title || 'Article' }]} />
         {error && <div className="mt-6 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-red-200">{error}</div>}
         {!article ? (
-          <div className="opacity-70">Loading…</div>
+          <div className="min-h-[40vh] w-full flex items-center justify-center">
+            <div className="flex items-center gap-3 text-white/80 bg-white/5 border border-white/10 rounded-xl px-4 py-3 animate-fade-in">
+              <svg className="animate-spin h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+              </svg>
+              <span className="text-sm">Loading article…</span>
+            </div>
+          </div>
         ) : (
           <article>
             <header className="mb-6">
@@ -83,4 +120,3 @@ export default function InsightArticlePage(){
     </div>
   );
 }
-

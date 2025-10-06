@@ -29,10 +29,18 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
+    port: 5000,
+    proxy: {
+      // Proxy API calls to Vercel Dev (or any API server) to keep a single origin in dev
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        // do not rewrite, we want /api/* to pass through as-is
+      },
+    },
     fs: {
       strict: true,
       deny: ["**/.*"],
     },
   },
 });
-

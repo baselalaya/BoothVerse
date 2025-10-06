@@ -26,6 +26,7 @@ export default function AdminNav() {
             <Link href="/admin" className={navClass('/admin')}>Dashboard</Link>
             <Link href="/admin/leads" className={navClass('/admin/leads')}>Leads</Link>
             <Link href="/admin/articles" className={navClass('/admin/articles')}>Articles</Link>
+            <Link href="/admin/media" className={navClass('/admin/media')}>Media</Link>
             <Link href="/admin/seo" className={navClass('/admin/seo')}>SEO</Link>
             <Link href="/admin/settings" className={navClass('/admin/settings')}>Settings</Link>
           </nav>

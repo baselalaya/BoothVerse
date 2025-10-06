@@ -24,6 +24,7 @@ import AdminSeoPage from "@/pages/admin/seo";
 import AdminArticlesPage from "@/pages/admin/articles";
 import AdminArticleEditPage from "@/pages/admin/article-edit";
 import AdminSettingsPage from "@/pages/admin/settings";
+import AdminMediaPage from "@/pages/admin/media";
 import TermsPage from "@/pages/terms";
 import PrivacyPage from "@/pages/privacy";
 import AiEffectsGallery from "@/pages/ai-effects";
@@ -176,6 +177,11 @@ function Router() {
         <Route path="/admin/settings">
           <PageTransition key={location} type="scale-blur">
             <AdminSettingsPage />
+          </PageTransition>
+        </Route>
+        <Route path="/admin/media">
+          <PageTransition key={location} type="scale-blur">
+            <AdminMediaPage />
           </PageTransition>
         </Route>
         <Route>

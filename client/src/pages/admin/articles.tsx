@@ -1,4 +1,5 @@
-import AdminNav from "@/components/admin-nav";
+// Top admin nav removed; using floating bottom nav
+import AdminBottomNav from "@/components/admin-bottom-nav";
 import { useEffect, useState } from "react";
 import { adminApi } from "@/lib/adminApi";
 
@@ -20,7 +21,7 @@ export default function AdminArticlesPage(){
 
   return (
     <div className="min-h-screen text-white">
-      <AdminNav />
+      {null}
       <main className="max-w-6xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold">Articles</h1>
@@ -59,7 +60,7 @@ export default function AdminArticlesPage(){
           <button disabled={page>=totalPages} onClick={()=>setPage(p=>Math.min(totalPages,p+1))} className="px-3 py-1 rounded border border-white/20 disabled:opacity-50">Next</button>
         </div>
       </main>
+      <AdminBottomNav />
     </div>
   );
 }
-

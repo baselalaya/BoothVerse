@@ -14,83 +14,7 @@ import { validateLeadBasics } from "@/lib/validation";
 import Breadcrumbs from "@/components/breadcrumbs";
 import { Search, ChevronDown } from "lucide-react";
 
-type Effect = { title: string; tag: string; img1: string; img2: string };
-
-// Using locally downloaded assets under `/images`
-const allEffects: Effect[] = [
-  {
-    title: "Stained Glass",
-    tag: "Technology & Digital",
-    img1: "/images/ai-effects-02-c681ffa8-902d-4cee-acbb-23da392bb58a.jpg",
-    img2: "/images/ai-effects-03-6ff3be51-a401-428c-bb06-3519b3dc824d.jpeg",
-  },
-  {
-    title: "GTA",
-    tag: "Brand Specific",
-    img1: "/images/ai-effects-12-abc87399-46e6-4499-94a5-24099adc2d0f.jpg",
-    img2: "/images/ai-effects-14-e92e477d-7a05-4303-9270-f2c302c099a8.jpg",
-  },
-  {
-    title: "Muppet style",
-    tag: "Product Integration",
-    img1: "/images/ai-effects-21-5c0c2ccf-7798-45b3-a915-aeb91c58b5b2.jpeg",
-    img2: "/images/ai-effects-22-f0a318a5-a6cd-485b-9222-456a55d6d754.jpg",
-  },
-  {
-    title: "Simpson Style",
-    tag: "Creative & Artistic",
-    img1: "/images/ai-effects-14-e92e477d-7a05-4303-9270-f2c302c099a8.jpg",
-    img2: "/images/ai-effects-13-8f9358bf-adeb-4445-96c5-60d3413cffc1.jpeg",
-  },
-  {
-    title: "Christmas",
-    tag: "Seasonal & Events",
-    img1: "/images/ai-effects-04-85a30eff-f9da-4408-a2b3-3d903af49864.jpg",
-    img2: "/images/ai-effects-05-a204058a-88d8-4042-8b34-42528d195155.jpeg",
-  },
-  {
-    title: "Sketch",
-    tag: "Automotive & Transportation",
-    img1: "/images/ai-effects-12-abc87399-46e6-4499-94a5-24099adc2d0f.jpg",
-    img2: "/images/ai-effects-25-34e87f0a-8b2e-4762-92fc-12aa5c136feb.jpg",
-  },
-  {
-    title: "Be Old",
-    tag: "Automotive & Transportation",
-    img1: "/images/ai-effects-11-578f1090-db2e-432a-a318-cc95d5f9877c.jpeg",
-    img2: "/images/ai-effects-10-6697ad3c-9d76-439a-8b77-f4327ef98124.jpg",
-  },
-  {
-    title: "Zombie",
-    tag: "Technology & Digital",
-    img1: "/images/ai-effects-10-6697ad3c-9d76-439a-8b77-f4327ef98124.jpg",
-    img2: "/images/ai-effects-08-b978f07a-8d24-419e-84d9-4488cc9e0281.jpg",
-  },
-  {
-    title: "Ken",
-    tag: "Fashion & Beauty",
-    img1: "/images/ai-effects-15-15dbc957-a9da-4d77-9674-2e971ba7b014.jpeg",
-    img2: "/images/ai-effects-16-691e3667-7c26-459e-9ba7-bd00e258c34a.jpg",
-  },
-  {
-    title: "Cartoon Self",
-    tag: "Brand Specific",
-    img1: "/images/ai-effects-13-8f9358bf-adeb-4445-96c5-60d3413cffc1.jpeg",
-    img2: "/images/ai-effects-24-87a3ecd1-8012-4fff-b172-0fd869fb98d0.jpg",
-  },
-  {
-    title: "Illustration Art",
-    tag: "Automotive & Transportation",
-    img1: "/images/ai-effects-25-34e87f0a-8b2e-4762-92fc-12aa5c136feb.jpg",
-    img2: "/images/ai-effects-18-4d0d7820-be91-4c28-a548-be1941e53889.jpg",
-  },
-  {
-    title: "Bricks Toy",
-    tag: "Seasonal & Events",
-    img1: "/images/ai-effects-24-87a3ecd1-8012-4fff-b172-0fd869fb98d0.jpg",
-    img2: "/images/ai-effects-20-da89e045-5c62-44a0-a935-45af62a096ea.jpg",
-  },
-];
+type MediaItem = { id: string; title: string; slug: string; type: 'image'|'video'; url: string; thumbnail_url?: string; tags?: string[] };
 
 const filters = [
   "All",
@@ -132,14 +56,29 @@ export default function AiEffectsGallery() {
     window.history.replaceState(null, "", url.toString());
   }, [active]);
 
-  const items = useMemo(
-    () =>
-      active === "All"
-        ? allEffects
-        : allEffects.filter((e) => e.tag === active),
-    [active]
-  );
-  const [limit, setLimit] = useState(12);
+  const [page, setPage] = useState(1);
+  const pageSize = 24;
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string|undefined>();
+  const [items, setItems] = useState<MediaItem[]>([]);
+  const [total, setTotal] = useState(0);
+
+  useEffect(()=>{ (async()=>{
+    setLoading(true); setError(undefined);
+    try{
+      const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+      if (active && active !== 'All') params.set('tag', active);
+      const res = await fetch(`/api/media?${params.toString()}`);
+      const ct = res.headers.get('content-type') || '';
+      let json: any;
+      if (ct.includes('application/json')) json = await res.json(); else { const txt = await res.text(); try{ json = JSON.parse(txt);}catch{ throw new Error('Unexpected response'); } }
+      if (!res.ok) throw new Error(json?.message||'Failed to load media');
+      setItems(json.data || []); setTotal(json.count || 0);
+    }catch(e:any){ setError(e?.message||'Failed to load media'); }
+    finally{ setLoading(false); }
+  })(); }, [active, page]);
+
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const [open, setOpen] = useState<{
     title: string;
     tag: string;
@@ -173,7 +112,7 @@ export default function AiEffectsGallery() {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
-  const visible = items.slice(0, limit);
+  const visible = items;
   return (
     <div className="relative min-h-screen text-white">
       <Seo
@@ -241,36 +180,42 @@ export default function AiEffectsGallery() {
           </div>
         </div>
 
+        {loading ? (
+          <div className="min-h-[40vh] w-full flex items-center justify-center">
+            <div className="flex items-center gap-3 text-white/80 bg-white/5 border border-white/10 rounded-xl px-4 py-3 animate-fade-in">
+              <svg className="animate-spin h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+              </svg>
+              <span className="text-sm">Loading effects…</span>
+            </div>
+          </div>
+        ) : (
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {visible.map((e, i) => (
+          {visible.map((e) => (
             <article
-              key={i}
+              key={e.id}
               className="overflow-hidden rounded-2xl bg-white/5 text-white border border-white/10 shadow-md hover:shadow-lg transition-shadow duration-300"
             >
               <div className="relative group aspect-video bg-black overflow-hidden rounded-b-none">
-                <img
-                  src={e.img1}
-                  alt={e.title}
-                  className="w-full h-full object-cover transition-opacity duration-300 opacity-100 group-hover:opacity-0"
-                />
-                <img
-                  src={e.img2}
-                  alt={e.title + " alternate"}
-                  className="w-full h-full object-cover absolute inset-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100"
-                />
+                {e.type === 'video' ? (
+                  <video className="w-full h-full object-cover" src={e.url} poster={e.thumbnail_url} muted playsInline preload="metadata" />
+                ) : (
+                  <img src={e.url} alt={e.title} className="w-full h-full object-cover" loading="lazy" />
+                )}
               </div>
               <div className="px-4 pt-4 pb-3">
                 <h3 className="font-semibold text-base md:text-lg leading-tight text-white/90">
                   {e.title}
                 </h3>
                 <p className="text-white/70 text-xs md:text-sm mt-1">
-                  Tags: {e.tag}
+                  {(e.tags||[]).slice(0,1).join(', ')}
                 </p>
               </div>
               <div className="p-4 pt-0">
                 <Button
                   onClick={() =>
-                    setOpen({ title: e.title, tag: e.tag, img: e.img1 })
+                    setOpen({ title: e.title, tag: (e.tags?.[0]||'Effect'), img: e.type==='image' ? e.url : (e.thumbnail_url || e.url) })
                   }
                   variant="creativePrimary"
                   className="w-full"
@@ -281,16 +226,12 @@ export default function AiEffectsGallery() {
             </article>
           ))}
         </section>
+        )}
 
-        <div className="flex justify-center mt-8">
-          {limit < items.length ? (
-            <button
-              onClick={() => setLimit((l) => l + 12)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 text-white/90 hover:text-white hover:border-white"
-            >
-              View More
-            </button>
-          ) : null}
+        <div className="mt-8 flex items-center justify-center gap-3">
+          <button disabled={page<=1} onClick={()=>setPage(p=>Math.max(1,p-1))} className="px-4 py-2 rounded-full border border-white/20 text-white/90 disabled:opacity-50">Prev</button>
+          <div className="text-white/70 text-sm">Page {page} of {totalPages}</div>
+          <button disabled={page>=totalPages} onClick={()=>setPage(p=>Math.min(totalPages,p+1))} className="px-4 py-2 rounded-full border border-white/20 text-white/90 disabled:opacity-50">Next</button>
         </div>
 
         {open &&
