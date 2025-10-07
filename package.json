@@ -6,9 +6,10 @@
   "scripts": {
     "prebuild": "tsx scripts/check-env.ts",
     "dev": "NODE_ENV=development tsx server/index.ts",
-    "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist && tsx scripts/generate-sitemap.ts && tsx scripts/generate-robots.ts",
+    "build": "vite build && tsx scripts/prerender.ts && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist && tsx scripts/generate-sitemap.ts && tsx scripts/generate-robots.ts",
     "prebuild:client": "tsx scripts/check-env.ts",
-    "build:client": "vite build && tsx scripts/generate-sitemap.ts && tsx scripts/generate-robots.ts",
+    "build:client": "vite build && tsx scripts/prerender.ts && tsx scripts/generate-sitemap.ts && tsx scripts/generate-robots.ts",
+    "prerender": "tsx scripts/prerender.ts",
     "sitemap": "tsx scripts/generate-sitemap.ts",
     "robots": "tsx scripts/generate-robots.ts",
     "preview:client": "serve dist/public -s -l 4173 || npx serve dist/public -s -l 4173",

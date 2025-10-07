@@ -205,7 +205,8 @@ function App() {
     // Fetch GA4 measurement id and initialize
     (async () => {
       try {
-        const res = await fetch('/api/settings/ga');
+        const base = (import.meta as any).env?.VITE_API_BASE_URL || '';
+        const res = await fetch(`${base.replace(/\/$/,'')}/api/settings/ga`);
         if (res.ok) {
           const { id } = await res.json();
           if (id) { loadGA(id); setGaLoaded(true); }
@@ -213,7 +214,8 @@ function App() {
       } catch {}
       try {
         // Inject search console meta tags if configured
-        const res = await fetch('/api/settings/public');
+        const base = (import.meta as any).env?.VITE_API_BASE_URL || '';
+        const res = await fetch(`${base.replace(/\/$/,'')}/api/settings/public`);
         if (res.ok) {
           const cfg = await res.json();
           const ensureMeta = (name: string, content?: string) => {

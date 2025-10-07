@@ -69,6 +69,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (tag) query = query.contains('tags', [tag]);
       const { data, error, count } = await query;
       if (error) return res.status(500).json({ message: error.message });
+      res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
       return res.json({ data, count, page: p, pageSize: ps });
     } catch (e: any) {
       return res.status(500).json({ message: e.message || 'Server error' });
@@ -86,6 +87,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .eq('status', 'published')
         .single();
       if (error) return res.status(404).json({ message: 'Not found' });
+      res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=1200');
       return res.json(data);
     } catch (e: any) {
       return res.status(500).json({ message: e.message || 'Server error' });
@@ -271,6 +273,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const supabase = getSupabaseAdmin();
       const { data, error } = await supabase.from('seo_configs').select('*').eq('id', req.params.id).single();
       if (error) return res.status(404).json({ message: 'Not found' });
+      res.setHeader('Cache-Control', 'public, max-age=600, stale-while-revalidate=3600');
       return res.json(data);
     } catch (e:any) {
       return res.status(500).json({ message: e.message || 'Server error' });
@@ -311,6 +314,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const supabase = getSupabaseAdmin();
       const { data, error } = await supabase.from('settings').select('value').eq('key', 'ga_measurement_id').single();
       if (error && error.code !== 'PGRST116') return res.status(500).json({ message: error.message });
+      res.setHeader('Cache-Control', 'public, max-age=86400');
       return res.json({ id: data?.value || null });
     } catch (e:any) {
       return res.status(500).json({ message: e.message || 'Server error' });
@@ -326,6 +330,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (error) return res.status(500).json({ message: error.message });
       const out: Record<string, string> = {};
       (data || []).forEach((row: any) => { out[row.key] = row.value; });
+      res.setHeader('Cache-Control', 'public, max-age=86400');
       return res.json(out);
     } catch (e:any) {
       return res.status(500).json({ message: e.message || 'Server error' });
@@ -355,6 +360,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.json(data);
     } catch (e:any) {
       return res.status(500).json({ message: e.message || 'Server error' });
+    }
+  });
+
+  // SEO: robots.txt
+  app.get('/robots.txt', (_req, res) => {
+    const host = process.env.CANONICAL_HOST || '';
+    const lines = [
+      'User-agent: *',
+      'Disallow: /admin',
+      `Sitemap: ${host ? `https://${host}` : ''}/sitemap.xml`
+    ].join('\n');
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    return res.send(lines);
+  });
+
+  // SEO: sitemap.xml from published articles
+  app.get('/sitemap.xml', async (_req, res) => {
+    try {
+      const host = process.env.CANONICAL_HOST || '';
+      const base = host ? `https://${host}` : '';
+      const supabase = getSupabaseAdmin();
+      const { data, error } = await supabase
+        .from('articles')
+        .select('slug,published_at')
+        .eq('status', 'published')
+        .order('published_at', { ascending: false });
+      if (error) return res.status(500).send('');
+      const urls = (data || []).map((row: any) => ({
+        loc: `${base}/insights/${row.slug}`,
+        lastmod: row.published_at ? new Date(row.published_at).toISOString() : undefined,
+        changefreq: 'weekly',
+        priority: '0.8'
+      }));
+      const staticUrls = [
+        { loc: `${base}/`, changefreq: 'weekly', priority: '1.0' },
+        { loc: `${base}/insights`, changefreq: 'daily', priority: '0.9' },
+      ];
+      const all = [...staticUrls, ...urls];
+      const xml = ['<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+        ...all.map(u => {
+          return [
+            '<url>',
+            `<loc>${u.loc}</loc>`,
+            u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : '',
+            `<changefreq>${u.changefreq}</changefreq>`,
+            `<priority>${u.priority}</priority>`,
+            '</url>'
+          ].filter(Boolean).join('');
+        }),
+        '</urlset>'
+      ].join('');
+      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+      return res.send(xml);
+    } catch {
+      return res.status(500).send('');
     }
   });
 

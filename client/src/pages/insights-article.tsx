@@ -50,13 +50,15 @@ export default function InsightArticlePage(){
     setError(undefined);
     try {
       // Prefer query-based endpoint to avoid any dynamic route quirks on Vercel
-      const firstUrl = `/api/articles/by-slug?slug=${encodeURIComponent(slug)}`;
+      const base = (import.meta as any).env?.VITE_API_BASE_URL || '';
+      const firstUrl = `${base.replace(/\/$/,'')}/api/articles/by-slug?slug=${encodeURIComponent(slug)}`;
       let data: any;
       try {
         data = await tryFetch(firstUrl);
       } catch (e:any) {
         // Fallback to dynamic route if the first attempt returns HTML or fails parsing
-        const fallbackUrl = `/api/articles/${encodeURIComponent(slug)}`;
+        const base2 = (import.meta as any).env?.VITE_API_BASE_URL || '';
+        const fallbackUrl = `${base2.replace(/\/$/,'')}/api/articles/${encodeURIComponent(slug)}`;
         data = await tryFetch(fallbackUrl);
       }
       setArticle(data);

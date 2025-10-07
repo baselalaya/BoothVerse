@@ -4,11 +4,21 @@ import dotenv from 'dotenv';
 dotenv.config();
 dotenv.config({ path: '.env.local' });
 import { registerRoutes } from "./routes";
+import cors from 'cors';
 import { setupVite, serveStatic, log } from "./vite";
+import compression from 'compression';
 
 const app = express();
+// CORS: allow configured origin(s) for frontend calling the API
+const allowOrigin = process.env.CORS_ORIGIN || '';
+if (allowOrigin) {
+  app.use(cors({ origin: allowOrigin.split(',').map(s => s.trim()), credentials: false }));
+} else {
+  // default: allow same-origin only (no CORS header)
+}
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(compression());
 
 app.use((req, res, next) => {
   const start = Date.now();

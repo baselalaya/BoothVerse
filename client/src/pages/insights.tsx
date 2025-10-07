@@ -32,7 +32,8 @@ export default function InsightsPage(){
     try{
       const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
       if (q) params.set('q', q); if (tag) params.set('tag', tag);
-      const res = await fetch(`/api/articles?${params.toString()}`);
+      const base = (import.meta as any).env?.VITE_API_BASE_URL || '';
+      const res = await fetch(`${base.replace(/\/$/,'')}/api/articles?${params.toString()}`);
       const json = await res.json();
       if(!res.ok) throw new Error(json?.message||'Failed');
       setData(json.data||[]); setCount(json.count||0);

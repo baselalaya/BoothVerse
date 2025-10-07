@@ -10,7 +10,8 @@ export default function AdminLoginPage() {
     try {
       localStorage.setItem('adminKey', key);
       // quick ping to verify
-      const res = await fetch('/api/seo', { headers: { 'x-admin-key': key }});
+      const base = (import.meta as any).env?.VITE_API_BASE_URL || '';
+      const res = await fetch(`${base.replace(/\/$/,'')}/api/seo`, { headers: { 'x-admin-key': key }});
       if (!res.ok) {
         const text = await res.text().catch(()=> '');
         // try to extract message json
