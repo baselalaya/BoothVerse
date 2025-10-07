@@ -9,6 +9,7 @@ import CTASplit from "@/components/cta-split";
 import AnalyticsSection from "@/components/analytics-section";
 import ClientsMarquee from "@/components/clients-marquee";
 import FooterSection from "@/components/footer-section";
+<<<<<<< HEAD
 import ThreeDShape from "@/components/three-d-shape";
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import Seo from "@/components/seo";
@@ -73,15 +74,23 @@ export default function Home() {
         {/* Readability overlay to blend background with content */}
         <div className="absolute inset-0 mix-blend-multiply bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
       </div>
+=======
+import StickyParticlesBackground from "@/components/sticky-particles-background";
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-black text-white relative" data-testid="home-page">
+      {/* Sticky 3D Background */}
+      <StickyParticlesBackground />
+      
+      {/* Page Sections */}
+>>>>>>> parent of fc3d337 (final)
       <div className="relative z-10">
-        <div className="min-h-screen text-white" data-testid="home-page">
         <Navigation />
-        <div
-          data-section="hero"
-          className={`relative transition-opacity duration-1000 ${fadeHero ? 'opacity-30' : 'opacity-100'}`}
-        >
+        <div data-section="hero">
           <HeroSection />
         </div>
+<<<<<<< HEAD
         <div
           data-section="brand-activation"
           className={`relative overflow-hidden transition-opacity duration-1000 flex items-center justify-center px-6 max-w-full mx-auto bg-opacity-50 backdrop-blur-md ${fadeBrand ? 'opacity-100' : 'opacity-0'}`}
@@ -99,28 +108,30 @@ export default function Home() {
           />
           <div className="relative max-w-4xl mx-auto">
             <BrandActivation />
+=======
+        <div data-section="brand-activation">
+          <BrandActivation />
+>>>>>>> parent of fc3d337 (final)
         </div>
-        </div>
-        <div data-section="products" className="py-12 md:py-16">
+        <div data-section="products">
           <ProductsSection />
         </div>
-          <div data-section="meet-talia" className="py-12 md:py-16">
+        <div data-section="meet-talia">
           <MeetTalia />
         </div>
-        {/* Interactive 3D — Robot Talia (lazy-loaded on view) */}
-        <div data-section="beyond-booths" className="py-12 md:py-16">
+        <div data-section="beyond-booths">
           <BeyondBooths />
         </div>
-        <div data-section="stats" className="py-12 md:py-16">
+        <div data-section="stats">
           <StatsSection />
         </div>
-        <div data-section="cta" className="py-12 md:py-16">
+        <div data-section="cta">
           <CTASplit />
         </div>
-        <div data-section="analytics" className="py-12 md:py-16">
+        <div data-section="analytics">
           <AnalyticsSection />
         </div>
-        <div data-section="clients" className="py-12 md:py-16">
+        <div data-section="clients">
           <ClientsMarquee />
         </div>
         <div data-section="footer">
@@ -128,6 +139,7 @@ export default function Home() {
         </div>
       </div>
     </div>
+<<<<<<< HEAD
     </>
   );
 }
@@ -146,3 +158,7 @@ export default function Home() {
 //     </div>
 //   );
 // }
+=======
+  );
+}
+>>>>>>> parent of fc3d337 (final)

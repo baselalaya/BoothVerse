@@ -4,8 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
-import { Link } from "wouter";
 
+<<<<<<< HEAD
 const servicesLinks = [
   { name: "PhotoBooths", href: "/products" },
   { name: "AI Tech", href: "/ai-technology" },
@@ -26,6 +26,10 @@ const legalLinks = [
   { name: "Privacy Policy", href: "/privacy" },
   { name: "Terms & Conditions", href: "/terms" },
 ] as const;
+=======
+const navigationLinks = ["Home", "Products", "Technology", "Portfolio", "About"];
+const legalLinks = ["Privacy Policy", "Terms of Service", "Cookie Policy"];
+>>>>>>> parent of fc3d337 (final)
 
 export default function FooterSection() {
   const prefersReducedMotion = useReducedMotion();
@@ -54,8 +58,9 @@ export default function FooterSection() {
   };
 
   return (
-    <footer
+    <footer 
       ref={ref}
+<<<<<<< HEAD
       className="relative py-16 sm:py-20 md:py-24 overflow-hidden"
       data-testid="footer-section"
     >
@@ -63,6 +68,12 @@ export default function FooterSection() {
       <div className="absolute inset-0 bg-gradient-to-b from-[#05060c] via-[#070910] to-[#05060c]" />
       <div className="pointer-events-none absolute -top-32 -left-28 w-[560px] h-[560px] rounded-full bg-purple-600/8 blur-[160px]" />
       <div className="pointer-events-none absolute -bottom-32 -right-28 w-[560px] h-[560px] rounded-full bg-indigo-500/8 blur-[160px]" />
+=======
+      className="relative py-32 overflow-hidden" 
+      data-testid="footer-section"
+    >
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-purple-900/20 to-transparent" />
+>>>>>>> parent of fc3d337 (final)
       
       <motion.div 
         className="relative z-10 max-w-7xl mx-auto px-6"
@@ -70,6 +81,7 @@ export default function FooterSection() {
         animate={isIntersecting ? "visible" : "hidden"}
         variants={staggerContainer}
       >
+<<<<<<< HEAD
         {/* Grid: Brand + Services + Company + Legal */}
         <div className="grid grid-cols-1 gap-6 sm:gap-8 md:gap-10 mb-10 sm:mb-12 md:mb-16">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8 md:gap-10">
@@ -185,7 +197,122 @@ export default function FooterSection() {
                 </Button>
               </a>
             </div>
+=======
+        <div className="grid md:grid-cols-4 gap-12 mb-16">
+          {/* Navigation */}
+          <motion.div variants={fadeUpVariants}>
+            <h3 className="text-2xl font-bold gradient-text mb-6" data-testid="footer-navigation-title">
+              Navigation
+            </h3>
+            <ul className="space-y-4">
+              {navigationLinks.map((link) => (
+                <li key={link}>
+                  <a 
+                    href={`#${link.toLowerCase()}`}
+                    className="text-gray-300 hover:text-white transition-colors duration-300"
+                    data-testid={`footer-nav-${link.toLowerCase().replace(' ', '-')}`}
+                  >
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+          
+          {/* Social */}
+          <motion.div variants={fadeUpVariants}>
+            <h3 className="text-2xl font-bold gradient-text mb-6" data-testid="footer-social-title">
+              Social
+            </h3>
+            <div className="flex space-x-4 mb-6">
+              <Button
+                size="icon"
+                variant="outline"
+                className="glass-effect rounded-full hover:scale-110 transition-all duration-300 animate-bounce-gentle"
+                data-testid="social-instagram"
+              >
+                <Instagram size={20} />
+              </Button>
+              <Button
+                size="icon"
+                variant="outline"
+                className="glass-effect rounded-full hover:scale-110 transition-all duration-300 animate-bounce-gentle"
+                data-testid="social-twitter"
+              >
+                <Twitter size={20} />
+              </Button>
+              <Button
+                size="icon"
+                variant="outline"
+                className="glass-effect rounded-full hover:scale-110 transition-all duration-300 animate-bounce-gentle"
+                data-testid="social-linkedin"
+              >
+                <Linkedin size={20} />
+              </Button>
+            </div>
+            <p className="text-gray-400 text-sm">Follow our journey</p>
+          </motion.div>
+          
+          {/* Legal */}
+          <motion.div variants={fadeUpVariants}>
+            <h3 className="text-2xl font-bold gradient-text mb-6" data-testid="footer-legal-title">
+              Legal
+            </h3>
+            <ul className="space-y-4">
+              {legalLinks.map((link) => (
+                <li key={link}>
+                  <a 
+                    href={`#${link.toLowerCase().replace(' ', '-')}`}
+                    className="text-gray-300 hover:text-white transition-colors duration-300"
+                    data-testid={`footer-legal-${link.toLowerCase().replace(' ', '-')}`}
+                  >
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+          
+          {/* Contact */}
+          <motion.div variants={fadeUpVariants}>
+            <h3 className="text-2xl font-bold gradient-text mb-6" data-testid="footer-contact-title">
+              Contact
+            </h3>
+            <p className="text-gray-300 mb-4" data-testid="footer-email">hello@ibooth.me</p>
+            <p className="text-gray-300 mb-6" data-testid="footer-phone">+1 (555) 123-4567</p>
+            
+            <div className="glass-effect rounded-2xl p-6" data-testid="newsletter-signup">
+              <h4 className="font-semibold mb-4">Stay Connected</h4>
+              <div className="flex">
+                <Input 
+                  type="email" 
+                  placeholder="your@email.com" 
+                  className="flex-1 bg-white/10 border-white/20 rounded-l-full focus:ring-neon-purple focus:bg-white/20"
+                  data-testid="newsletter-email-input"
+                />
+                <Button 
+                  size="icon"
+                  className="bg-gradient-to-r from-neon-purple to-electric rounded-r-full hover:scale-105 transition-all duration-300"
+                  data-testid="newsletter-submit"
+                >
+                  <Send size={16} />
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+        
+        <motion.div 
+          className="border-t border-white/10 pt-8 text-center"
+          variants={fadeUpVariants}
+        >
+          <div className="text-3xl font-bold gradient-text mb-4" data-testid="footer-brand">
+            iBooth.me
+>>>>>>> parent of fc3d337 (final)
           </div>
+          <p className="text-gray-400" data-testid="footer-copyright">
+            © 2024 iBooth.me. Revolutionizing brand experiences worldwide.
+          </p>
         </motion.div>
       </motion.div>
     </footer>

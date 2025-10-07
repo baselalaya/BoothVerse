@@ -7,33 +7,53 @@ const services = [
     id: "production",
     title: "Personalized Merch",
     description: "End-to-end content creation and brand storytelling",
+<<<<<<< HEAD
     video: "/videos/tata-notebook.mp4",
     gradient: "from-neon-purple/0 to-neon-purple/60",
     href: "/personalised-merch",
+=======
+    image: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800",
+    gradient: "from-neon-purple/0 to-neon-purple/60"
+>>>>>>> parent of fc3d337 (final)
   },
   {
     id: "hybrid-experiences",
     title: "Experiential Marketing",
     description: "Seamless blend of physical and digital interactions",
+<<<<<<< HEAD
     video: "/videos/philips-coasters.mp4",
     gradient: "from-neon-blue/0 to-neon-blue/60",
     href: "/experiential-marketing",
+=======
+    image: "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800",
+    gradient: "from-neon-blue/0 to-neon-blue/60"
+>>>>>>> parent of fc3d337 (final)
   },
   {
     id: "gamification",
     title: "Gamification",
     description: "Interactive challenges and competitive experiences",
+<<<<<<< HEAD
     video: "/videos/gamification-iboothme.mp4",
     gradient: "from-neon-green/0 to-neon-green/60",
     href: "/gamifications",
+=======
+    image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800",
+    gradient: "from-neon-green/0 to-neon-green/60"
+>>>>>>> parent of fc3d337 (final)
   },
   {
     id: "web-app",
     title: "Tailored Software Solutions",
     description: "Custom digital platforms and brand ecosystems",
+<<<<<<< HEAD
     video: "/videos/tailored.mp4",
     gradient: "from-orange-500/0 to-orange-500/60",
     href: "/get-ideas#software",
+=======
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800",
+    gradient: "from-orange-500/0 to-orange-500/60"
+>>>>>>> parent of fc3d337 (final)
   }
 ];
 
@@ -67,36 +87,36 @@ export default function BeyondBooths() {
   return (
     <section 
       ref={ref}
-      className="py-20 sm:py-28 md:py-32 relative overflow-hidden" 
+      className="py-32 bg-gradient-to-b from-black to-gray-900" 
       data-testid="beyond-booths-section"
     >
-      {/* Ambient brand-tinted background */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-[#0b0b12] to-black" />
-        <div className="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_15%,rgba(112,66,210,0.12),transparent_60%)]" />
-      </div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto px-6">
         <motion.div 
-          className="text-center mb-12 sm:mb-16 md:mb-20"
+          className="text-center mb-20"
           initial="hidden"
           animate={isIntersecting ? "visible" : "hidden"}
           variants={cardVariants}
         >
-          <h2 className="text-3xl sm:text-4xl md:text-6xl font-black mb-4 sm:mb-6 gradient-text leading-tight" data-testid="beyond-booths-headline">
+          <h2 className="text-5xl md:text-6xl font-black mb-6 gradient-text" data-testid="beyond-booths-headline">
             Beyond Photo Booths
           </h2>
+<<<<<<< HEAD
           <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto px-1" data-testid="beyond-booths-description">
             A broad mix of technologies for brand engagement.
+=======
+          <p className="text-xl text-gray-400 max-w-3xl mx-auto" data-testid="beyond-booths-description">
+            Complete ecosystem of immersive brand activation solutions
+>>>>>>> parent of fc3d337 (final)
           </p>
         </motion.div>
         
-        {/* 4-up premium grid */}
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 lg:gap-7"
+        <motion.div 
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
           initial="hidden"
           animate={isIntersecting ? "visible" : "hidden"}
           variants={containerVariants}
         >
+<<<<<<< HEAD
           {services.map((service) => {
             return (
               <motion.a
@@ -139,6 +159,33 @@ export default function BeyondBooths() {
               </motion.a>
             );
           })}
+=======
+          {services.map((service) => (
+            <motion.div 
+              key={service.id}
+              className="group relative overflow-hidden rounded-2xl aspect-square cursor-pointer"
+              variants={cardVariants}
+              whileHover={{ scale: prefersReducedMotion ? 1 : 1.05 }}
+              data-testid={`service-card-${service.id}`}
+            >
+              <img 
+                src={service.image} 
+                alt={service.title}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className={`absolute inset-0 bg-gradient-to-r ${service.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+              <div className="absolute bottom-6 left-6 right-6">
+                <h3 className="text-2xl font-bold mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500" data-testid={`service-title-${service.id}`}>
+                  {service.title}
+                </h3>
+                <p className="text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100" data-testid={`service-description-${service.id}`}>
+                  {service.description}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+>>>>>>> parent of fc3d337 (final)
         </motion.div>
       </div>
     </section>

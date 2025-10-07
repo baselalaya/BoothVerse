@@ -1,9 +1,10 @@
-import { Switch, Route, useLocation } from "wouter";
+import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/home";
+<<<<<<< HEAD
 import ProductsPage from "@/pages/products";
 import ProductDetailPage from "@/pages/product-detail";
 import AITechnologyPage from "@/pages/ai-technology";
@@ -38,10 +39,13 @@ import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from 'react';
 import { captureUtmFromUrl } from "@/lib/utm";
 import { loadGA, trackPageView } from "@/lib/ga";
+=======
+import NotFound from "@/pages/not-found";
+>>>>>>> parent of fc3d337 (final)
 
 function Router() {
-  const [location] = useLocation();
   return (
+<<<<<<< HEAD
     <AnimatePresence mode="wait" initial={false}>
       <Switch>
         <Route path="/">
@@ -191,6 +195,12 @@ function Router() {
         </Route>
       </Switch>
     </AnimatePresence>
+=======
+    <Switch>
+      <Route path="/" component={Home} />
+      <Route component={NotFound} />
+    </Switch>
+>>>>>>> parent of fc3d337 (final)
   );
 }
 
@@ -239,7 +249,6 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
-        <ScrollToTop />
         <Router />
       </TooltipProvider>
     </QueryClientProvider>

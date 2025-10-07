@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import CTAGroup from "@/components/ui/cta-group";
 import { TrendingUp } from "lucide-react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
@@ -25,32 +24,16 @@ export default function AnalyticsSection() {
   const particles = Array.from({ length: 5 }, (_, i) => ({
     id: i,
     left: `${10 + i * 20}%`,
-    top: `${20 + (i * 15) % 70}%`, // avoid starting at very top
     delay: `${i * 3}s`,
-    color: i % 2 === 0 ? 'bg-neon-purple' : 'bg-neon-blue' // remove white dots
+    color: i % 3 === 0 ? 'bg-white' : i % 3 === 1 ? 'bg-neon-purple' : 'bg-neon-blue'
   }));
 
   return (
     <section 
       ref={ref}
-      className="py-20 sm:py-28 md:py-32 relative overflow-hidden" 
+      className="py-32 relative overflow-hidden" 
       data-testid="analytics-section"
     >
-      {/* Background video */}
-      <video
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{ zIndex: -2 }}
-        src="/video/last-section.mp4"
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-      />
-
-      {/* Dark overlay for readability */}
-      <div className="absolute inset-0 bg-black/40" />
-
       <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/20 to-purple-900/20" />
       
       <div className="absolute inset-0 pointer-events-none" data-testid="particles-container">
@@ -60,22 +43,20 @@ export default function AnalyticsSection() {
             className={`absolute w-1 h-1 ${particle.color} rounded-full animate-particle-drift opacity-60`}
             style={{
               left: particle.left,
-              top: particle.top,
-              animationDelay: particle.delay,
-              opacity: 0.5,
+              animationDelay: particle.delay
             }}
           />
         ))}
       </div>
       
       <motion.div 
-        className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6"
+        className="relative z-10 max-w-4xl mx-auto text-center px-6"
         initial="hidden"
         animate={isIntersecting ? "visible" : "hidden"}
         variants={fadeUpVariants}
       >
         <motion.h2 
-          className="text-3xl sm:text-4xl md:text-6xl font-black mb-5 sm:mb-7 md:mb-8 gradient-text neon-glow leading-tight"
+          className="text-4xl md:text-6xl font-black mb-8 gradient-text neon-glow"
           variants={fadeUpVariants}
           data-testid="analytics-headline"
         >
@@ -83,7 +64,7 @@ export default function AnalyticsSection() {
         </motion.h2>
         
         <motion.p 
-          className="text-base sm:text-lg md:text-xl text-gray-300 mb-8 sm:mb-10 md:mb-12 max-w-2xl mx-auto leading-relaxed px-1"
+          className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed"
           variants={fadeUpVariants}
           data-testid="analytics-description"
         >
@@ -91,17 +72,14 @@ export default function AnalyticsSection() {
         </motion.p>
         
         <motion.div variants={fadeUpVariants}>
-          <CTAGroup breakpoint="md" className="justify-center">
-            <Button 
-              size="lg"
-              variant="creativePrimary"
-              className="group w-full md:w-auto text-base sm:text-lg py-6"
-              data-testid="see-what-you-get"
-            >
-              See What You Get
-              <TrendingUp className="ml-2" />
-            </Button>
-          </CTAGroup>
+          <Button 
+            size="lg"
+            className="bg-gradient-to-r from-neon-purple to-electric px-8 py-4 text-lg font-semibold hover:scale-105 transition-all duration-300 animate-glow-pulse"
+            data-testid="see-what-you-get"
+          >
+            See What You Get
+            <TrendingUp className="ml-2" />
+          </Button>
         </motion.div>
       </motion.div>
     </section>
