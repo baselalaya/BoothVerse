@@ -3,6 +3,10 @@ dist
 .DS_Store
 server/public
 vite.config.ts.*
+<<<<<<< HEAD
 *.tar.gz
 .vercel
 .env*
+=======
+*.tar.gz
+>>>>>>> parent of fc3d337 (final)

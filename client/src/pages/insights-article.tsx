@@ -58,26 +58,17 @@ export default function InsightArticlePage(){
 
     setError(undefined);
     try {
-      const candidates = [
-        `/api/articles?slug=${encodeURIComponent(slug)}`,
-        `/api/articles/${encodeURIComponent(slug)}`,
-      ];
-
+      // Prefer query-based endpoint to avoid any dynamic route quirks on Vercel
+      const base = (import.meta as any).env?.VITE_API_BASE_URL || '';
+      const firstUrl = `${base.replace(/\/$/,'')}/api/articles/by-slug?slug=${encodeURIComponent(slug)}`;
       let data: any;
-      let lastError: any;
-      for (const url of candidates) {
-        try {
-          data = await tryFetch(url);
-          break;
-        } catch (err) {
-          lastError = err;
-        }
-      }
-
-      if (!data) throw lastError || new Error('Failed to load article');
-      let normalized = data;
-      if (normalized && typeof normalized === 'object' && !Array.isArray(normalized) && !('slug' in normalized) && 'data' in normalized) {
-        normalized = (normalized as any).data;
+      try {
+        data = await tryFetch(firstUrl);
+      } catch (e:any) {
+        // Fallback to dynamic route if the first attempt returns HTML or fails parsing
+        const base2 = (import.meta as any).env?.VITE_API_BASE_URL || '';
+        const fallbackUrl = `${base2.replace(/\/$/,'')}/api/articles/${encodeURIComponent(slug)}`;
+        data = await tryFetch(fallbackUrl);
       }
       if (Array.isArray(normalized)) {
         normalized = normalized[0];

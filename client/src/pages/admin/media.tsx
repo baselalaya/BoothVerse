@@ -95,7 +95,10 @@ export default function AdminMediaPage() {
     }
     // refresh
     setEditing(null);
-    await refetch();
+    const base = (import.meta as any).env?.VITE_API_BASE_URL || '';
+    const res = await fetch(`${base.replace(/\/$/,'')}/api/media?page=${page}&pageSize=${pageSize}`);
+    const json = await res.json();
+    setItems(json.data||[]); setTotal(json.count||0);
   };
 
   const onDelete = async (id: string) => {
@@ -103,7 +106,10 @@ export default function AdminMediaPage() {
     await adminApi('DELETE', `/api/media/${id}`);
     toast({ title: 'Media deleted' });
     // refresh
-    await refetch();
+    const base = (import.meta as any).env?.VITE_API_BASE_URL || '';
+    const res = await fetch(`${base.replace(/\/$/,'')}/api/media?page=${page}&pageSize=${pageSize}`);
+    const json = await res.json();
+    setItems(json.data||[]); setTotal(json.count||0);
   };
 
   return (

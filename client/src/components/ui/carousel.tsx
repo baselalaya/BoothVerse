@@ -118,48 +118,6 @@ const Carousel = React.forwardRef<
       }
     }, [api, onSelect])
 
-    // Interval-based autoplay with pause on hover/offscreen
-    React.useEffect(() => {
-      if (!api) return
-
-      const root = api.rootNode()
-      let hovering = false
-      let inView = true
-
-      const onMouseEnter = () => {
-        hovering = true
-      }
-      const onMouseLeave = () => {
-        hovering = false
-      }
-
-      const io = new IntersectionObserver(
-        (entries) => {
-          inView = entries[0]?.isIntersecting ?? true
-        },
-        { root: null, threshold: 0.2 }
-      )
-      io.observe(root)
-
-      const tick = () => {
-        if (!api) return
-        if (orientation !== "horizontal") return
-        if (hovering || !inView) return
-        api.scrollNext()
-      }
-      const id = window.setInterval(tick, (opts?.duration as number) || 3000)
-
-      root.addEventListener("mouseenter", onMouseEnter)
-      root.addEventListener("mouseleave", onMouseLeave)
-
-      return () => {
-        window.clearInterval(id)
-        root.removeEventListener("mouseenter", onMouseEnter)
-        root.removeEventListener("mouseleave", onMouseLeave)
-        io.disconnect()
-      }
-    }, [api, orientation, opts?.duration])
-
     return (
       <CarouselContext.Provider
         value={{
