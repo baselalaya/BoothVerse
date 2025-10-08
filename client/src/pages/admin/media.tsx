@@ -93,23 +93,15 @@ export default function AdminMediaPage() {
       const created = await adminApi('POST', `/api/media`, body);
       toast({ title: 'Media created', description: `${created.title} added.` });
     }
-    // refresh
     setEditing(null);
-    const base = (import.meta as any).env?.VITE_API_BASE_URL || '';
-    const res = await fetch(`${base.replace(/\/$/,'')}/api/media?page=${page}&pageSize=${pageSize}`);
-    const json = await res.json();
-    setItems(json.data||[]); setTotal(json.count||0);
+    await refetch();
   };
 
   const onDelete = async (id: string) => {
     if (!confirm('Delete this item?')) return;
     await adminApi('DELETE', `/api/media/${id}`);
     toast({ title: 'Media deleted' });
-    // refresh
-    const base = (import.meta as any).env?.VITE_API_BASE_URL || '';
-    const res = await fetch(`${base.replace(/\/$/,'')}/api/media?page=${page}&pageSize=${pageSize}`);
-    const json = await res.json();
-    setItems(json.data||[]); setTotal(json.count||0);
+    await refetch();
   };
 
   return (
