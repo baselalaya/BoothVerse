@@ -10,16 +10,65 @@ import AnalyticsSection from "@/components/analytics-section";
 import ClientsMarquee from "@/components/clients-marquee";
 import FooterSection from "@/components/footer-section";
 import ThreeDShape from "@/components/three-d-shape";
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense, useMemo } from 'react';
 import Seo from "@/components/seo";
 import { applySeoToHead, fetchSeoConfig } from "@/lib/seoOverride";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
+import { testimonials } from "@/data/testimonials";
+import { getLogoUrl } from "@/lib/siteMeta";
 const RobotTaliaViewer = lazy(() => import("@/components/robot-talia-viewer"));
 // removed hook-based SEO override usage
 
 export default function Home() {
   const [fadeHero, setFadeHero] = useState(false);
   const [fadeBrand, setFadeBrand] = useState(false);
+
+  const testimonialJsonLd = useMemo(() => {
+    const aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: (
+        testimonials.reduce((sum, item) => sum + item.rating, 0) / testimonials.length
+      ).toFixed(2),
+      reviewCount: testimonials.length,
+      bestRating: "5",
+      worstRating: "4"
+    };
+
+    const reviewSchemas = testimonials.map((item) => ({
+      "@type": "Review",
+      author: {
+        "@type": "Person",
+        name: item.name,
+        jobTitle: item.role,
+        worksFor: item.company
+      },
+      reviewRating: {
+        "@type": "Rating",
+        ratingValue: item.rating,
+        bestRating: "5",
+        worstRating: "1"
+      },
+      reviewBody: item.quote,
+      itemReviewed: {
+        "@type": "Organization",
+        name: "iboothme",
+        url: "https://www.iboothme.com",
+        logo: getLogoUrl()
+      }
+    }));
+
+    return [
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "iboothme",
+        aggregateRating,
+        url: "https://www.iboothme.com",
+        logo: getLogoUrl()
+      },
+      ...reviewSchemas
+    ];
+  }, []);
 
   useEffect(() => {
     // Fetch and apply runtime SEO overrides
@@ -60,13 +109,7 @@ export default function Home() {
         canonical="/"
         ogImage="/images/icon.svg"
         keywords={["experiential marketing", "photo booth", "AI", "gamification", "brand activation"]}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          name: "iboothme",
-          url: "https://www.iboothme.com/",
-          logo: "https://www.iboothme.com/images/icon.svg"
-        }}
+        jsonLd={testimonialJsonLd}
       />
       <div className="absolute inset-0 z-10 pointer-events-none">
         <ThreeDShape />
@@ -113,6 +156,34 @@ export default function Home() {
         </div>
         <div data-section="stats" className="py-12 md:py-16">
           <StatsSection />
+        </div>
+        <div data-section="testimonials" className="py-12 md:py-16">
+          <section className="max-w-6xl mx-auto px-6">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl md:text-4xl font-extrabold">Trusted by Experiential Leaders</h2>
+              <p className="text-white/70 mt-2 text-sm md:text-base">
+                Hear how global brands activate with iboothme event technology.
+              </p>
+            </div>
+            <div className="grid gap-6 md:grid-cols-3">
+              {testimonials.map((item) => (
+                <article key={`${item.name}-${item.company}`} className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+                  <div className="flex items-center gap-2 text-yellow-300 text-sm">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <span key={i}>{i < Math.round(item.rating) ? '★' : '☆'}</span>
+                    ))}
+                    <span className="text-white/70 text-xs">{item.rating.toFixed(1)}/5</span>
+                  </div>
+                  <p className="mt-4 text-white/85 text-sm md:text-base leading-relaxed">“{item.quote}”</p>
+                  <div className="mt-5">
+                    <div className="font-semibold text-white">{item.name}</div>
+                    <div className="text-white/70 text-sm">{item.role}, {item.company}</div>
+                    {item.location && <div className="text-white/50 text-xs mt-1">{item.location}</div>}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
         </div>
         <div data-section="cta" className="py-12 md:py-16">
           <CTASplit />

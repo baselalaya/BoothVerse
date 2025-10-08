@@ -11,6 +11,7 @@ import { useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
+import { buildServiceSchema } from "@/lib/siteMeta";
 
 export default function GamificationsPage() {
   useEffect(() => { (async () => { const cfg = await fetchSeoConfig('/gamifications'); if (cfg) applySeoToHead(cfg); })(); }, []);
@@ -22,13 +23,14 @@ export default function GamificationsPage() {
         canonical="/gamifications"
         ogImage="/images/gumball-x-purple.png"
         keywords={["gamification", "interactive games", "event engagement"]}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Service",
+        jsonLd={buildServiceSchema({
           name: "Gamifications",
           description: "Interactive games for events.",
-          provider: { "@type": "Organization", name: "iboothme" }
-        }}
+          slug: "/gamifications",
+          image: "/images/gumball-x-purple.png",
+          serviceType: "Brand Gamification",
+          areaServed: ["United Arab Emirates", "GCC"],
+        })}
       />
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(70%_50%_at_50%_0%,rgba(112,66,210,0.12),transparent_60%),radial-gradient(60%_40%_at_80%_100%,rgba(34,212,253,0.10),transparent_60%)]" />
       <Navigation />

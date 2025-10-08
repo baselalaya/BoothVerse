@@ -7,7 +7,8 @@ export function getAdminKey() {
 }
 
 export async function adminApi<T = any>(method: string, path: string, body?: any): Promise<T> {
-  const base = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_BASE) || '';
+  const env = (typeof import.meta !== 'undefined' && (import.meta as any).env) || {};
+  const base = env.VITE_API_BASE || env.VITE_API_BASE_URL || '';
   const headers: Record<string,string> = { 'Content-Type': 'application/json' };
   const key = getAdminKey();
   if (key) headers['x-admin-key'] = key;
@@ -33,4 +34,3 @@ export async function adminApi<T = any>(method: string, path: string, body?: any
   try { return JSON.parse(text) as T; } catch {}
   throw new Error('Unexpected non-JSON response');
 }
-

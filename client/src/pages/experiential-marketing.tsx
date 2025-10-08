@@ -7,6 +7,7 @@ import CTAGroup from "@/components/ui/cta-group";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import Breadcrumbs from "@/components/breadcrumbs";
+import { buildServiceSchema } from "@/lib/siteMeta";
 
 export default function ExperientialMarketingPage() {
   useEffect(() => { (async () => { const cfg = await fetchSeoConfig('/experiential-marketing'); if (cfg) applySeoToHead(cfg); })(); }, []);
@@ -18,13 +19,14 @@ export default function ExperientialMarketingPage() {
         canonical="/experiential-marketing"
         ogImage="/images/Brand Activation.jpg"
         keywords={["experiential marketing", "brand activations", "interactive experiences"]}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Service",
+        jsonLd={buildServiceSchema({
           name: "Experiential Marketing",
           description: "Immersive brand activations and interactive experiences.",
-          provider: { "@type": "Organization", name: "iboothme" }
-        }}
+          slug: "/experiential-marketing",
+          image: "/images/Brand Activation.jpg",
+          serviceType: "Experiential Marketing",
+          areaServed: ["United Arab Emirates", "GCC"],
+        })}
       />
       <div
         aria-hidden

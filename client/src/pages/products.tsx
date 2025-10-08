@@ -8,6 +8,7 @@ import { products as dataProducts, type Product } from "@/data/products";
 import { useEffect as useEffectReact } from 'react';
 import { trackEvent } from "@/lib/ga";
 import Breadcrumbs from "@/components/breadcrumbs";
+import { absoluteUrl } from "@/lib/siteMeta";
 
 // products imported from shared data
 
@@ -22,6 +23,61 @@ export default function ProductsPage() {
       });
     } catch {}
   }, []);
+
+  const sortedProducts = (() => {
+    const desiredOrder = [
+      "iboothme-x",
+      "glamdroid",
+      "claw-machine",
+      "gumball-x",
+      "locker-x",
+      "vending-x",
+      "arcade-x",
+      "mega-vending",
+      "retro-x",
+      "slider-180",
+      "scribble-booth",
+      "slider-12",
+      "catch-baton",
+      "gift-box",
+      "booth-360",
+      "gobooth",
+    ];
+    const indexMap = new Map<string, number>(desiredOrder.map((id, idx) => [id, idx]));
+    return [...dataProducts].sort((a: Product, b: Product) => {
+      const ia = indexMap.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+      const ib = indexMap.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+      return ia - ib;
+    });
+  })();
+
+  const productsItemList = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "iboothme Experiential Products",
+    itemListElement: sortedProducts.map((product, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: absoluteUrl(`/products/${product.id}`),
+      item: {
+        "@type": "Product",
+        name: product.name,
+        image: product.image ? absoluteUrl(product.image) : undefined,
+        description: product.description,
+        brand: { "@type": "Brand", name: "iboothme" },
+        category: product.tier,
+      },
+    })),
+  };
+
+  const collectionPageJson = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Products",
+    description: "Interactive booths and experiential products for events.",
+    mainEntity: productsItemList,
+  };
+
   return (
     <div className="relative min-h-screen text-white">
       <Seo
@@ -30,12 +86,7 @@ export default function ProductsPage() {
         canonical="/products"
         ogImage="/images/booth_unit_1.webp"
         keywords={["photo booth", "experiential products", "event tech"]}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          name: "Products",
-          description: "Interactive booths and experiential products for events."
-        }}
+        jsonLd={[collectionPageJson, productsItemList]}
       />
       <Navigation />
       <main className="relative z-10 py-16 sm:py-20 md:py-24" data-testid="products-page">
@@ -53,33 +104,7 @@ export default function ProductsPage() {
 
           {/* Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-7">
-            {(() => {
-              const desiredOrder = [
-                "iboothme-x",
-                "glamdroid",
-                "claw-machine",
-                "gumball-x",
-                "locker-x",
-                "vending-x",
-                "arcade-x",
-                "mega-vending",
-                "retro-x",
-                "slider-180",
-                "scribble-booth",
-                "slider-12",
-                "catch-baton",
-                "gift-box",
-                "booth-360",
-                "gobooth",
-              ];
-              const indexMap = new Map<string, number>(desiredOrder.map((id, idx) => [id, idx]));
-              const sorted = [...dataProducts].sort((a: Product, b: Product) => {
-                const ia = indexMap.get(a.id) ?? Number.MAX_SAFE_INTEGER;
-                const ib = indexMap.get(b.id) ?? Number.MAX_SAFE_INTEGER;
-                return ia - ib;
-              });
-              return sorted;
-            })().map((product, i) => (
+            {sortedProducts.map((product, i) => (
               <motion.article
                 key={product.id}
                 initial={{ opacity: 0, y: 24 }}
