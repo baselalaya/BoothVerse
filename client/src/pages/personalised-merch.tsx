@@ -14,6 +14,7 @@ import { EffectCoverflow, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import Breadcrumbs from "@/components/breadcrumbs";
+import { buildServiceSchema } from "@/lib/siteMeta";
 
 export default function PersonalisedMerchPage() {
   useEffect(() => { (async () => { const cfg = await fetchSeoConfig('/personalised-merch'); if (cfg) applySeoToHead(cfg); })(); }, []);
@@ -25,13 +26,14 @@ export default function PersonalisedMerchPage() {
         canonical="/personalised-merch"
         ogImage="/images/gift-box-purple.png"
         keywords={["personalised merch", "custom giveaways", "event merchandise"]}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Service",
+        jsonLd={buildServiceSchema({
           name: "Personalised Merchandise",
           description: "On-demand branded merchandise for events.",
-          provider: { "@type": "Organization", name: "iboothme" }
-        }}
+          slug: "/personalised-merch",
+          image: "/images/gift-box-purple.png",
+          serviceType: "Personalised Merchandise",
+          areaServed: ["United Arab Emirates", "GCC"],
+        })}
       />
       <div
         aria-hidden

@@ -11,7 +11,8 @@ export type SeoConfig = {
 
 export async function fetchSeoConfig(path: string): Promise<SeoConfig | null> {
   try {
-    const res = await fetch(`/api/seo/${encodeURIComponent(path)}`);
+    const base = (import.meta as any).env?.VITE_API_BASE_URL || '';
+    const res = await fetch(`${base.replace(/\/$/,'')}/api/seo/${encodeURIComponent(path)}`);
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -62,4 +63,3 @@ function setJsonLd(data: any) {
   script.text = typeof data === 'string' ? data : JSON.stringify(data);
   document.head.appendChild(script);
 }
-

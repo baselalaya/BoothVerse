@@ -1,7 +1,6 @@
 import Navigation from "@/components/navigation";
 import { useEffect } from 'react';
 import { applySeoToHead, fetchSeoConfig } from "@/lib/seoOverride";
-import Seo from "@/components/seo";
 import FooterSection from "@/components/footer-section";
 import { products } from "@/data/products";
 import { Link, useRoute } from "wouter";
@@ -9,6 +8,17 @@ import { useState } from "react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { trackEvent } from "@/lib/ga";
+import Seo from "@/components/seo";
+import { absoluteUrl } from "@/lib/siteMeta";
+
+type ArticleSummary = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt?: string;
+  cover_image?: string;
+  published_at?: string;
+};
 // import Breadcrumbs from "@/components/breadcrumbs";
 
 export default function ProductDetailPage() {
@@ -24,6 +34,8 @@ export default function ProductDetailPage() {
 
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
+  const [relatedArticles, setRelatedArticles] = useState<ArticleSummary[]>([]);
+  const [articlesLoaded, setArticlesLoaded] = useState(false);
   // Lock body scroll while modal open
   useEffect(() => {
     if (!open) return;
@@ -31,24 +43,72 @@ export default function ProductDetailPage() {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = prev; };
   }, [open]);
+
+  useEffect(() => {
+    if (!product) return;
+    const controller = new AbortController();
+    const primaryTag = product.tags?.[0];
+    const params = new URLSearchParams({ pageSize: '3', page: '1' });
+    if (primaryTag) params.set('tag', primaryTag);
+    (async () => {
+      try {
+        const res = await fetch(`/api/articles?${params.toString()}`, { signal: controller.signal });
+        if (!res.ok) throw new Error(await res.text());
+        const data = await res.json();
+        setRelatedArticles(data?.data || []);
+      } catch (err) {
+        if ((err as any)?.name !== 'AbortError') {
+          console.warn('Failed to load related articles', err);
+        }
+      } finally {
+        setArticlesLoaded(true);
+      }
+    })();
+    return () => controller.abort();
+  }, [product]);
   return (
     <div className="relative min-h-screen text-white">
       {product && (
+        (() => {
+          const productUrl = `/products/${product.id}`;
+          const productJson = {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: product.name,
+            image: product.image ? [absoluteUrl(product.image)] : undefined,
+            description: product.description,
+            brand: { "@type": "Brand", name: "iboothme" },
+            category: product.tier,
+            offers: {
+              "@type": "Offer",
+              price: "0",
+              priceCurrency: "USD",
+              availability: "https://schema.org/PreOrder",
+              url: absoluteUrl(`/contact-us?product=${product.id}`),
+            },
+          };
+
+          const breadcrumbJson = {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl("/") },
+              { "@type": "ListItem", position: 2, name: "Products", item: absoluteUrl("/products") },
+              { "@type": "ListItem", position: 3, name: product.name, item: absoluteUrl(productUrl) },
+            ],
+          };
+
+          return (
         <Seo
           title={`${product.name}`}
           description={product.description || `Learn more about ${product.name} experiential product.`}
           canonical={`/products/${product.id}`}
           ogImage={product.image}
           keywords={[product.name, "photo booth", "experiential product"]}
-          jsonLd={{
-            "@context": "https://schema.org",
-            "@type": "Product",
-            name: product.name,
-            image: product.image ? [product.image] : undefined,
-            description: product.description,
-            brand: { "@type": "Brand", name: "iboothme" }
-          }}
+          jsonLd={[productJson, breadcrumbJson]}
         />
+          );
+        })()
       )}
       <Navigation />
       {/* Sticky back bar on mobile */}
@@ -168,6 +228,45 @@ export default function ProductDetailPage() {
                 </ul>
               </section>
             ) : null}
+            {articlesLoaded && (
+              <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-6">
+                <h3 className="text-lg font-semibold mb-2">Insights on {product.name}</h3>
+                {relatedArticles.length === 0 ? (
+                  <p className="text-white/70 text-sm">Stay tuned for upcoming articles on experiential campaigns using {product.name}.</p>
+                ) : (
+                  <div className="grid gap-4 md:grid-cols-3">
+                    {relatedArticles.map((article) => (
+                      <a
+                        key={article.id}
+                        href={`/insights/${article.slug}`}
+                        className="group rounded-xl border border-white/10 bg-black/30 p-4 hover:border-white/20 transition"
+                      >
+                        {article.cover_image && (
+                          <img
+                            src={article.cover_image}
+                            alt={article.title}
+                            className="mb-3 h-32 w-full rounded-lg object-cover"
+                            loading="lazy"
+                          />
+                        )}
+                        <div className="text-xs uppercase tracking-wide text-purple-200/90 mb-1">Experiential Insight</div>
+                        <h4 className="text-base font-semibold text-white group-hover:text-purple-200 transition-colors">
+                          {article.title}
+                        </h4>
+                        {article.excerpt && (
+                          <p className="mt-2 text-sm text-white/70 line-clamp-3">
+                            {article.excerpt}
+                          </p>
+                        )}
+                        <span className="mt-3 inline-flex items-center text-sm text-purple-200/90">
+                          Explore how this activation strategy elevates {product.name} →
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </section>
+            )}
             <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-6">
               <h3 className="text-lg font-semibold mb-2">Customization Options</h3>
               <p className="text-white/80 text-sm">Software and hardware customization available. Branding, flows, and integrations tailored to your event.</p>

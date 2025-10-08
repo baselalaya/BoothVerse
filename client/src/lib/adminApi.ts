@@ -9,7 +9,8 @@ export function getAdminKey() {
 export async function adminApi<T = any>(method: string, path: string, body?: any): Promise<T> {
   // Prefer explicit API base. Support legacy var name, then fallback to same-origin.
   const env = (typeof import.meta !== 'undefined' ? (import.meta as any).env : undefined) || {};
-  const base = env.VITE_API_BASE_URL || env.VITE_API_BASE || '';  const headers: Record<string,string> = { 'Content-Type': 'application/json' };
+  const base = env.VITE_API_BASE_URL || env.VITE_API_BASE || '';
+  const headers: Record<string,string> = { 'Content-Type': 'application/json' };
   const key = getAdminKey();
   if (key) headers['x-admin-key'] = key;
   const url = base ? base.replace(/\/$/, '') + (path.startsWith('/') ? path : `/${path}`) : path;
@@ -29,9 +30,8 @@ export async function adminApi<T = any>(method: string, path: string, body?: any
   if (!text) throw new Error('Empty response');
   // Detect if we accidentally got HTML (SPA fallback)
   if (/<!DOCTYPE html>|<html[\s>]/i.test(text)) {
-    throw new Error('Received HTML from API (routing fallback). Check vercel routing.');
+    throw new Error('Received HTML from API (routing fallback). Check API base URL.');
   }
   try { return JSON.parse(text) as T; } catch {}
   throw new Error('Unexpected non-JSON response');
 }
-

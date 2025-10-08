@@ -50,15 +50,32 @@ export default function AdminMediaPage() {
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
+  useEffect(() => {
+    if (!getAdminKey()) {
+      window.location.href = '/admin/login';
+      return;
+    }
+  }, []);
+
+  const refetch = async () => {
+    const params = new URLSearchParams({
+      page: String(page),
+      pageSize: String(pageSize),
+      includeAll: 'true',
+    });
+    if (q) params.set('q', q);
+    if (tag) params.set('tag', tag);
+    if (type) params.set('type', type);
+    const res = await adminApi<{ data: MediaItem[]; count: number }>('GET', `/api/media?${params.toString()}`);
+    setItems(res.data || []);
+    setTotal(res.count || 0);
+  };
+
   useEffect(()=>{ (async()=>{
     setLoading(true); setError(undefined);
     try{
-      const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize), includeAll: 'true' });
-      if (q) params.set('q', q);
-      if (tag) params.set('tag', tag);
-      if (type) params.set('type', type);
-      const res = await adminApi<{ data: MediaItem[]; count: number }>('GET', `/api/media?${params.toString()}`);
-      setItems(res.data||[]); setTotal(res.count||0);
+      if (!getAdminKey()) return;
+      await refetch();
     }catch(e:any){ setError(e?.message||'Failed to load media'); }
     finally{ setLoading(false); }
   })(); }, [q, tag, type, page]);
@@ -72,24 +89,19 @@ export default function AdminMediaPage() {
       const updated = await adminApi('PUT', `/api/media/${draft.id}`, body);
       toast({ title: 'Media updated', description: `${updated.title} saved.` });
     } else {
+      delete body.id;
       const created = await adminApi('POST', `/api/media`, body);
       toast({ title: 'Media created', description: `${created.title} added.` });
     }
-    // refresh
     setEditing(null);
-    const res = await fetch(`/api/media?page=${page}&pageSize=${pageSize}`);
-    const json = await res.json();
-    setItems(json.data||[]); setTotal(json.count||0);
+    await refetch();
   };
 
   const onDelete = async (id: string) => {
     if (!confirm('Delete this item?')) return;
     await adminApi('DELETE', `/api/media/${id}`);
     toast({ title: 'Media deleted' });
-    // refresh
-    const res = await fetch(`/api/media?page=${page}&pageSize=${pageSize}`);
-    const json = await res.json();
-    setItems(json.data||[]); setTotal(json.count||0);
+    await refetch();
   };
 
   return (

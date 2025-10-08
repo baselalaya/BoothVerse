@@ -68,7 +68,8 @@ export default function AiEffectsGallery() {
     try{
       const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
       if (active && active !== 'All') params.set('tag', active);
-      const res = await fetch(`/api/media?${params.toString()}`);
+      const base = (import.meta as any).env?.VITE_API_BASE_URL || '';
+      const res = await fetch(`${base.replace(/\/$/,'')}/api/media?${params.toString()}`);
       const ct = res.headers.get('content-type') || '';
       let json: any;
       if (ct.includes('application/json')) json = await res.json(); else { const txt = await res.text(); try{ json = JSON.parse(txt);}catch{ throw new Error('Unexpected response'); } }

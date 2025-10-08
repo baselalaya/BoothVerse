@@ -4,6 +4,8 @@ import Seo from "@/components/seo";
 import Breadcrumbs from "@/components/breadcrumbs";
 import { useEffect, useMemo, useState } from "react";
 import { useRoute } from "wouter";
+import { absoluteUrl, getLogoUrl } from "@/lib/siteMeta";
+import { products } from "@/data/products";
 
 type Article = {
   id: string; title: string; slug: string; excerpt?: string; cover_image?: string; content: string; tags?: string[]; author?: string; published_at?: string;
@@ -27,6 +29,13 @@ export default function InsightArticlePage(){
   const slug = params?.slug || '';
   const [article, setArticle] = useState<Article|undefined>();
   const [error, setError] = useState<string|undefined>();
+  const relatedProducts = useMemo(() => {
+    if (!article) return [] as typeof products;
+    const tags = new Set((article.tags || []).map(t => t.toLowerCase()));
+    return products.filter(product =>
+      product.tags?.some(tag => tags.has(tag.toLowerCase()))
+    ).slice(0, 4);
+  }, [article]);
 
   useEffect(()=>{ (async()=>{
     const tryFetch = async (url: string) => {
@@ -50,16 +59,24 @@ export default function InsightArticlePage(){
     setError(undefined);
     try {
       // Prefer query-based endpoint to avoid any dynamic route quirks on Vercel
-      const firstUrl = `/api/articles/by-slug?slug=${encodeURIComponent(slug)}`;
+      const base = (import.meta as any).env?.VITE_API_BASE_URL || '';
+      const firstUrl = `${base.replace(/\/$/,'')}/api/articles/by-slug?slug=${encodeURIComponent(slug)}`;
       let data: any;
       try {
         data = await tryFetch(firstUrl);
       } catch (e:any) {
         // Fallback to dynamic route if the first attempt returns HTML or fails parsing
-        const fallbackUrl = `/api/articles/${encodeURIComponent(slug)}`;
+        const base2 = (import.meta as any).env?.VITE_API_BASE_URL || '';
+        const fallbackUrl = `${base2.replace(/\/$/,'')}/api/articles/${encodeURIComponent(slug)}`;
         data = await tryFetch(fallbackUrl);
       }
-      setArticle(data);
+      if (Array.isArray(normalized)) {
+        normalized = normalized[0];
+      }
+      if (!normalized || typeof normalized !== 'object' || !('slug' in normalized)) {
+        throw new Error('Unexpected article payload');
+      }
+      setArticle(normalized as Article);
     } catch (e:any) {
       const msg = typeof e?.message === 'string' ? e.message : 'Failed to load article';
       setError(msg);
@@ -68,13 +85,31 @@ export default function InsightArticlePage(){
 
   const jsonLd = useMemo(()=>{
     if (!article) return null;
+    const authorName = article.author || 'iboothme Editorial Team';
+    const cover = article.cover_image ? absoluteUrl(article.cover_image) : undefined;
     return {
       "@context":"https://schema.org",
       "@type":"Article",
       headline: article.title,
+      description: article.excerpt,
       datePublished: article.published_at || undefined,
-      author: article.author ? { "@type":"Person", name: article.author } : undefined,
-      image: article.cover_image || undefined,
+      author: {
+        "@type":"Person",
+        name: authorName,
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "iboothme",
+        logo: {
+          "@type": "ImageObject",
+          url: getLogoUrl(),
+        },
+      },
+      image: cover ? [cover] : undefined,
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": absoluteUrl(`/insights/${article.slug}`),
+      },
       keywords: (article.tags||[]).join(', ')
     } as any;
   }, [article]);
@@ -113,6 +148,26 @@ export default function InsightArticlePage(){
             <footer className="mt-8 flex flex-wrap gap-2">
               {(article.tags||[]).map(t=> (<span key={t} className="text-xs px-2 py-1 rounded-full border border-white/20 bg-white/10">{t}</span>))}
             </footer>
+            {relatedProducts.length > 0 && (
+              <section className="mt-12 rounded-2xl border border-white/10 bg-white/5 p-6">
+                <h2 className="text-xl font-semibold text-white mb-3">Experiential Solutions Mentioned</h2>
+                <p className="text-white/70 text-sm mb-5">
+                  Elevate your next activation with the technologies highlighted in this article.
+                </p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {relatedProducts.map(product => (
+                    <a key={product.id} href={`/products/${product.id}`} className="flex flex-col gap-3 rounded-xl border border-white/10 bg-black/30 p-4 transition hover:border-white/20">
+                      <div className="text-xs uppercase tracking-wide text-purple-200/90">{product.meta}</div>
+                      <h3 className="text-lg font-semibold text-white">{product.name}</h3>
+                      <p className="text-sm text-white/75 line-clamp-3">
+                        {product.description}
+                      </p>
+                      <span className="text-sm text-purple-200/90">Discover the {product.name} experiential solution →</span>
+                    </a>
+                  ))}
+                </div>
+              </section>
+            )}
           </article>
         )}
       </main>

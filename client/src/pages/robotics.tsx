@@ -12,6 +12,7 @@ import { validateLeadBasics } from "@/lib/validation";
 import CTAGroup from "@/components/ui/cta-group";
 import { trackEvent } from "@/lib/ga";
 import { motion } from "framer-motion";
+import { buildServiceSchema } from "@/lib/siteMeta";
 import {
   Shirt,
   Users,
@@ -52,13 +53,14 @@ export default function RoboticsPage() {
         canonical="/robotics"
         ogImage="/images/robotics-talia.png"
         keywords={["robotics", "event robots", "interactive activations"]}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Service",
+        jsonLd={buildServiceSchema({
           name: "Robotics",
           description: "Robotic experiences for events.",
-          provider: { "@type": "Organization", name: "iboothme" }
-        }}
+          slug: "/robotics",
+          image: "/images/robotics-talia.png",
+          serviceType: "Robotic Event Activations",
+          areaServed: ["United Arab Emirates", "GCC"],
+        })}
       />
       <div
         aria-hidden

@@ -20,12 +20,14 @@ export default function AdminSettingsPage() {
     if (!getAdminKey()) { window.location.href = '/admin/login'; return; }
     (async () => {
       try {
-        const res = await fetch('/api/settings/ga');
+        const base = (import.meta as any).env?.VITE_API_BASE_URL || '';
+        const res = await fetch(`${base.replace(/\/$/,'')}/api/settings/ga`);
         if (res.ok) {
           const { id } = await res.json();
           setGaId(id || '');
         }
-        const pub = await fetch('/api/settings/public');
+        const base2 = (import.meta as any).env?.VITE_API_BASE_URL || '';
+        const pub = await fetch(`${base2.replace(/\/$/,'')}/api/settings/public`);
         if (pub.ok) {
           const js = await pub.json();
           setGoogleVerify(js.google_site_verification || '');
@@ -41,7 +43,8 @@ export default function AdminSettingsPage() {
         setAllowAnthropic((map['allow_anthropic_ai'] ?? 'true') !== 'false');
         setAllowPerplexity((map['allow_perplexitybot'] ?? 'true') !== 'false');
         try {
-          const h = await fetch('/api/health/env');
+          const base3 = (import.meta as any).env?.VITE_API_BASE_URL || '';
+          const h = await fetch(`${base3.replace(/\/$/,'')}/api/health/env`);
           setEnvHealth(h.ok ? await h.json() : null);
         } catch {}
       } catch {}

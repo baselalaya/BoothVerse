@@ -6,6 +6,7 @@ import Navigation from "@/components/navigation";
 import { applySeoToHead, fetchSeoConfig } from "@/lib/seoOverride";
 import Seo from "@/components/seo";
   import FooterSection from "@/components/footer-section";
+import { buildServiceSchema } from "@/lib/siteMeta";
 
 
 
@@ -46,13 +47,14 @@ export default function AnalyticsPage() {
         canonical="/analytics"
         ogImage="/images/studio-ai-example.jpg"
         keywords={["event analytics", "engagement metrics", "ROI tracking"]}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Service",
+        jsonLd={buildServiceSchema({
           name: "Event Analytics",
           description: "Dashboards and insights for event performance.",
-          provider: { "@type": "Organization", name: "iboothme" }
-        }}
+          slug: "/analytics",
+          image: "/images/studio-ai-example.jpg",
+          serviceType: "Event Analytics & Reporting",
+          areaServed: ["United Arab Emirates", "GCC"],
+        })}
       />
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(70%_50%_at_50%_0%,rgba(112,66,210,0.12),transparent_60%),radial-gradient(60%_40%_at_80%_100%,rgba(34,212,253,0.10),transparent_60%)]" />
       <Navigation />
