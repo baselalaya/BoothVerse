@@ -17,6 +17,10 @@ type Lead = {
   utm_source?: string;
   utm_medium?: string;
   utm_campaign?: string;
+  utm_term?: string;
+  utm_content?: string;
+  gclid?: string;
+  fbclid?: string;
 };
 
 export default function AdminLeadsPage() {
@@ -101,7 +105,7 @@ export default function AdminLeadsPage() {
                   </td>
                 </tr>
               ))}
-              {data.length===0 && (<tr><td className="p-4 text-white/60" colSpan={6}>No leads found.</td></tr>)}
+              {data.length===0 && (<tr><td className="p-4 text-white/60" colSpan={7}>No leads found.</td></tr>)}
             </tbody>
           </table>
         </div>
