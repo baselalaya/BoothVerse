@@ -4,7 +4,6 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "prebuild": "tsx scripts/check-env.ts",
     "dev": "NODE_ENV=development tsx server/index.ts",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist && tsx scripts/generate-sitemap.ts && tsx scripts/generate-robots.ts && tsx scripts/prerender-pages.ts",
     "prebuild:client": "tsx scripts/check-env.ts",
@@ -87,7 +86,7 @@
     "troika-three-text": "^0.52.4",
     "tw-animate-css": "^1.2.5",
     "vaul": "^1.1.2",
-    "vercel": "^47.1.3",
+    "vercel": "^48.2.6",
     "wouter": "^3.3.5",
     "ws": "^8.18.0",
     "zod": "^3.24.2",
