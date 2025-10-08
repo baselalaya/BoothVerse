@@ -7,8 +7,9 @@ export function getAdminKey() {
 }
 
 export async function adminApi<T = any>(method: string, path: string, body?: any): Promise<T> {
-  const base = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_BASE) || '';
-  const headers: Record<string,string> = { 'Content-Type': 'application/json' };
+  // Prefer explicit API base. Support legacy var name, then fallback to same-origin.
+  const env = (typeof import.meta !== 'undefined' ? (import.meta as any).env : undefined) || {};
+  const base = env.VITE_API_BASE_URL || env.VITE_API_BASE || '';  const headers: Record<string,string> = { 'Content-Type': 'application/json' };
   const key = getAdminKey();
   if (key) headers['x-admin-key'] = key;
   const url = base ? base.replace(/\/$/, '') + (path.startsWith('/') ? path : `/${path}`) : path;
