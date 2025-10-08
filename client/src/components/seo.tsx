@@ -1,4 +1,5 @@
 import React from "react";
+import { absoluteUrl, getSiteUrl } from "@/lib/siteMeta";
 
 type SeoProps = {
   title?: string;
@@ -11,8 +12,8 @@ type SeoProps = {
 };
 
 const SITE_NAME = "iboothme";
-const BASE_URL = typeof window !== "undefined" ? window.location.origin : "";
 const DEFAULT_OG = "/images/icon.svg";
+const SITE_URL = getSiteUrl();
 
 export function Seo({
   title,
@@ -24,12 +25,8 @@ export function Seo({
   jsonLd,
 }: SeoProps) {
   const pageTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
-  const canonicalUrl = canonical
-    ? canonical.startsWith("http")
-      ? canonical
-      : `${BASE_URL}${canonical}`
-    : undefined;
-  const og = ogImage || DEFAULT_OG;
+  const canonicalUrl = canonical ? absoluteUrl(canonical) : undefined;
+  const og = absoluteUrl(ogImage || DEFAULT_OG);
   const kw = keywords?.join(", ");
   const json = typeof jsonLd === "string" ? jsonLd : jsonLd ? JSON.stringify(jsonLd) : undefined;
 
@@ -47,7 +44,12 @@ export function Seo({
       <meta property="og:type" content="website" />
       {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
       <meta property="og:site_name" content={SITE_NAME} />
-      {og && <meta property="og:image" content={og} />}
+      {og && (
+        <>
+          <meta property="og:image" content={og} />
+          <meta property="og:image:secure_url" content={og} />
+        </>
+      )}
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -64,4 +66,3 @@ export function Seo({
 }
 
 export default Seo;
-

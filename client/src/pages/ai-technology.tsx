@@ -9,6 +9,7 @@ import { Autoplay, Navigation as SwiperNavigation } from "swiper/modules";
 import "swiper/css";
 import Seo from "@/components/seo";
 import { applySeoToHead, fetchSeoConfig } from "@/lib/seoOverride";
+import { buildServiceSchema } from "@/lib/siteMeta";
 
 export default function AITechnologyPage() {
   const prevRef = useRef<HTMLButtonElement | null>(null);
@@ -122,13 +123,14 @@ export default function AITechnologyPage() {
         canonical="/ai-technology"
         ogImage="/images/studio-ai-example.jpg"
         keywords={["AI photo booth", "AI avatars", "experiential AI", "computer vision"]}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Service",
+        jsonLd={buildServiceSchema({
           name: "AI Technology",
           description: "AI-driven interactive experiences for events.",
-          provider: { "@type": "Organization", name: "iboothme" }
-        }}
+          slug: "/ai-technology",
+          image: "/images/studio-ai-example.jpg",
+          serviceType: "AI Event Technology",
+          areaServed: ["United Arab Emirates", "GCC"],
+        })}
       />
       <Navigation />
 

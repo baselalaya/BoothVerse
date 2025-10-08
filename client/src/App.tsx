@@ -1,10 +1,9 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/home";
-<<<<<<< HEAD
 import ProductsPage from "@/pages/products";
 import ProductDetailPage from "@/pages/product-detail";
 import AITechnologyPage from "@/pages/ai-technology";
@@ -39,13 +38,57 @@ import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from 'react';
 import { captureUtmFromUrl } from "@/lib/utm";
 import { loadGA, trackPageView } from "@/lib/ga";
-=======
-import NotFound from "@/pages/not-found";
->>>>>>> parent of fc3d337 (final)
+import { SOCIAL_LINKS, absoluteUrl, getSiteUrl, getLogoUrl, getVerificationCodes } from "@/lib/siteMeta";
+
+const SITE_URL = getSiteUrl();
+const LOGO_URL = getLogoUrl();
+const { google: GOOGLE_VERIFICATION, bing: BING_VERIFICATION } = getVerificationCodes();
+
+const ORGANIZATION_SCHEMA = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "iboothme",
+  url: SITE_URL,
+  logo: LOGO_URL,
+  sameAs: SOCIAL_LINKS,
+  contactPoint: [{
+    "@type": "ContactPoint",
+    telephone: "+971-4-333-7700",
+    contactType: "customer service",
+    areaServed: "AE"
+  }]
+});
+
+const WEBSITE_SCHEMA = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "iboothme",
+  url: SITE_URL,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: `${SITE_URL}/search?q={search_term_string}`,
+    "query-input": "required name=search_term_string"
+  }
+});
+
+function GlobalHeadTags() {
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: ORGANIZATION_SCHEMA }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: WEBSITE_SCHEMA }} />
+      {GOOGLE_VERIFICATION && (
+        <meta name="google-site-verification" content={GOOGLE_VERIFICATION} />
+      )}
+      {BING_VERIFICATION && (
+        <meta name="msvalidate.01" content={BING_VERIFICATION} />
+      )}
+    </>
+  );
+}
 
 function Router() {
+  const [location] = useLocation();
   return (
-<<<<<<< HEAD
     <AnimatePresence mode="wait" initial={false}>
       <Switch>
         <Route path="/">
@@ -195,12 +238,6 @@ function Router() {
         </Route>
       </Switch>
     </AnimatePresence>
-=======
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route component={NotFound} />
-    </Switch>
->>>>>>> parent of fc3d337 (final)
   );
 }
 
@@ -215,8 +252,7 @@ function App() {
     // Fetch GA4 measurement id and initialize
     (async () => {
       try {
-        const base = (import.meta as any).env?.VITE_API_BASE_URL || '';
-        const res = await fetch(`${base.replace(/\/$/,'')}/api/settings/ga`);
+        const res = await fetch('/api/settings/ga');
         if (res.ok) {
           const { id } = await res.json();
           if (id) { loadGA(id); setGaLoaded(true); }
@@ -224,8 +260,7 @@ function App() {
       } catch {}
       try {
         // Inject search console meta tags if configured
-        const base = (import.meta as any).env?.VITE_API_BASE_URL || '';
-        const res = await fetch(`${base.replace(/\/$/,'')}/api/settings/public`);
+        const res = await fetch('/api/settings/public');
         if (res.ok) {
           const cfg = await res.json();
           const ensureMeta = (name: string, content?: string) => {
@@ -248,7 +283,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <GlobalHeadTags />
         <Toaster />
+        <ScrollToTop />
         <Router />
       </TooltipProvider>
     </QueryClientProvider>

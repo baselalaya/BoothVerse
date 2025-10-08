@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { products as dataProducts, type Product } from "@/data/products";
 import Breadcrumbs from "@/components/breadcrumbs";
+import { buildServiceSchema } from "@/lib/siteMeta";
 
 export default function TailoredSoftwareSolutionsPage() {
   useEffect(() => { (async () => { const cfg = await fetchSeoConfig('/tailored-software-solutions'); if (cfg) applySeoToHead(cfg); })(); }, []);
@@ -19,13 +20,14 @@ export default function TailoredSoftwareSolutionsPage() {
         canonical="/tailored-software-solutions"
         ogImage="/images/tech.png"
         keywords={["custom software", "event tech", "brand activation software", "experiential software", "AR", "AI", "gamification"]}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Service",
+        jsonLd={buildServiceSchema({
           name: "Tailored Software Solutions",
           description: "Custom software for events and brand activations.",
-          provider: { "@type": "Organization", name: "iboothme" }
-        }}
+          slug: "/tailored-software-solutions",
+          image: "/images/tech.png",
+          serviceType: "Custom Event Software",
+          areaServed: ["United Arab Emirates", "GCC"],
+        })}
       />
       <Navigation />
       <main className="relative z-10">

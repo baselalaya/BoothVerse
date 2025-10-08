@@ -2,6 +2,19 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { createClient } from "@supabase/supabase-js";
+import { randomUUID } from "crypto";
+
+function getCdnBase() {
+  const base = process.env.CDN_BASE_URL || "";
+  return base.replace(/\/$/, "");
+}
+
+function qualifyUrl(keyOrUrl?: string | null) {
+  if (!keyOrUrl) return keyOrUrl || undefined;
+  if (/^https?:\/\//i.test(keyOrUrl)) return keyOrUrl;
+  const base = getCdnBase();
+  return base ? `${base}/${keyOrUrl.replace(/^\//, "")}` : keyOrUrl;
+}
 
 function getSupabaseAdmin() {
   const url = process.env.SUPABASE_URL as string;
@@ -56,7 +69,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/articles', async (req, res) => {
     try {
       const supabase = getSupabaseAdmin();
-      const { page = '1', pageSize = '12', q, tag } = req.query as any;
+      const { page = '1', pageSize = '12', q, tag, slug } = req.query as any;
+
+      if (typeof slug === 'string' && slug.trim()) {
+        const { data, error } = await supabase
+          .from('articles')
+          .select('id,title,slug,excerpt,cover_image,tags,author,published_at,content')
+          .eq('slug', slug.trim())
+          .single();
+        if (error) return res.status(404).json({ message: 'Not found' });
+        return res.json(data);
+      }
+
       const p = Math.max(1, parseInt(page));
       const ps = Math.min(50, Math.max(1, parseInt(pageSize)));
       let query = supabase
@@ -229,6 +253,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.json({ data, count, page: p, pageSize: ps });
     } catch (e:any) {
       return res.status(500).json({ message: e.message || 'Server error' });
+    }
+  });
+
+  // Media library endpoints
+  app.post('/api/media/upload-url', requireAdmin, async (req, res) => {
+    try {
+      const supabase = getSupabaseAdmin();
+      const bucket = process.env.SUPABASE_MEDIA_BUCKET || 'media';
+      const body = (req.body || {}) as Record<string, any>;
+      const rawFileName = typeof body.fileName === 'string' && body.fileName ? body.fileName : 'upload';
+      const safeName = rawFileName.replace(/[^a-zA-Z0-9._-]+/g, '-');
+      const contentType = typeof body.contentType === 'string' && body.contentType ? body.contentType : 'application/octet-stream';
+      const rawSubDir = typeof body.subDir === 'string' ? body.subDir : '';
+      const subDir = rawSubDir ? rawSubDir.replace(/^\/+|\/+$/g, '') : '';
+      const now = new Date();
+      const parts = [subDir, String(now.getFullYear()), String(now.getMonth() + 1).padStart(2, '0'), `${randomUUID()}-${safeName}`].filter(Boolean);
+      const key = parts.join('/');
+      const { data, error } = await supabase.storage.from(bucket).createSignedUploadUrl(key, { upsert: true, contentType });
+      if (error) return res.status(500).json({ message: error.message });
+      const { data: pub } = supabase.storage.from(bucket).getPublicUrl(key);
+      return res.json({ uploadUrl: data?.signedUrl, key, url: pub?.publicUrl || null, bucket, access: body.access || 'public' });
+    } catch (e: any) {
+      return res.status(500).json({ message: e?.message || 'Server error' });
+    }
+  });
+
+  app.get('/api/media', async (req, res) => {
+    try {
+      const supabase = getSupabaseAdmin();
+      const { page = '1', pageSize = '24', q, tag, type, includeAll } = req.query as any;
+      const p = Math.max(1, parseInt(String(page)) || 1);
+      const ps = Math.min(100, Math.max(1, parseInt(String(pageSize)) || 24));
+      let query = supabase
+        .from('media_items')
+        .select('id,title,slug,type,url,thumbnail_url,tags,published,created_at', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range((p - 1) * ps, p * ps - 1);
+      const isAdmin = req.headers['x-admin-key'] && req.headers['x-admin-key'] === process.env.ADMIN_PASSWORD;
+      const wantAll = String(includeAll || '').toLowerCase() === 'true';
+      if (!(isAdmin && wantAll)) {
+        query = query.eq('published', true);
+      }
+      if (q) query = query.or(`title.ilike.%${q}%,slug.ilike.%${q}%`);
+      if (tag) query = query.contains('tags', [String(tag)] as any);
+      if (type) query = query.eq('type', String(type));
+
+      const { data, error, count } = await query;
+      if (error) return res.status(500).json({ message: error.message });
+      const mapped = (data || []).map((item: any) => ({
+        ...item,
+        url: qualifyUrl(item.url),
+        thumbnail_url: qualifyUrl(item.thumbnail_url),
+      }));
+      return res.json({ data: mapped, count: count || 0, page: p, pageSize: ps });
+    } catch (e: any) {
+      return res.status(500).json({ message: e?.message || 'Server error' });
+    }
+  });
+
+  app.post('/api/media', requireAdmin, async (req, res) => {
+    try {
+      const supabase = getSupabaseAdmin();
+      const body = req.body || {};
+      body.created_at = new Date().toISOString();
+      body.updated_at = body.created_at;
+      const { data, error } = await supabase.from('media_items').insert(body).select().single();
+      if (error) return res.status(500).json({ message: error.message });
+      return res.status(201).json(data);
+    } catch (e: any) {
+      return res.status(500).json({ message: e?.message || 'Server error' });
+    }
+  });
+
+  app.put('/api/media/:id', requireAdmin, async (req, res) => {
+    try {
+      const supabase = getSupabaseAdmin();
+      const patch = { ...(req.body || {}), updated_at: new Date().toISOString() };
+      const { data, error } = await supabase.from('media_items').update(patch).eq('id', req.params.id).select().single();
+      if (error) return res.status(500).json({ message: error.message });
+      return res.json(data);
+    } catch (e: any) {
+      return res.status(500).json({ message: e?.message || 'Server error' });
+    }
+  });
+
+  app.delete('/api/media/:id', requireAdmin, async (req, res) => {
+    try {
+      const supabase = getSupabaseAdmin();
+      const { error } = await supabase.from('media_items').delete().eq('id', req.params.id);
+      if (error) return res.status(500).json({ message: error.message });
+      return res.status(204).end();
+    } catch (e: any) {
+      return res.status(500).json({ message: e?.message || 'Server error' });
     }
   });
 

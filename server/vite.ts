@@ -69,6 +69,7 @@ export async function setupVite(app: Express, server: Server) {
 
 export function serveStatic(app: Express) {
   const distPath = path.resolve(import.meta.dirname, "public");
+  const prerenderPath = path.resolve(distPath, "prerender");
 
   if (!fs.existsSync(distPath)) {
     throw new Error(
@@ -80,6 +81,26 @@ export function serveStatic(app: Express) {
 
   // fall through to index.html if the file doesn't exist
   app.use("*", (_req, res) => {
+    const requestPath = (_req.originalUrl || "/").split("?")[0].split("#")[0];
+    const normalized = requestPath.replace(/\/+$/, "");
+
+    const resolvePrerender = () => {
+      if (!fs.existsSync(prerenderPath)) return null;
+      const relative = normalized === "" || normalized === "/"
+        ? []
+        : normalized.replace(/^\/+/, "").split("/");
+      const filePath = path.join(prerenderPath, ...relative, "index.html");
+      return fs.existsSync(filePath) ? filePath : null;
+    };
+
+    const prerendered = resolvePrerender();
+    if (prerendered) {
+      if (normalized === "/404" || normalized === "404") {
+        res.status(404);
+      }
+      return res.sendFile(prerendered);
+    }
+
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }
